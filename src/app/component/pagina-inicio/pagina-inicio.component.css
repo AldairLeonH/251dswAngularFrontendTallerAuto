@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+  }
+  
+  .navbar {
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  .navbar button {
+    background-color: #007BFF; /* azul principal */
+    color: white;
+    padding: 12px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .navbar button:hover {
+    background-color: #0056b3; /* azul más oscuro al pasar el mouse */
+  }
+  
+  .content {
+    padding: 50px;
+    text-align: center;
+  }
+  
+  .content h1 {
+    font-size: 2em;
+    color: #333;
+  }
+  
