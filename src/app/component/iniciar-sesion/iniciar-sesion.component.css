@@ -1,0 +1,18 @@
+/* Centrado horizontal y margen superior */
+.container-superior {
+          display: flex;
+          justify-content: center;
+          margin-top: 60px; /* Puedes ajustar este valor */
+        }
+        
+        /* Estilo para la tarjeta */
+        .card {
+          min-width: 300px;
+          max-width: 400px;
+          width: 100%;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          border-radius: 12px;
+          background-color: #f8f9fa; /* Color claro */
+          padding: 20px;
+        }
+        
