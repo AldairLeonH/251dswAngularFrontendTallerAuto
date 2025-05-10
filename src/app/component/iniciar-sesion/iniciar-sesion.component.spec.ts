@@ -1,14 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { IniciarSesionComponent } from './iniciar-sesion.component';
+import { AuthService } from '@services/auth.service';
+import { ToastService } from '@services/toast.service';
 
-describe('IniciarSesionComponent', () => {
+describe('InicioSesionComponent', () => {
   let component: IniciarSesionComponent;
   let fixture: ComponentFixture<IniciarSesionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IniciarSesionComponent]
+      imports: [HttpClientTestingModule, RouterTestingModule, ReactiveFormsModule],
+      providers: [AuthService, ToastService]
     })
     .compileComponents();
 
