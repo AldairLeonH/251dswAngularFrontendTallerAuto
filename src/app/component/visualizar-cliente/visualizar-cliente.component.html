@@ -1,0 +1,67 @@
+
+<div class="card">
+          <div class="card-body">
+                    <table class="table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">NroDoc</th>
+                                  <th scope="col">TipoDoc</th>
+                                  <th scope="col">ApellidoPaterno</th>
+                                  <th scope="col">ApellidoMaterno</th>
+                                  <th scope="col">Nombres</th>
+                                  <th scope="col">Direccion</th>
+                                  <th scope="col">Sexo</th>
+                                  <th scope="col">Telefono</th>
+
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr
+                                *ngFor="let usuario of usuarioArray
+                                  |paginate : { itemsPerPage: 10, currentPage: page };
+                                let i = index
+                              ">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ usuario.persona.nroDocumento}}</td>
+                                <td *ngIf="usuario.persona.tipoDocumento">
+                                        {{ usuario.persona.tipoDocumento.tipoDoc}}
+                                </td>
+                                <td *ngIf="!usuario.persona.tipoDocumento">Sin Documento</td>    
+
+                                <td>{{ usuario.persona.apellidoPaterno}}</td>
+                                <td>{{ usuario.persona.apellidoMaterno}}</td>
+                                <td>{{ usuario.persona.nombres}}</td>
+                                <td>{{ usuario.persona.direccion}}</td>
+                                <td>{{ usuario.persona.sexo}}</td>
+                                <td>{{ usuario.persona.telefono}}</td>
+                                <!-- <td>{{ persona.apellidoMaterno }}</td>
+                                <td>{{ persona.nombres }}</td>
+                                <td>{{ persona.fechaNacimiento }}</td>
+                                <td *ngIf="persona.tipoDocumento">
+                                  {{ persona.tipoDocumento.descripcion }}
+                                </td>
+                                <td *ngIf="!persona.tipoDocumento">Sin Documento</td>
+                                <td>{{ persona.ndocumento }}</td>
+                                <td>{{ persona.direccion }}</td>
+                                <td *ngIf="persona.ubigeo">
+                                  {{
+                                    persona.ubigeo.departamento +
+                                      "|" +
+                                      persona.ubigeo.provincia +
+                                      "|" +
+                                      persona.ubigeo.distrito
+                                  }}
+                                </td>
+                                <td *ngIf="!persona.ubigeo">Sin Ubigeo</td>-->
+                              </tbody>
+                    </table>
+                    <pagination-controls
+                              (pageChange)="page = $event"
+                              previousLabel="Anterior"
+                              nextLabel="Siguiente"
+                              >
+                    </pagination-controls>
+          </div>
+</div>
+
