@@ -1,5 +1,5 @@
 export interface IUsuarioRequest {
-    idUsuario: number;
+    idUsuario?: number;
     nombreUsuario: string;
     password: string;
     idRol: number;

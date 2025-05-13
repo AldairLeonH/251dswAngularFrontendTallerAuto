@@ -12,7 +12,7 @@ export class TokenService {
     }
     return null;
   }
-
+   
   getEmail(): string {
     const decodedToken = this.getDecodedToken();
     if (decodedToken && decodedToken.email) {

@@ -1,13 +1,13 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component, inject,TemplateRef,ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router,RouterModule } from '@angular/router';
 import { AuthService } from '@service/auth.service';
 import { Location } from '@angular/common';
 import { ToastService } from '@service/toast.service';
 
 @Component({
-  selector: 'app-inicio-sesion',
+  selector: 'app-iniciar-sesion',
   standalone: true,
   imports: [ReactiveFormsModule, HttpClientModule, RouterModule],
   templateUrl: './iniciar-sesion.component.html',
@@ -16,7 +16,8 @@ import { ToastService } from '@service/toast.service';
 export class IniciarSesionComponent {
   authService = inject(AuthService);
   location = inject(Location);
-  toastService = inject(ToastService)
+  toastService = inject(ToastService);
+  router = inject(Router);
   @ViewChild('successTpl', { static: true }) successTpl!: TemplateRef<any>;
 
 
@@ -41,6 +42,7 @@ export class IniciarSesionComponent {
       response => {
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful', response);
+        this.router.navigate(['/menu-recepcionista']); 
       },
       error => { 
         let mensaje: string;

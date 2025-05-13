@@ -1,0 +1,180 @@
+
+<div class="card">
+          <div class="card-body">
+                    <table class="table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">NroDoc</th>
+                                  <th scope="col">TipoDoc</th>
+                                  <th scope="col">ApellidoPaterno</th>
+                                  <th scope="col">ApellidoMaterno</th>
+                                  <th scope="col">Nombres</th>
+                                  <th scope="col">Direccion</th>
+                                  <th scope="col">Sexo</th>
+                                  <th scope="col">Telefono</th>
+
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr
+                                *ngFor="let usuario of usuarioArray
+                                  |paginate : { itemsPerPage: 10, currentPage: page };
+                                let i = index
+                              ">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ usuario.persona.nroDocumento}}</td>
+                                <td *ngIf="usuario.persona.tipoDocumento">
+                                        {{ usuario.persona.tipoDocumento.tipoDoc}}
+                                </td>
+                                <td *ngIf="!usuario.persona.tipoDocumento">Sin Documento</td>    
+
+                                <td>{{ usuario.persona.apellidoPaterno}}</td>
+                                <td>{{ usuario.persona.apellidoMaterno}}</td>
+                                <td>{{ usuario.persona.nombres}}</td>
+                                <td>{{ usuario.persona.direccion}}</td>
+                                <td>{{ usuario.persona.sexo}}</td>
+                                <td>{{ usuario.persona.telefono}}</td>
+                                <td>
+                                  <button class="btn btn-secondary rounded-circle p-2 lh-1"
+                                    (click)="mostrarEditarCliente(usuario)"
+                                    >
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+
+                                    widht ="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    class="fa-solid fa-user-pen" 
+
+                                    
+                                    viewBox="0 0 16 16">
+                                    <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l293.1 0c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7l40.3-40.3c-32.1-31-75.7-50.1-123.9-50.1l-91.4 0zm435.5-68.3c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM375.9 417c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L576.1 358.7l-71-71L375.9 417z"/></svg>
+
+                                  </button>
+                                  <button class="btn btn-secondary rounded-circle p-2 lh-1"
+                                   (click)="eliminarCliente(usuario)">
+                                   <svg xmlns="http://www.w3.org/2000/svg"
+                                   widht ="16"
+                                   height="16"
+                                   fill="currentColor"
+                                   class="bi bi-trash3-fill" 
+                                   viewBox="0 0 16 16">
+                                    <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
+                                    Ver
+
+                                  </button>
+                                </td>
+                                <!-- <td>{{ persona.apellidoMaterno }}</td>
+                                <td>{{ persona.nombres }}</td>
+                                <td>{{ persona.fechaNacimiento }}</td>
+                                <td *ngIf="persona.tipoDocumento">
+                                  {{ persona.tipoDocumento.descripcion }}
+                                </td>
+                                <td *ngIf="!persona.tipoDocumento">Sin Documento</td>
+                                <td>{{ persona.ndocumento }}</td>
+                                <td>{{ persona.direccion }}</td>
+                                <td *ngIf="persona.ubigeo">
+                                  {{
+                                    persona.ubigeo.departamento +
+                                      "|" +
+                                      persona.ubigeo.provincia +
+                                      "|" +
+                                      persona.ubigeo.distrito
+                                  }}
+                                </td>
+                                <td *ngIf="!persona.ubigeo">Sin Ubigeo</td>-->
+                              </tbody>
+                    </table>
+                    <pagination-controls
+                              (pageChange)="page = $event"
+                              previousLabel="Anterior"
+                              nextLabel="Siguiente"
+                              >
+                    </pagination-controls>
+          </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"> <!-- Centrado verticalmente -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarClienteLabel">Editar Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+                    <div class="card">
+                              <div class="card-body">
+                                        <form class="form-group" [formGroup]="usuarioForm">
+                                                  <h4 class="text-center mb-4">INGRESAR DATOS DEL CLIENTE</h4>
+                                                  <div class="row">
+                                                    <!-- Columna Izquierda -->
+                                                    <div class="col-md-6">
+                                                      <div class="mb-3">
+                                                        <label for="nroDocumento" class="form-label">Nro de Documento</label>
+                                                        <input type="text" class="form-control" id="nroDocumento" formControlName="nroDocumento" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                                                        <input type="text" class="form-control" id="apellidoPaterno" formControlName="apellidoPaterno" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="nombres" class="form-label">Nombres</label>
+                                                        <input type="text" class="form-control" id="nombres" formControlName="nombres" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="sexo" class="form-label">Sexo</label>
+                                                        <select class="form-control" id="sexo" formControlName="sexo">
+                                                          <option selected disabled>Seleccione el sexo</option>
+                                                          <option>Masculino</option>
+                                                          <option>Femenino</option>
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                
+                                                    <!-- Columna Derecha -->
+                                                    <div class="col-md-6">
+                                                      <div class="mb-3">
+                                                        <label for="idTipoDocumento" class="form-label" >Tipo de Documento</label>
+                                                        <!--<input type="text" class="form-control" id="idTipoDocumento" formControlName="idTipoDocumento" />-->
+                                                        <select class="form-control form-select" id="idTipoDocumento" formControlName="idTipoDocumento"
+                                                         (change)="setTipoDocumento($event)">
+                                                          <option
+                                                            *ngFor="let tipodoc of tipoDocArray" 
+                                                            value="{{tipodoc.idTipoDoc}}"                                               
+                                                            >
+                                                            {{tipodoc.tipoDoc}}
+                                                          </option>
+
+                                                        </select>
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                                                        <input type="text" class="form-control" id="apellidoMaterno" formControlName="apellidoMaterno" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="direccion" class="form-label">Dirección</label>
+                                                        <input type="text" class="form-control" id="direccion" formControlName="direccion"/>
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="telefono" class="form-label">Teléfono</label>
+                                                        <input type="text" class="form-control" id="telefono" formControlName="telefono"/>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                
+
+                                        </form>
+                              </div>
+                    </div>
+
+          </div>
+      </div>
+<div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmarEdicionCliente()">Aceptar</button>
+      </div>
+    </div>
+</div>
+

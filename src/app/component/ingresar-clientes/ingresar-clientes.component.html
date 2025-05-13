@@ -1,0 +1,78 @@
+
+<div class="container-md">
+          <div class="row">
+                    <div class="card">
+                              <div class="card-body">
+                                        <form class="form-group" [formGroup]="personaForm">
+                                                  <h4 class="text-center mb-4">INGRESAR DATOS DEL CLIENTE</h4>
+                                                  <div class="row">
+                                                    <!-- Columna Izquierda -->
+                                                    <div class="col-md-6">
+                                                      <div class="mb-3">
+                                                        <label for="nroDocumento" class="form-label">Nro de Documento</label>
+                                                        <input type="text" class="form-control" id="nroDocumento" formControlName="nroDocumento" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                                                        <input type="text" class="form-control" id="apellidoPaterno" formControlName="apellidoPaterno" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="nombres" class="form-label">Nombres</label>
+                                                        <input type="text" class="form-control" id="nombres" formControlName="nombres" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="sexo" class="form-label">Sexo</label>
+                                                        <select class="form-control" id="sexo" formControlName="sexo">
+                                                          <option selected disabled>Seleccione el sexo</option>
+                                                          <option>Masculino</option>
+                                                          <option>Femenino</option>
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                
+                                                    <!-- Columna Derecha -->
+                                                    <div class="col-md-6">
+                                                      <div class="mb-3">
+                                                        <label for="idTipoDocumento" class="form-label" >Tipo de Documento</label>
+                                                        <!--<input type="text" class="form-control" id="idTipoDocumento" formControlName="idTipoDocumento" />-->
+                                                        <select class="form-control form-select" id="idTipoDocumento" formControlName="idTipoDocumento"
+                                                         (change)="setTipoDocumento($event)">
+                                                          
+                                                          <option
+                                                            *ngFor="let tipodoc of tipoDocArray" 
+                                                            value="{{tipodoc.idTipoDoc}}"                                               
+                                                            >
+                                                            {{tipodoc.tipoDoc}}
+                                                          </option>
+
+                                                        </select>
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                                                        <input type="text" class="form-control" id="apellidoMaterno" formControlName="apellidoMaterno" />
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="direccion" class="form-label">Dirección</label>
+                                                        <input type="text" class="form-control" id="direccion" formControlName="direccion"/>
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="telefono" class="form-label">Teléfono</label>
+                                                        <input type="text" class="form-control" id="telefono" formControlName="telefono"/>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                
+                                                  <div class="text-center mt-3">
+                                                    <button type="submit" 
+                                                    class="btn btn-dark"
+                                                    (click)="registrarCliente(); $event.preventDefault()">Ingresar</button>
+                                                  </div>
+                                        </form>
+                              </div>
+                    </div>
+
+          </div>
+
+</div>
+
+        

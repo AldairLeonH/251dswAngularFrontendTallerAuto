@@ -1,10 +1,10 @@
-import { Rol } from './rol';
-import { Persona } from './persona';
+import { IRol } from './rol';
+import { IPersona } from './persona';
 
 export interface IUsuarioResponse {
   idUsuario: number;
   nombreUsuario: string;
   password: string;
-  rol: Rol;
-  persona: Persona;
+  rol: IRol;
+  persona: IPersona;
 } 

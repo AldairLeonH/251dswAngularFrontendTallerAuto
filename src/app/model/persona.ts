@@ -1,9 +1,9 @@
-import { TipoDocumento } from './tipo-documento';
+import { ITipoDocumento } from './tipo-documento';
 
-export interface Persona {
+export interface IPersona {
   idPersona: number;
   nroDocumento: string;
-  tipoDocumento: TipoDocumento;
+  tipoDocumento: ITipoDocumento;
   apellidoPaterno: string;
   apellidoMaterno: string;
   nombres: string;
