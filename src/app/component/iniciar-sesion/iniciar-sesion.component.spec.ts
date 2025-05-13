@@ -3,8 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IniciarSesionComponent } from './iniciar-sesion.component';
-import { AuthService } from '@services/auth.service';
-import { ToastService } from '@services/toast.service';
+import { AuthService } from '@service/auth.service';
+import { ToastService } from '@service/toast.service';
 
 describe('InicioSesionComponent', () => {
   let component: IniciarSesionComponent;

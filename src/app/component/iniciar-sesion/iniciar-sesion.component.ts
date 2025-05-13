@@ -11,7 +11,7 @@ import { ToastService } from '@service/toast.service';
   standalone: true,
   imports: [ReactiveFormsModule, HttpClientModule, RouterModule],
   templateUrl: './iniciar-sesion.component.html',
-  styleUrl: './iniciar-sesion.component.scss'
+  styleUrl: './iniciar-sesion.component.css'
 })
 export class IniciarSesionComponent {
   authService = inject(AuthService);
@@ -43,8 +43,18 @@ export class IniciarSesionComponent {
         console.log('Login successful', response);
       },
       error => {
-        this.toastService.show(`Ingreso fallido. ${error?.error}`, 'danger');
-        console.error('Login failed', error.error);
+        let mensaje: string;
+
+              if (typeof error.error === 'string') {
+                mensaje = error.error;
+              } else if (typeof error.error === 'object' && error.error !== null) {
+                mensaje = error.error.message || error.error.error || 'Error desconocido';
+              } else {
+                mensaje = error.message || 'Error inesperado';
+              }
+
+        this.toastService.show(`Ingreso fallido. ${mensaje}`, 'danger');
+        console.error('Login failed', mensaje);
       }
     );
   }
