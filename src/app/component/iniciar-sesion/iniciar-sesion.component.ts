@@ -29,7 +29,7 @@ export class IniciarSesionComponent {
     console.log(this.form.value);
     if (this.form.invalid) {
       console.log('form invalid')
-      return;
+      return; 
     }
 
     if (!this.form.value.email || !this.form.value.password) {
