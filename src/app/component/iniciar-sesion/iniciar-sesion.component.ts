@@ -42,7 +42,7 @@ export class IniciarSesionComponent {
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful', response);
       },
-      error => {
+      error => { 
         let mensaje: string;
 
               if (typeof error.error === 'string') {

@@ -4,4 +4,4 @@ export interface IUsuarioRequest {
     password: string;
     idRol: number;
     idPersona: number;
-}
+} 

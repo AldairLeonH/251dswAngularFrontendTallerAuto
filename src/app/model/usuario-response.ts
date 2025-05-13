@@ -7,4 +7,4 @@ export interface IUsuarioResponse {
   password: string;
   rol: Rol;
   persona: Persona;
-}
+} 

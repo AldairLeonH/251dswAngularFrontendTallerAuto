@@ -9,7 +9,7 @@ import { tap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthService { 
   http = inject(HttpClient);
   router = inject(Router);
 

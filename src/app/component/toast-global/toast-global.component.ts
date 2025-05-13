@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './toast-global.component.css'
 })
 export class ToastGlobalComponent {
-
+ 
 }

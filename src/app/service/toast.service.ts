@@ -23,7 +23,7 @@ export class ToastService {
 		
 		console.log('adding this toast', toast);
 		this.toasts.push(toast);
-	}
+	} 
 	
 
 	remove(toast: Toast) {

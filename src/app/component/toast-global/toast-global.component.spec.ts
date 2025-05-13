@@ -11,7 +11,7 @@ describe('ToastGlobalComponent', () => {
       imports: [ToastGlobalComponent]
     })
     .compileComponents();
-
+ 
     fixture = TestBed.createComponent(ToastGlobalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
