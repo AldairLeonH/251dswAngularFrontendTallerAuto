@@ -10,8 +10,7 @@ import { VisualizarClienteComponent } from './component/visualizar-cliente/visua
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet ,NavbarComponent,ToastContainerComponent
-    ,IngresarClientesComponent,MenuRecepcionistaComponent,IniciarSesionComponent,VisualizarClienteComponent
+  imports: [RouterOutlet ,NavbarComponent,ToastContainerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
