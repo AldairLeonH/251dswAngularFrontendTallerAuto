@@ -67,9 +67,13 @@ export class IngresarClientesComponent {
 
   }
   setUsuarioRequest(idPersona: number):void {
+    const nombres = this.personaRequest.nombres?.trim().split(' ');
+    const primerNombre = nombres && nombres.length > 0 ? nombres[0].toLowerCase() : '';
+    const apellidoPaterno = this.personaRequest.apellidoPaterno?.toLowerCase() || '';
+    const nombreUsuario = `${primerNombre}.${apellidoPaterno}U`;
     
-    this.usuarioRequest.nombreUsuario="pedro";
-    this.usuarioRequest.password="pedro";
+    this.usuarioRequest.nombreUsuario= nombreUsuario;
+    this.usuarioRequest.password= nombreUsuario;
     this.usuarioRequest.idRol=3;
     this.usuarioRequest.idPersona=idPersona
   }
