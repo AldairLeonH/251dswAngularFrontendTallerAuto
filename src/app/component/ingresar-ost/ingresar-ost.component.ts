@@ -75,11 +75,14 @@ export class IngresarOstComponent implements OnInit {
   }
 
   // sin lógica todavía
-  onMarcaChange(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    const selected = target.value;
-    console.log('Marca seleccionada:', selected);
-  }
+selectedMarcaId: number | null = null;
+modelosFiltrados: any[] = [];
+
+onMarcaChange(event: Event) {
+  const marcaId = +(event.target as HTMLSelectElement).value;
+  this.selectedMarcaId = marcaId;
+  this.modelosFiltrados = this.modelos.filter(m => m.marcaId === marcaId);
+}
 
   buscarPersona(): void {
     // No implementado aún

@@ -23,16 +23,16 @@
       <div class="col-md-4">
         <label for="marca">Marca</label>
         <select class="form-select" id="marca" (change)="onMarcaChange($event)">
-          <option value="">Seleccione una marca</option>
+          <option value=""disabled selected>Seleccione una marca</option>
           <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
         </select>
       </div>
 
       <div class="col-md-4">
         <label for="idModelo">Modelo</label>
-        <select class="form-select" id="idModelo" formControlName="idModelo">
-          <option value="">Seleccione un modelo</option>
-          <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+        <select class="form-select" id="idModelo"[disabled]="!modelosFiltrados.length">
+          <option value=""disabled selected>Seleccione un modelo</option>
+          <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.id">{{ modelo.nombre }}</option>
         </select>
       </div>
 
