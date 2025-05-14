@@ -22,8 +22,14 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-          localStorage.setItem('token', res?.token);
-          this.router.navigate(['/']);
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('rol', res.usuario.rol);
+            localStorage.setItem('tipoDocumento', res.usuario.tipoDocumento);
+            localStorage.setItem('nombreCompleto', res.usuario.nombreCompleto);
+            localStorage.setItem('telefono', res.usuario.telefono);
+            localStorage.setItem('nroDocumento', res.usuario.nroDocumento);
+            localStorage.setItem('nombreUsuario', res.usuario.nombreUsuario);
+            localStorage.setItem('idUsuario', res.usuario.id.toString());
         })
       );
   }
@@ -34,7 +40,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
-    this.router.navigate(['/']);
+    this.router.navigate(['/iniciar-sesion']);
   }
 
   register(registerData: RegisterModel) {

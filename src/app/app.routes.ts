@@ -5,13 +5,14 @@ import { MenuRecepcionistaComponent } from './component/menu-recepcionista/menu-
 import { IngresarClientesComponent } from './component/ingresar-clientes/ingresar-clientes.component';
 import { VisualizarClienteComponent } from './component/visualizar-cliente/visualizar-cliente.component';
 import { IngresarOstComponent } from './component/ingresar-ost/ingresar-ost.component';
+import { authGuard } from '@guards/auth.guard';
 
 export const routes: Routes = [
           {path:'',redirectTo:'/home',pathMatch:'full'},
           {path: 'home',component: HomeComponent},
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
-          {path: 'menu-recepcionista',component: MenuRecepcionistaComponent},
-          {path: 'ingresar-clientes',component: IngresarClientesComponent}, 
-          {path: 'visualizar-clientes',component: VisualizarClienteComponent},
-          {path: 'ingresar-ost', component: IngresarOstComponent},
+          {path: 'menu-recepcionista',component: MenuRecepcionistaComponent,canActivate: [authGuard]},
+          {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard]}, 
+          {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
+          {path: 'ingresar-ost', component: IngresarOstComponent, canActivate: [authGuard]},
 ];
