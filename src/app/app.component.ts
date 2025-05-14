@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./component/navbar/navbar.component";
 import { ToastContainerComponent } from '@component/toast-container/toast-container.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { IngresarClientesComponent } from './component/ingresar-clientes/ingresar-clientes.component';
 import { MenuRecepcionistaComponent } from './component/menu-recepcionista/menu-recepcionista.component';
 import { IniciarSesionComponent } from './component/iniciar-sesion/iniciar-sesion.component';
@@ -10,7 +12,7 @@ import { VisualizarClienteComponent } from './component/visualizar-cliente/visua
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet ,NavbarComponent,ToastContainerComponent,
+  imports: [RouterOutlet ,NavbarComponent,ToastContainerComponent,ReactiveFormsModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

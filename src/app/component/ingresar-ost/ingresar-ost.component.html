@@ -1,1 +1,85 @@
-<p>ingresar-ost works!</p>
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Registrar Orden de Servicio Técnica (OST)</h2>
+
+  <form [formGroup]="formOST" (ngSubmit)="guardarOST()">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="fecha">Fecha</label>
+        <input type="date" class="form-control" id="fecha" formControlName="fecha">
+      </div>
+
+      <div class="col-md-4">
+        <label for="hora">Hora</label>
+        <input type="time" class="form-control" id="hora" formControlName="hora">
+      </div>
+
+      <div class="col-md-4">
+        <label for="direccion">Dirección</label>
+        <input type="text" class="form-control" id="direccion" formControlName="direccion">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="marca">Marca</label>
+        <select class="form-select" id="marca" (change)="onMarcaChange($event)">
+          <option value="">Seleccione una marca</option>
+          <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="idModelo">Modelo</label>
+        <select class="form-select" id="idModelo" formControlName="idModelo">
+          <option value="">Seleccione un modelo</option>
+          <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label for="placa">Placa</label>
+        <input type="text" class="form-control" id="placa" formControlName="placa">
+      </div>
+
+      <div class="col-md-2">
+        <label for="anio">Año</label>
+        <input type="number" class="form-control" id="anio" formControlName="anio">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label>Buscar persona</label>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="DNI o nombre">
+          <button class="btn btn-outline-primary" type="button" (click)="buscarPersona()">Buscar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+  <label>Preguntas de revisión:</label>
+  <div class="form-check" *ngFor="let pregunta of preguntas">
+    <input type="checkbox"
+           class="form-check-input"
+           [value]="pregunta.id"
+           (change)="onCheckboxChange($event)">
+    <label class="form-check-label">
+      {{ pregunta.pregunta }}
+    </label>
+  </div>
+</div>
+
+<div class="mt-2 text-success">
+  <p *ngIf="seleccionadas.length">Seleccionadas: {{ seleccionadas.join(', ') }}</p>
+</div>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-success">Guardar OST</button>
+    </div>
+  </form>
+</div>
+                              <div  class="card-footer text-start">
+                                <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
+
+                              </div>

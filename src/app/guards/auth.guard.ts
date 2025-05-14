@@ -17,6 +17,13 @@ export const authGuard: CanActivateFn = (route, state) => {
 };
 
 
-/*export const authGuard: CanActivateFn = (route, state) => {
+/*
+const rol = localStorage.getItem('rol');
+if (rol === 'tecnico') {
   return true;
-};*/
+} else {
+  toastService.show('No tienes permiso para acceder a esta página', 'warning');
+  router.navigate(['/login']);
+  return false;
+}
+*/
