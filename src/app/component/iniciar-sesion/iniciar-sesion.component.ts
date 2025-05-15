@@ -64,4 +64,7 @@ export class IniciarSesionComponent {
   onBack() {
     this.location.back();
   }
+    registrarse() {
+    this.router.navigate(['/registrar-cliente']); 
+  }
 }

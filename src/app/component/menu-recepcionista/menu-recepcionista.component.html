@@ -58,6 +58,14 @@
             Ingresar Orden de Servicio Técnico (OST)
           </button>
 
+          <button 
+            *ngIf="rol === 'cliente'" 
+            type="button" 
+            class="btn btn-outline-success"
+            (click)="navigate('/ingresar-ost')">
+            Ingresar Orden de Servicio Técnico (OST)
+          </button>
+
         </div>
       </div>
 

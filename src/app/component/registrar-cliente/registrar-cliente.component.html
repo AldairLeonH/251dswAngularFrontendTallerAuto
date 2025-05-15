@@ -4,7 +4,7 @@
                     <div class="card">
                               <div class="card-body">
                                         <form class="form-group" [formGroup]="personaForm">
-                                                  <h4 class="text-center mb-4">INGRESAR DATOS DEL CLIENTE</h4>
+                                                  <h4 class="text-center mb-4">REGISTRARSE</h4>
                                                   <div class="row">
                                                     <!-- Columna Izquierda -->
                                                     <div class="col-md-6">
@@ -59,6 +59,14 @@
                                                         <label for="telefono" class="form-label">Teléfono</label>
                                                         <input type="text" class="form-control" id="telefono" formControlName="telefono"/>
                                                       </div>
+                                                      <div class="mb-3">
+                                                        <label for="nombreUsuario" class="form-label">nombreUsuario</label>
+                                                        <input type="text" class="form-control" id="nombreUsuario" formControlName="nombreUsuario"/>
+                                                      </div>
+                                                      <div class="mb-3">
+                                                        <label for="password" class="form-label">password</label>
+                                                        <input type="text" class="form-control" id="password" formControlName="password"/>
+                                                      </div>
                                                       
                                                     </div>
                                                   </div>
@@ -82,5 +90,3 @@
           
 
 </div>
-
-        

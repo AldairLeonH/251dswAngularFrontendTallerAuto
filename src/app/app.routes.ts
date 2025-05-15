@@ -6,6 +6,8 @@ import { IngresarClientesComponent } from './component/ingresar-clientes/ingresa
 import { VisualizarClienteComponent } from './component/visualizar-cliente/visualizar-cliente.component';
 import { IngresarOstComponent } from './component/ingresar-ost/ingresar-ost.component';
 import { authGuard } from '@guards/auth.guard';
+import { RegistrarClienteComponent } from '@component/registrar-cliente/registrar-cliente.component';
+
 
 export const routes: Routes = [
           {path:'',redirectTo:'/home',pathMatch:'full'},
@@ -15,4 +17,5 @@ export const routes: Routes = [
           {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard]}, 
           {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
           {path: 'ingresar-ost', component: IngresarOstComponent, canActivate: [authGuard]},
+          {path: 'registrar-cliente', component: RegistrarClienteComponent},
 ];
