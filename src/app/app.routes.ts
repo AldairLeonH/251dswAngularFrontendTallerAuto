@@ -7,6 +7,7 @@ import { VisualizarClienteComponent } from './component/visualizar-cliente/visua
 import { IngresarOstComponent } from './component/ingresar-ost/ingresar-ost.component';
 import { authGuard } from '@guards/auth.guard';
 import { RegistrarClienteComponent } from '@component/registrar-cliente/registrar-cliente.component';
+import { TesteoComponent } from '@component/testeo/testeo.component';
 
 
 export const routes: Routes = [
@@ -18,4 +19,5 @@ export const routes: Routes = [
           {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
           {path: 'ingresar-ost', component: IngresarOstComponent, canActivate: [authGuard]},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
+          {path: 'testeo', component: TesteoComponent},
 ];
