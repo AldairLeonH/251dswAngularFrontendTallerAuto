@@ -1,10 +1,19 @@
+import { IPregunta } from "./pregunta";
+
 export interface IOstRequest {
-  id_ost?: number;
+  idOst?: number;
   fecha: string;   // o Date
   hora: string;    // formato "HH:mm"
   direccion: string;
-  estado: number;
+
+  idModelo: number;
+  placa: string;
+  anio: string;
+  color: string;
+  idPersona: number;
+
+  idEstado: number;
   idAuto: number;
-  idUsuario: number;
+  idRecepcionista: number;
   preguntas: number[]; 
 }

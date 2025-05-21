@@ -1,10 +1,11 @@
+import { IModelo } from './modelo';
 import { IPersona } from './persona';
 
 export interface IAuto {
   idAuto?: number;
   placa: string;
-  modelo: number;
-  persona: number;
+  modelo: IModelo;
+  persona: IPersona;
   anio: number;
   color: string;
 }

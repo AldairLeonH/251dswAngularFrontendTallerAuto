@@ -27,4 +27,9 @@ export class PersonaService {
   actualizarPersona(persona: IPersonaRequest): Observable<IPersonaResponse> {
     return this.http.put<IPersonaResponse>(`${BASE_URL}/persona`, persona);
   }
+
+  
+  buscarPersonaPorDocumento(documento: string): Observable<any> {
+    return this.http.get(`${BASE_URL}/buscar?documento=${documento}`);
+  }
 }

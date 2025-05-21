@@ -20,20 +20,30 @@
     </div>
 
     <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="marca">Marca</label>
-        <select class="form-select" id="marca" (change)="onMarcaChange($event)">
-          <option value=""disabled selected>Seleccione una marca</option>
-          <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
-        </select>
-      </div>
+        <div class="col-md-4">
+    <label for="marca">Marca</label>
+    <select 
+      class="form-select" 
+      id="marca" 
+      formControlName="idMarca" 
+      (change)="onMarcaChange($event)">
+      <option value="" disabled selected>Seleccione una marca</option>
+      <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
+    </select>
+  </div>
 
       <div class="col-md-4">
         <label for="idModelo">Modelo</label>
-        <select class="form-select" id="idModelo"[disabled]="!modelosFiltrados.length">
-          <option value=""disabled selected>Seleccione un modelo</option>
-          <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.id">{{ modelo.nombre }}</option>
+        <select class="form-select" id="idModelo" formControlName="idModelo" [disabled]="!modelosFiltrados.length">
+          <option [ngValue]="null" disabled>Seleccione un modelo</option>
+          <option *ngFor="let modelo of modelosFiltrados" [ngValue]="modelo.idModelo">{{ modelo.nombre }}
+          </option>
         </select>
+      </div>
+
+      <div class="col-md-2">
+        <label for="color">Color</label>
+        <input type="text" class="form-control" id="color" formControlName="color">
       </div>
 
       <div class="col-md-2">
@@ -51,27 +61,39 @@
       <div class="col-md-6">
         <label>Buscar persona</label>
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="DNI o nombre">
+          <input type="text" class="form-control" [(ngModel)]="filtro"  [ngModelOptions]="{standalone: true}" placeholder="DNI o nombre">
           <button class="btn btn-outline-primary" type="button" (click)="buscarPersona()">Buscar</button>
         </div>
       </div>
     </div>
+<div *ngIf="personaEncontrada">
+  <p><strong>Nombre:</strong> {{ personaEncontrada.nombres }}</p>
+  <p><strong>DNI:</strong> {{ personaEncontrada.nroDocumento }}</p>
+  <button type="button" class="btn btn-outline-secondary" (click)="abrirModalAutos()">Ver autos</button>
+  
+</div>
+<div *ngIf="autoSeleccionado" class="alert alert-info mt-3">
+  <p><strong>Auto seleccionado:</strong> {{ autoSeleccionado.placa }} - {{ autoSeleccionado.modelo?.nombre }} - {{ autoSeleccionado.color }} - {{ autoSeleccionado.anio }}</p>
+  <button type="button" class="btn btn-sm btn-outline-danger" (click)="quitarAutoSeleccionado()">Quitar auto</button>
+</div>
 
-    <div class="mb-3">
+<div class="mb-3" [formGroup]="formOST">
   <label>Preguntas de revisión:</label>
-  <div class="form-check" *ngFor="let pregunta of preguntas">
-    <input type="checkbox"
-           class="form-check-input"
-           [value]="pregunta.id"
-           (change)="onCheckboxChange($event)">
-    <label class="form-check-label">
-      {{ pregunta.pregunta }}
-    </label>
+  <div formArrayName="preguntas">
+    <div class="form-check" *ngFor="let pregunta of preguntasArray; let i = index">
+      <input type="checkbox"
+             class="form-check-input"
+             [formControlName]="i"
+             id="pregunta-{{ i }}">
+      <label class="form-check-label" [for]="'pregunta-' + i">
+        {{ pregunta.pregunta }}
+      </label>
+    </div>
   </div>
 </div>
 
 <div class="mt-2 text-success">
-  <p *ngIf="seleccionadas.length">Seleccionadas: {{ seleccionadas.join(', ') }}</p>
+  <p *ngIf="preguntasSeleccionadas.length">Seleccionadas: {{ preguntasSeleccionadas.join(', ') }}</p>
 </div>
 
     <div class="text-center">
@@ -79,7 +101,52 @@
     </div>
   </form>
 </div>
-                              <div  class="card-footer text-start">
-                                <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
 
-                              </div>
+<div  class="card-footer text-start">
+  <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalAutos" tabindex="-1" aria-labelledby="modalAutosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAutosLabel">Autos de la persona</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" [(ngModel)]="filtroPlaca" placeholder="Buscar por placa" (input)="filtrarAutos()"
+                 [ngModelOptions]="{standalone: true}">
+        </div>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Color</th>
+              <th>Seleccionar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let auto of autosFiltrados">
+              <td>{{ auto.placa }}</td>
+              <td>{{ auto.modelo }}</td>
+              <td>{{ auto.anio }}</td>
+              <td>{{ auto.color }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="seleccionarAuto(auto)" data-bs-dismiss="modal">Seleccionar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

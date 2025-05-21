@@ -17,7 +17,7 @@ export const routes: Routes = [
           {path: 'menu-recepcionista',component: MenuRecepcionistaComponent,canActivate: [authGuard]},
           {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard]}, 
           {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
-          {path: 'ingresar-ost', component: IngresarOstComponent, canActivate: [authGuard]},
+          {path: 'ingresar-ost', component: IngresarOstComponent,},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
           {path: 'testeo', component: TesteoComponent},
 ];
