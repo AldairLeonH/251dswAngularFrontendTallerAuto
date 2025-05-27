@@ -1,0 +1,47 @@
+<div class="bg-dark text-white p-3 d-flex flex-column" style="width: 250px; height: 100vh;">
+  <!-- Perfil -->
+  <div class="text-center mb-4">
+    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Perfil" class="rounded-circle" width="80" height="80">
+    <h5 class="mt-2">{{ nombre }}</h5>
+    <p class="text-white">{{ rol }}</p>
+    <p class="text-white">{{ nombreUsuario }}</p>
+  </div>
+
+  <!-- Menú -->
+  <div class="flex-grow-1">
+    <ul class="nav flex-column gap-2">
+      <!-- Opción general -->
+      <li class="nav-item">
+        <a class="btn btn-outline-light w-100 text-start" routerLink="/menu-recepcionista" routerLinkActive="active">Inicio</a>
+      </li>
+
+      <!-- Recepcionista -->
+      <ng-container *ngIf="rol === 'recepcionista'">
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-clientes" routerLinkActive="active">Ingresar Cliente</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100 text-start" routerLink="/visualizar-clientes" routerLinkActive="active">Visualizar Clientes</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-ost" routerLinkActive="active">Ingresar OST</a>
+        </li>
+      </ng-container>
+
+      <!-- Cliente -->
+      <ng-container *ngIf="rol === 'cliente'">
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-ost" routerLinkActive="active">Ingresar OST</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100 text-start" routerLink="/ordenes" routerLinkActive="active">Mis órdenes</a>
+        </li>
+      </ng-container>
+
+      <!-- Opción común -->
+      <li class="nav-item">
+        <a class="btn btn-outline-light w-100 text-start" routerLink="/soporte" routerLinkActive="active">Soporte</a>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -5,12 +5,12 @@
     <div class="row mb-3">
       <div class="col-md-4">
         <label for="fecha">Fecha</label>
-        <input type="date" class="form-control" id="fecha" formControlName="fecha">
+        <input type="date" class="form-control" id="fecha" formControlName="fecha" [value]="fechaActual">
       </div>
 
       <div class="col-md-4">
         <label for="hora">Hora</label>
-        <input type="time" class="form-control" id="hora" formControlName="hora">
+        <input type="time" class="form-control" id="hora" formControlName="hora" [value]="horaActual">
       </div>
 
       <div class="col-md-4">
@@ -21,16 +21,16 @@
 
     <div class="row mb-3">
         <div class="col-md-4">
-    <label for="marca">Marca</label>
-    <select 
-      class="form-select" 
-      id="marca" 
-      formControlName="idMarca" 
-      (change)="onMarcaChange($event)">
-      <option value="" disabled selected>Seleccione una marca</option>
-      <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
-    </select>
-  </div>
+          <label for="marca">Marca</label>
+          <select 
+            class="form-select" 
+            id="marca" 
+            formControlName="idMarca" 
+            (change)="onMarcaChange($event)">
+            <option value="" disabled selected>Seleccione una marca</option>
+            <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
+          </select>
+        </div>
 
       <div class="col-md-4">
         <label for="idModelo">Modelo</label>
@@ -53,7 +53,8 @@
 
       <div class="col-md-2">
         <label for="anio">Año</label>
-        <input type="number" class="form-control" id="anio" formControlName="anio">
+        <input type="number" class="form-control" id="anio" formControlName="anio" [attr.min]="minAnio" [attr.max]="anioActual">
+
       </div>
     </div>
 
@@ -127,6 +128,7 @@
           <thead>
             <tr>
               <th>Placa</th>
+              <th>Marca</th>
               <th>Modelo</th>
               <th>Año</th>
               <th>Color</th>
@@ -136,7 +138,8 @@
           <tbody>
             <tr *ngFor="let auto of autosFiltrados">
               <td>{{ auto.placa }}</td>
-              <td>{{ auto.modelo }}</td>
+              <td>{{ auto.modelo.marca.nombre }}</td>
+              <td>{{ auto.modelo.nombre }}</td>
               <td>{{ auto.anio }}</td>
               <td>{{ auto.color }}</td>
               <td>
