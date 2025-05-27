@@ -45,13 +45,16 @@ export class BitacoraComponent {
       },
       error: (error) => {
         console.error('Error fetching tipo solucion:', error);
+        console.log('Contenido de tipoSolucionArray:', this.tipoSolucionArray);
       }
     });
+    console.log(this.bitacoraArray)
   }
   getBitacora() {
     this.bitacoraProblemasService.getBitacoras().subscribe({
       next: (response: IBitacoraResponse[]) => {
         this.bitacoraArray = response;
+        console.log('Contenido de bitacoraArray:', this.bitacoraArray);
       },
       error: (error) => {
         console.error('Error fetching bitacora:', error);

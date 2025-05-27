@@ -12,8 +12,8 @@ import { Observable } from 'rxjs';
 export class BitacoraProblemasService {
 
   constructor(private http: HttpClient) { }
-  getBitacoras(): Observable<IBitacora[]> {
-    return this.http.get<IBitacora[]>(`${BASE_URL}/bitacora`);
+  getBitacoras(): Observable<IBitacoraResponse[]> {
+    return this.http.get<IBitacoraResponse[]>(`${BASE_URL}/bitacora`);
   }
   registrarBitacora(bitacora: IBitacoraRequest): Observable<IBitacoraResponse> {
     console.log(bitacora);

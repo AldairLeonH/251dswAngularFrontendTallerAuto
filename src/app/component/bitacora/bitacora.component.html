@@ -20,18 +20,12 @@
                                 <td>{{ i + 1 }}</td>
                                 <td>{{bitacora.descripcionProblema}}</td>
                                 <td>{{ bitacora.solucion}}</td>
-                                <td>{{ bitacora.solucion}}</td>
                                 <td>{{ bitacora.fechaRegistro}}</td>
-                                <td>{{ bitacora.tipoSolucion.tipoSolucion}}</td>
                                 <td *ngIf="bitacora.tipoSolucion">
-                                  {{ bitacora.tipoSolucion.tipoSolucion}}
+                                  {{ bitacora.tipoSolucion.nombre}}
                                 </td>
                                 <td *ngIf="!bitacora.tipoSolucion">
                                   sin tipo
-                                </td>
-
-                                <td>
-
                                 </td>
 
                               </tbody>
