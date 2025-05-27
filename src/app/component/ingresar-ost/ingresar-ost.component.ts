@@ -24,27 +24,45 @@ export class IngresarOstComponent implements OnInit {
   preguntasArray: IPregunta[] = [];
   preguntasSeleccionadas: number[] = [];
   
+  anioActual = new Date().getFullYear();
+  minAnio = 1900;
+
+  fechaActual!: string;
+  horaActual!: string;
+
   constructor(private fb: FormBuilder, private ostService: OstService) {}
 
   ngOnInit(): void {
     this.formOST = this.fb.group({
-    fecha: ['', Validators.required],
-    hora: ['', Validators.required],
-    direccion: ['', Validators.required],
-    idMarca: ['', Validators.required], // se usará solo para filtrar
-    idModelo: ['', Validators.required], // se enviará idModelo
-    placa: ['', Validators.required],
-    color: ['',],
-    anio: [''],
-    preguntas: this.fb.array([]) // se llenará al cargar
+      fecha: ['', Validators.required],
+      hora: ['', Validators.required],
+      direccion: ['', Validators.required],
+      idMarca: ['', Validators.required], // se usará solo para filtrar
+      idModelo: ['', Validators.required], // se enviará idModelo
+      placa: ['', Validators.required],
+      color: ['',],
+      anio: [''],
+      preguntas: this.fb.array([]) // se llenará al cargar
     });
+
+        this.formOST.get('anio')?.setValue(this.anioActual);
+    const hoy = new Date();
+    this.fechaActual = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    this.formOST.get('fecha')?.setValue(this.fechaActual);
+    
+      const ahora = new Date();
+    const horas = ahora.getHours().toString().padStart(2, '0');
+    const minutos = ahora.getMinutes().toString().padStart(2, '0');
+    this.horaActual = `${horas}:${minutos}`;
+    this.formOST.get('hora')?.setValue(this.horaActual);
+
     this.ostService.getMarcas().subscribe(marcas => this.marcasArray = marcas);
     this.ostService.getModelos().subscribe(modelos => this.modelosArray = modelos);
     this.ostService.getPreguntas().subscribe(preguntas => {
     this.preguntasArray = preguntas;
     const formArray = preguntas.map(() => this.fb.control(false));
     this.formOST.setControl('preguntas', this.fb.array(formArray));
-  });
+    });
   }
 
   selectedMarcaId: number | null = null;
@@ -59,33 +77,33 @@ export class IngresarOstComponent implements OnInit {
     return this.formOST.get('preguntas') as FormArray;
   }
 
-filtro: string = '';
-personaEncontrada: any = null;
-autosPersona: any[] = [];
+  filtro: string = '';
+  personaEncontrada: any = null;
+  autosPersona: any[] = [];
 
-buscarPersona(): void {
-  if (!this.filtro.trim()) return;
- this.ostService.buscarPersona(this.filtro).subscribe({
-    next: (persona) => {
-      this.personaEncontrada = persona;
-      alert('persona encontrada');
-      // Obtener autos si la persona fue encontrada
-      this.ostService.getAutosPorPersona(persona.idPersona).subscribe({
-        next: (autos) => {
-          this.autosPersona = autos;
-        },
-        error: () => {
-          this.autosPersona = [];
-        }
-      });
-    },
-    error: () => {
-      this.personaEncontrada = null;
-      this.autosPersona = [];
-      alert('No se encontró persona con ese dato');
-    }
-  });
-}
+  buscarPersona(): void {
+    if (!this.filtro.trim()) return;
+    this.ostService.buscarPersona(this.filtro).subscribe({
+      next: (persona) => {
+        this.personaEncontrada = persona;
+        alert('persona encontrada');
+        // Obtener autos si la persona fue encontrada
+        this.ostService.getAutosPorPersona(persona.idPersona).subscribe({
+          next: (autos) => {
+            this.autosPersona = autos;
+          },
+          error: () => {
+            this.autosPersona = [];
+          }
+        });
+      },
+      error: () => {
+        this.personaEncontrada = null;
+        this.autosPersona = [];
+        alert('No se encontró persona con ese dato');
+      }
+    });
+  }
   guardarOST(): void {
     const formValue = this.formOST.value;
 
@@ -124,7 +142,7 @@ buscarPersona(): void {
   });
   }
   autoSeleccionado: any =null;
-camposAutoBloqueados: boolean = false;
+  camposAutoBloqueados: boolean = false;
     seleccionarAuto(auto: any) {
       console.log('Auto recibido:', auto);
       this.autoSeleccionado = auto;
@@ -155,35 +173,35 @@ camposAutoBloqueados: boolean = false;
       if (modal) modal.hide();
     }
 
-  autosFiltrados: any[] = [];
-  abrirModalAutos() {
-  // Aquí podrías cargar los autos desde el backend si no los tienes aún
-  this.autosFiltrados = [...this.autosPersona]; // copia para filtro
-  const modalElement = new bootstrap.Modal(document.getElementById('modalAutos')!);
-  modalElement.show();
-}
+    autosFiltrados: any[] = [];
+    abrirModalAutos() {
+      // Aquí podrías cargar los autos desde el backend si no los tienes aún
+      this.autosFiltrados = [...this.autosPersona]; // copia para filtro
+      const modalElement = new bootstrap.Modal(document.getElementById('modalAutos')!);
+      modalElement.show();
+    }
 
-filtroPlaca: string = '';
+    filtroPlaca: string = '';
 
-filtrarAutos() {
-  this.autosFiltrados = this.autosPersona.filter(auto =>
-    auto.placa.toLowerCase().includes(this.filtroPlaca.toLowerCase())
-  );
-}
-quitarAutoSeleccionado() {
-     this.camposAutoBloqueados = false;
+    filtrarAutos() {
+      this.autosFiltrados = this.autosPersona.filter(auto =>
+        auto.placa.toLowerCase().includes(this.filtroPlaca.toLowerCase())
+      );
+    }
+    quitarAutoSeleccionado() {
+        this.camposAutoBloqueados = false;
 
-  this.formOST.get('idMarca')?.enable();
-  this.formOST.get('idModelo')?.enable();
-  this.autoSeleccionado = null;
-  this.formOST.patchValue({
-    idModelo: null,
-    placa: '',
-    anio: '',
-    color: '',
-    idAuto: null,
-    idMarca: null
-  });
-  this.modelosFiltrados = [];
-}
+      this.formOST.get('idMarca')?.enable();
+      this.formOST.get('idModelo')?.enable();
+      this.autoSeleccionado = null;
+      this.formOST.patchValue({
+        idModelo: null,
+        placa: '',
+        anio: '',
+        color: '',
+        idAuto: null,
+        idMarca: null
+      });
+      this.modelosFiltrados = [];
+    }
 }
