@@ -1,4 +1,4 @@
 export interface ITipoSolucion {
           idTipoSolucion: number;
-          tipoSolucion: string;
+          nombre: string;
 }
