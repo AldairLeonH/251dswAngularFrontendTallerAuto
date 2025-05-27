@@ -1,0 +1,49 @@
+<div class="card">
+          <div class="card-body">
+                    <table class="table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">Descripcion del problema</th>
+                                  <th scope="col">Solucion</th>
+                                  <th scope="col">Fecha</th>
+                                  <th scope="col">Tipo de Solucion</th>
+
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr
+                                *ngFor="let bitacora of bitacoraArray
+                                  |paginate : { itemsPerPage: 10, currentPage: page };
+                                let i = index
+                              ">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{bitacora.descripcionProblema}}</td>
+                                <td>{{ bitacora.solucion}}</td>
+                                <td>{{ bitacora.solucion}}</td>
+                                <td>{{ bitacora.fechaRegistro}}</td>
+                                <td>{{ bitacora.tipoSolucion.tipoSolucion}}</td>
+                                <td *ngIf="bitacora.tipoSolucion">
+                                  {{ bitacora.tipoSolucion.tipoSolucion}}
+                                </td>
+                                <td *ngIf="!bitacora.tipoSolucion">
+                                  sin tipo
+                                </td>
+
+                                <td>
+
+                                </td>
+
+                              </tbody>
+                    </table>
+                    <pagination-controls
+                              (pageChange)="page = $event"
+                              previousLabel="Anterior"
+                              nextLabel="Siguiente"
+                              >
+                    </pagination-controls>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
+          </div>
+</div>

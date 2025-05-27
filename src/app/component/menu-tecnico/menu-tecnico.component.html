@@ -1,0 +1,40 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-danger" (click)="logout()">Cerrar sesión</button>
+</div>
+    <div class="col-md-6">
+
+      <!-- Botón Atrás -->
+      <button class="btn btn-sm btn-outline-dark mb-3" (click)="goBack()">
+        ← Volver
+      </button>
+
+      <!-- Tarjeta de perfil del usuario -->
+      <div class="card text-center mb-4 shadow">
+        <div class="card-body">
+          <h4 class="card-title">Bienvenido, {{ nombres }}</h4>
+          <p class="card-text mb-1"><strong>Rol:</strong> {{ rol }}</p>
+          <p class="card-text mb-1"><strong>Email:</strong> {{ nombreUsuario + '@gmail.com'}}</p>
+        </div>
+      </div>
+
+      <!-- Tarjeta de botones del menú -->
+      <div class="card shadow">
+        <div class="card-body d-flex flex-column gap-3">
+
+          <!-- Botones para tecnicos -->
+          <button 
+            
+            class="btn btn-outline-primary"
+            (click)="navigate('/bitacora')">
+            Consultar Bitacora
+          </button>
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
