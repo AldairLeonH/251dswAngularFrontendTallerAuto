@@ -8,6 +8,8 @@ import { IngresarOstComponent } from './component/ingresar-ost/ingresar-ost.comp
 import { authGuard } from '@guards/auth.guard';
 import { RegistrarClienteComponent } from '@component/registrar-cliente/registrar-cliente.component';
 import { TesteoComponent } from '@component/testeo/testeo.component';
+import { MenuTecnicoComponent } from '@component/menu-tecnico/menu-tecnico.component';
+import { BitacoraComponent } from '@component/bitacora/bitacora.component';
 
 
 export const routes: Routes = [
@@ -20,4 +22,8 @@ export const routes: Routes = [
           {path: 'ingresar-ost', component: IngresarOstComponent,},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
           {path: 'testeo', component: TesteoComponent},
+          {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard]},
+          {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard]},
+
+
 ];
