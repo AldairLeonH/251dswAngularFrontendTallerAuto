@@ -42,13 +42,14 @@ export class BitacoraComponent {
     this.tipoSolucionService.getTipoSolucion().subscribe({
       next: (response: ITipoSolucion[]) => {
         this.tipoSolucionArray = response;
+        console.log('Contenido de tipoSolucionArray:', this.tipoSolucionArray);
       },
       error: (error) => {
         console.error('Error fetching tipo solucion:', error);
         console.log('Contenido de tipoSolucionArray:', this.tipoSolucionArray);
       }
     });
-    console.log(this.bitacoraArray)
+    
   }
   getBitacora() {
     this.bitacoraProblemasService.getBitacoras().subscribe({
