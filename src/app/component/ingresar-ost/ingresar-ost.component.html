@@ -62,14 +62,17 @@
       <div class="col-md-6">
         <label>Buscar persona</label>
         <div class="input-group">
-          <input type="text" class="form-control" [(ngModel)]="filtro"  [ngModelOptions]="{standalone: true}" placeholder="DNI o nombre">
+          <input type="text" class="form-control" [(ngModel)]="filtro"  [ngModelOptions]="{standalone: true}" placeholder="Nro Documento">
           <button class="btn btn-outline-primary" type="button" (click)="buscarPersona()">Buscar</button>
         </div>
       </div>
     </div>
 <div *ngIf="personaEncontrada">
   <p><strong>Nombre:</strong> {{ personaEncontrada.nombres }}</p>
-  <p><strong>DNI:</strong> {{ personaEncontrada.nroDocumento }}</p>
+  <p><strong>Apellido Paterno:</strong> {{ personaEncontrada.apellidoPaterno }}</p>
+  <p><strong>Apellido Materno:</strong> {{ personaEncontrada.apellidoMaterno }}</p>
+  <p><strong>Documento:</strong> {{ personaEncontrada.nroDocumento }}</p>
+  <p><strong>Telefono:</strong> {{ personaEncontrada.telefono }}</p>
   <button type="button" class="btn btn-outline-secondary" (click)="abrirModalAutos()">Ver autos</button>
   
 </div>

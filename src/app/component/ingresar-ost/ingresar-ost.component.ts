@@ -5,8 +5,9 @@ import { IModelo } from '@model/modelo';
 import { IMarca } from '@model/marca';
 import { OstService} from '@service/ost.service';
 import { PersonaService} from '@service/persona.service';
+import Swal from 'sweetalert2';
 import { IPregunta } from '@model/pregunta';
-declare var bootstrap: any; // Añade esta línea arriba del `@Component`
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-ingresar-ost',
@@ -104,11 +105,33 @@ export class IngresarOstComponent implements OnInit {
       }
     });
   }
+  mostrarAlertaSinPersona = false;
+
   guardarOST(): void {
     const formValue = this.formOST.value;
 
-  console.log('Formulario:', formValue);
-
+    // Validación obligatoria: persona debe estar seleccionada
+    if (!this.personaEncontrada) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Falta seleccionar una persona',
+          text: 'Debe seleccionar una persona antes de guardar la OST.',
+          confirmButtonText: 'Entendido',
+          customClass: {
+            popup: 'swal2-border-radius'
+          }
+        });
+      return;
+    }
+    if (this.formOST.invalid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos obligatorios',
+        confirmButtonText: 'Ok'
+      });
+      return;
+    }
 
     const preguntasSeleccionadas = this.preguntasFormArray.value
       .map((checked: boolean, i: number) => checked ? this.preguntasArray[i].id : null)
@@ -122,25 +145,35 @@ export class IngresarOstComponent implements OnInit {
       placa: formValue.placa,
       anio: formValue.anio,
       color: formValue.color,
-      idPersona: this.personaEncontrada ? this.personaEncontrada.idPersona : null,
-      idEstado: 1, // o el valor que uses por defecto
+      idPersona: this.personaEncontrada.idPersona,
+      idEstado: 1, // Estado por defecto
       idAuto: this.autoSeleccionado ? this.autoSeleccionado.idAuto : null,
-      idRecepcionista: 23, // lo puedes obtener del token de sesión si tienes auth
+      idRecepcionista: 23, // Reemplazar por ID dinámico si usas auth
       preguntas: preguntasSeleccionadas
     };
 
     console.log('Datos a enviar al backend:', ostPayload);
 
+
   this.ostService.registrarOst(ostPayload).subscribe({
     next: (respuesta) => {
-      console.log('OST registrada con éxito', respuesta);
+      Swal.fire({
+        icon: 'success',
+        title: 'OST registrada',
+        text: 'La orden de servicio fue registrada correctamente.'
+      });
     },
     error: (err) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al registrar la OST.'
+      });
       console.error('Error al registrar la OST:', err);
-      console.log('Datos a error enviar al backend:', ostPayload);
     }
   });
   }
+
   autoSeleccionado: any =null;
   camposAutoBloqueados: boolean = false;
     seleccionarAuto(auto: any) {
@@ -168,7 +201,7 @@ export class IngresarOstComponent implements OnInit {
       // Bloquear campos
       this.camposAutoBloqueados = true;
       this.formOST.get('idModelo')?.disable();
-    this.formOST.get('idMarca')?.disable();
+      this.formOST.get('idMarca')?.disable();
       const modal = bootstrap.Modal.getInstance(document.getElementById('modalAutos')!);
       if (modal) modal.hide();
     }

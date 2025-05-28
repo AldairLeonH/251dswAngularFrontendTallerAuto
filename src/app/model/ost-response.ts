@@ -6,11 +6,21 @@ export interface IOstResponse {
   fecha: string;
   hora: string;
   direccion: string;
-  idModelo: number;
+  estado: string;
+
   placa: string;
-  anio: string;
-  estado: number;
-  auto: IAuto;
-  usuario: number;
-  preguntas: IPregunta[];
+  modelo: string;
+  marca: string;
+  color: string;
+  anio: number;
+
+  idPersona: number;
+  nombres: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  nroDocumento: string;
+  tipoDocumento: string;
+  telefono: string;
+
+  recepcionista: string;
 }

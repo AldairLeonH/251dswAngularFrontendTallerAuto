@@ -14,7 +14,14 @@ import { IPersonaResponse } from '@model/persona-response';
 })
 export class OstService {
 
-    constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
+
+  obtenerOsts(): Observable<IOstResponse[]> {
+    return this.http.get<IOstResponse[]>(`${BASE_URL}/ost`);
+  }
+  eliminarOst(id: number): Observable<void> {
+    return this.http.delete<void>(`${BASE_URL}/ost/${id}`);
+  }
 
   getPreguntas(): Observable<any[]> {
     return this.http.get<any[]>(`${BASE_URL}/pregunta`);
@@ -35,10 +42,10 @@ export class OstService {
   }
 
   buscarPersona(filtro: string): Observable<IPersonaResponse> {
-  return this.http.get<IPersonaResponse>(`${BASE_URL}/persona/buscar?filtro=${filtro}`);
-}
+    return this.http.get<IPersonaResponse>(`${BASE_URL}/persona/buscar?filtro=${filtro}`);
+  }
 
-getAutosPorPersona(idPersona: number): Observable<IAuto[]> {
-  return this.http.get<any[]>(`${BASE_URL}/persona/autos/persona/${idPersona}`);
-}
+  getAutosPorPersona(idPersona: number): Observable<IAuto[]> {
+    return this.http.get<any[]>(`${BASE_URL}/persona/autos/persona/${idPersona}`);
+  }
 }
