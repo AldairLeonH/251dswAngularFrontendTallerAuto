@@ -1,0 +1,92 @@
+    <!-- Filtros -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por placa" [(ngModel)]="filtroPlaca">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por estado" [(ngModel)]="filtroEstado">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por modelo" [(ngModel)]="filtroModelo">
+  </div>
+</div>
+
+<div class="card mt-4 shadow-sm">
+  <div class="container p-3">
+    <h4 class="text-primary mb-3">Órdenes de Servicio Técnico</h4>
+    <!-- Tabla -->
+    <table class="table table-striped table-borderless align-middle" *ngIf="ostFiltrados.length > 0">
+      <thead class="bg-primary text-white">
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Placa</th>
+          <th>Modelo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ost of ostFiltrados | paginate : { itemsPerPage: 10, currentPage: page }; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ ost.fecha }}</td>
+          <td>{{ ost.hora }}</td>
+          <td>{{ ost.direccion }}</td>
+          <td>{{ ost.estado }}</td>
+          <td>{{ ost.placa }}</td>
+          <td>{{ ost.modelo }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-info" (click)="verDetalles(ost)">Ver</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <pagination-controls
+      (pageChange)="page = $event"
+      previousLabel="Anterior"
+      nextLabel="Siguiente">
+    </pagination-controls>
+
+    <!-- Si no hay datos -->
+    <div *ngIf="ostFiltrados.length === 0" class="alert alert-info">
+      No hay órdenes que coincidan con los filtros.
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver OST -->
+<div class="modal fade" id="modalVerOst" tabindex="-1" aria-labelledby="modalVerOstLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalVerOstLabel">Detalles de la OST</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <!-- Columna izquierda -->
+          <div class="col-md-6">
+            <p><strong>Fecha:</strong> {{ ostSeleccionada?.fecha }}</p>
+            <p><strong>Hora:</strong> {{ ostSeleccionada?.hora }}</p>
+            <p><strong>Dirección:</strong> {{ ostSeleccionada?.direccion }}</p>
+            <p><strong>Estado:</strong> {{ ostSeleccionada?.estado }}</p>
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="col-md-6">
+            <p><strong>Placa:</strong> {{ ostSeleccionada?.placa }}</p>
+            <p><strong>Modelo:</strong> {{ ostSeleccionada?.modelo }}</p>
+            <p><strong>Recepcionista:</strong> {{ ostSeleccionada?.recepcionista }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

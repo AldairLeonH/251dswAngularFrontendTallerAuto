@@ -13,6 +13,7 @@ import { BitacoraComponent } from '@component/bitacora/bitacora.component';
 import { SidebarLayoutComponent } from '@component/sidebar-layout/sidebar-layout.component';
 import { PerfilComponent } from '@component/perfil/perfil.component';
 import { VerOstComponent } from '@component/ver-ost/ver-ost.component';
+import { ClienteOstComponent } from '@component/cliente-ost/cliente-ost.component';
 
 
 export const routes: Routes = [
@@ -33,6 +34,7 @@ export const routes: Routes = [
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard]},
             {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard]},
+            {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard]},
             { path: '', redirectTo: 'perfil', pathMatch: 'full' }
             ]
           },

@@ -148,7 +148,7 @@ export class IngresarOstComponent implements OnInit {
       idPersona: this.personaEncontrada.idPersona,
       idEstado: 1, // Estado por defecto
       idAuto: this.autoSeleccionado ? this.autoSeleccionado.idAuto : null,
-      idRecepcionista: 23, // Reemplazar por ID dinámico si usas auth
+      idRecepcionista: Number(localStorage.getItem('idUsuario')), // Reemplazar por ID dinámico si usas auth
       preguntas: preguntasSeleccionadas
     };
 
