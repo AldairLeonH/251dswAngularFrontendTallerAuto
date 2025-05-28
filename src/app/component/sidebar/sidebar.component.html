@@ -6,42 +6,11 @@
     <p class="text-white">{{ rol }}</p>
     <p class="text-white">{{ nombreUsuario }}</p>
   </div>
-
-  <!-- Menú -->
-  <div class="flex-grow-1">
-    <ul class="nav flex-column gap-2">
-      <!-- Opción general -->
-      <li class="nav-item">
-        <a class="btn btn-outline-light w-100 text-start" routerLink="/menu-recepcionista" routerLinkActive="active">Inicio</a>
-      </li>
-
-      <!-- Recepcionista -->
-      <ng-container *ngIf="rol === 'recepcionista'">
-        <li class="nav-item">
-          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-clientes" routerLinkActive="active">Ingresar Cliente</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-light w-100 text-start" routerLink="/visualizar-clientes" routerLinkActive="active">Visualizar Clientes</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-ost" routerLinkActive="active">Ingresar OST</a>
-        </li>
-      </ng-container>
-
-      <!-- Cliente -->
-      <ng-container *ngIf="rol === 'cliente'">
-        <li class="nav-item">
-          <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-ost" routerLinkActive="active">Ingresar OST</a>
-        </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-light w-100 text-start" routerLink="/ordenes" routerLinkActive="active">Mis órdenes</a>
-        </li>
-      </ng-container>
-
-      <!-- Opción común -->
-      <li class="nav-item">
-        <a class="btn btn-outline-light w-100 text-start" routerLink="/soporte" routerLinkActive="active">Soporte</a>
-      </li>
-    </ul>
-  </div>
+  <!-- Menú según el rol -->
+  <ng-container [ngSwitch]="rol">
+    <app-menu-recepcionista *ngSwitchCase="'recepcionista'"></app-menu-recepcionista>
+    <app-testeo *ngSwitchCase="'cliente'"></app-testeo>
+    <app-menu-tecnico *ngSwitchCase="'tecnico'"></app-menu-tecnico>
+    <div *ngSwitchDefault class="text-warning">Rol no reconocido</div>
+  </ng-container>
 </div>

@@ -42,19 +42,19 @@ export class IniciarSesionComponent {
       response => {
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful', response);
-        //this.router.navigate(['/menu-recepcionista']);
-        const rol = response.usuario.rol.toLowerCase(); // ← aseguramos comparación en minúsculas
-        localStorage.setItem('rol', rol); // guarda el nombre del rol si lo necesitas después
-        //const rol = Number(localStorage.getItem('rol'));
-        if (rol === 'tecnico') {
-          this.router.navigate(['/menu-tecnico']);
-        } else if (rol === 'recepcionista') {
-          this.router.navigate(['/menu-recepcionista']);
-        } else if (rol === 'cliente') {
-          this.router.navigate(['/testeo']);
-        } else {
-          this.toastService.show('Rol no reconocido', 'danger');
-        } 
+        this.router.navigate(['/perfil']);
+        //const rol = response.usuario.rol.toLowerCase(); // ← aseguramos comparación en minúsculas
+        //localStorage.setItem('rol', rol); // guarda el nombre del rol si lo necesitas después
+        const rol = Number(localStorage.getItem('rol'));
+        //if (rol === 'tecnico') {
+          //this.router.navigate(['/menu-tecnico']);
+        //} else if (rol === 'recepcionista') {
+          //this.router.navigate(['/perfil']);
+        //} else if (rol === 'cliente') {
+          //this.router.navigate(['/testeo']);
+        //} else {
+          //this.toastService.show('Rol no reconocido', 'danger');
+        //} 
       },
       error => { 
         let mensaje: string;

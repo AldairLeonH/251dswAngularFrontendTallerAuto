@@ -8,7 +8,7 @@ import { filter } from 'rxjs/operators';
 @Component({
   standalone: true,
   selector: 'app-sidebar-layout',
-  imports: [  RouterOutlet,SidebarComponent],
+  imports: [  RouterOutlet,SidebarComponent,],
   templateUrl: './sidebar-layout.component.html',
   styleUrl: './sidebar-layout.component.css'
 })
@@ -22,12 +22,14 @@ export class SidebarLayoutComponent {
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects;
 
-        if (url.includes('menu-recepcionista')) {
+        if (url.includes('perfil')) {
           this.titulo = 'Mi Perfil';
         } else if (url.includes('ingresar-clientes')) {
           this.titulo = 'Ingresar clientes';
         } else if (url.includes('ingresar-ost')) {
           this.titulo = 'Registrar Orden de Servicio Técnico';
+        } else if (url.includes('visualizar-clientes')) {
+          this.titulo = 'Clientes';
         } else {
           this.titulo = 'AutoSeguro - Panel';
         }

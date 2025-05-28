@@ -1,29 +1,26 @@
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, CanActivateFn } from '@angular/router';
-import { ToastService } from '@service/toast.service'; // ajusta el path según donde esté
+import { ToastService } from '@service/toast.service'; // Ajusta si es necesario
 
 export const authGuard: CanActivateFn = (route, state) => {
-  const token = localStorage.getItem('token');
+  const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
   const toastService = inject(ToastService);
 
-  if (token) {
-    return true;
+  // Verificar que se está ejecutando en el navegador
+  if (isPlatformBrowser(platformId)) {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      return true;
+    } else {
+      toastService.show('Debes iniciar sesión', 'danger');
+      router.navigate(['/iniciar-sesion']);
+      return false;
+    }
   } else {
-    toastService.show('Debes iniciar sesión', 'danger'); // mensaje de error
-    router.navigate(['/iniciar-sesion']);
+    // Si no es navegador (SSR, prerender), impedir acceso
     return false;
   }
 };
-
-
-/*
-const rol = localStorage.getItem('rol');
-if (rol === 'tecnico') {
-  return true;
-} else {
-  toastService.show('No tienes permiso para acceder a esta página', 'warning');
-  router.navigate(['/login']);
-  return false;
-}
-*/

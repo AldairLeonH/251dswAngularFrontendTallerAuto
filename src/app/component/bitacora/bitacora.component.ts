@@ -17,7 +17,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-bitacora',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule,NgxPaginationModule],
+  imports: [CommonModule,ReactiveFormsModule,NgxPaginationModule,],
   templateUrl: './bitacora.component.html',
   styleUrl: './bitacora.component.css'
 })

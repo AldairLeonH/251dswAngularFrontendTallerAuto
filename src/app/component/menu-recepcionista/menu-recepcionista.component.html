@@ -1,16 +1,41 @@
-<div class="container mt-5">
+<ul class="nav flex-column gap-2">
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/perfil" routerLinkActive="active">Perfil</a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-clientes" routerLinkActive="active">Ingresar Cliente</a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/visualizar-clientes" routerLinkActive="active">Visualizar Clientes</a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/ingresar-ost" routerLinkActive="active">Ingresar OST</a>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<div class="container mt-5">
   <div class="row justify-content-center">
     <div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-danger" (click)="logout()">Cerrar sesión</button>
-</div>
+   <button class="btn btn-danger" (click)="logout()">Cerrar sesión</button>
+   </div>
     <div class="col-md-6">
 
-      <!-- Botón Atrás -->
       <button class="btn btn-sm btn-outline-dark mb-3" (click)="goBack()">
         ← Volver
       </button>
 
-      <!-- Tarjeta de perfil del usuario -->
+     
       <div class="card text-center mb-4 shadow">
         <div class="card-body">
           <h4 class="card-title">Bienvenido, {{ nombres }}</h4>
@@ -20,11 +45,11 @@
         </div>
       </div>
 
-      <!-- Tarjeta de botones del menú -->
+      
       <div class="card shadow">
         <div class="card-body d-flex flex-column gap-3">
 
-          <!-- Botones para RECEPCIONISTA -->
+         
           <button 
             *ngIf="rol === 'recepcionista'" 
             type="button" 
@@ -49,17 +74,10 @@
             Ingresar Orden de Servicio Técnico (OST)
           </button>
 
-          <button 
-            *ngIf="rol === 'cliente'" 
-            type="button" 
-            class="btn btn-outline-success"
-            (click)="navigate('/ingresar-ost')">
-            Ingresar Orden de Servicio Técnico (OST)
-          </button>
-
         </div>
       </div>
 
     </div>
   </div>
 </div>
+-->

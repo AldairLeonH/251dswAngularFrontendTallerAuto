@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@service/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-menu-tecnico',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './menu-tecnico.component.html',
   styleUrl: './menu-tecnico.component.css'
 })

@@ -1,36 +1,11 @@
-<div class="d-flex" style="min-height: 100vh">
-  <!-- Sidebar -->
-  <div class="bg-dark text-white p-3" style="width: 250px;">
-    <div class="text-center mb-4">
-      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Perfil" class="rounded-circle" width="80" height="80">
-      <h5 class="mt-2">Juan Pérez</h5>
-      <p class="text-muted">Cliente</p>
-    </div>
-    <ul class="nav flex-column">
-      <li class="nav-item">
-        <a class="nav-link text-white" routerLink="/perfil">Perfil</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" routerLink="/ordenes">Mis órdenes</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" routerLink="/soporte">Soporte</a>
-      </li>
-    </ul>
-  </div>
-
-  <!-- Contenido principal -->
-  <div class="flex-grow-1">
-    <!-- Navbar superior -->
-    <nav class="navbar navbar-light bg-light shadow-sm px-4">
-      <span class="navbar-brand mb-0 h1">AutoSeguro - Panel</span>
-      <button class="btn btn-outline-danger">Cerrar sesión</button>
-    </nav>
-
-    <!-- Contenido dinámico (click)="cerrarSesion()" -->
-    <div class="p-4">
-      <h3>Bienvenido a tu panel</h3>
-      <p>Aquí verás tus servicios, órdenes, y más opciones personalizadas.</p>
-    </div>
-  </div>
-</div>
+<ul class="nav flex-column gap-2">
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/perfil" routerLinkActive="active">Perfil</a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/ver-ost" routerLinkActive="active">Mis ordenes</a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/ver-autos" routerLinkActive="active">Mis Autos</a>
+  </li>
+</ul>

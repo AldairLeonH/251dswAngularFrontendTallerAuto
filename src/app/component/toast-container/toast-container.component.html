@@ -1,11 +1,13 @@
-@for (toast of toastService.toasts; track toast) {
+<!-- toast-container.component.html -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1200">
+  @for (toast of toastService.toasts; track toast) {
     <ngb-toast
-        [class]="getToastClass(toast.type)"
-        [autohide]="true"
-        [delay]="3000"
-        (hidden)="toastService.remove(toast)"
+      [class]="getToastClass(toast.type)"
+      [autohide]="true"
+      [delay]="3000"
+      (hidden)="toastService.remove(toast)"
     >
-        {{ toast.message }}
+      {{ toast.message }}
     </ngb-toast>
-}
-  
+  }
+</div>

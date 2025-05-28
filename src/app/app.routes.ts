@@ -11,28 +11,28 @@ import { TesteoComponent } from '@component/testeo/testeo.component';
 import { MenuTecnicoComponent } from '@component/menu-tecnico/menu-tecnico.component';
 import { BitacoraComponent } from '@component/bitacora/bitacora.component';
 import { SidebarLayoutComponent } from '@component/sidebar-layout/sidebar-layout.component';
+import { PerfilComponent } from '@component/perfil/perfil.component';
 
 
 export const routes: Routes = [
           {path:'',redirectTo:'/home',pathMatch:'full'},
           {path: 'home',component: HomeComponent},
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
-          {path: 'testeo', component: TesteoComponent},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
-
           
           {path: '',
            component: SidebarLayoutComponent,
            children: [
             {path: 'menu-recepcionista',component: MenuRecepcionistaComponent,canActivate: [authGuard]},
+            {path: 'testeo',component: TesteoComponent,canActivate: [authGuard]},
+            {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard]},
+            {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard]},
+            {path: 'perfil',component: PerfilComponent,canActivate: [authGuard]},
             {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard]}, 
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard]},
-            { path: '', redirectTo: 'menu-recepcionista', pathMatch: 'full' }
+            { path: '', redirectTo: 'perfil', pathMatch: 'full' }
             ]
           },
-          {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard]},
-          {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard]},
-
 
 ];

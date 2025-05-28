@@ -1,12 +1,12 @@
 import { Component,OnInit } from '@angular/core';
 import { AuthService } from '@service/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common'; 
 
 
 @Component({
   selector: 'app-menu-recepcionista',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './menu-recepcionista.component.html',
   styleUrl: './menu-recepcionista.component.css'
 })
