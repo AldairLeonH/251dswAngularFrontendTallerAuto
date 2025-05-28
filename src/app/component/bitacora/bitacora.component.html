@@ -13,21 +13,37 @@
                               </thead>
                               <tbody>
                                 <tr
-                                *ngFor="let bitacora of bitacoraArray
-                                  |paginate : { itemsPerPage: 10, currentPage: page };
-                                let i = index
-                              ">
-                                <td>{{ i + 1 }}</td>
-                                <td>{{bitacora.descripcionProblema}}</td>
-                                <td>{{ bitacora.solucion}}</td>
-                                <td>{{ bitacora.fechaRegistro}}</td>
-                                <td *ngIf="bitacora.tipoSolucion">
-                                  {{ bitacora.tipoSolucion.nombre}}
-                                </td>
-                                <td *ngIf="!bitacora.tipoSolucion">
-                                  sin tipo
-                                </td>
-
+                                  *ngFor="let bitacora of bitacoraArray
+                                    |paginate : { itemsPerPage: 10, currentPage: page };
+                                  let i = index
+                                  ">
+                                  <td>{{ i + 1 }}</td>
+                                  <td>{{bitacora.descripcionProblema}}</td>
+                                  <td>{{ bitacora.solucion}}</td>
+                                  <td>{{ bitacora.fechaRegistro}}</td>
+                                  <td *ngIf="bitacora.tipoSolucion">
+                                    {{ bitacora.tipoSolucion.nombre}}
+                                  </td>
+                                  <td *ngIf="!bitacora.tipoSolucion">
+                                    sin tipo
+                                  </td>
+                                  <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                      <!-- Botón de editar -->
+                                      <button class="btn btn-primary rounded-circle p-2"
+                                              (click)="mostrarEditarBitacora(bitacora)"
+                                              title="Editar bitácora">
+                                        <i class="bi bi-pencil-fill"></i>
+                                      </button>
+                                      <!-- Botón de eliminar -->
+                                      <button class="btn btn-danger rounded-circle p-2"
+                                              (click)="eliminarBitacora(bitacora)"
+                                              title="Eliminar bitácora">
+                                        <i class="bi bi-trash-fill"></i>
+                                      </button>
+                                    </div>
+                                
+                                </tr>
                               </tbody>
                     </table>
                     <pagination-controls
@@ -40,4 +56,45 @@
           <div>
             <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
           </div>
+    
 </div>
+<!-- Modal -->
+<div class="modal fade" id="modalEditarBitacora" tabindex="-1" aria-labelledby="modalEditarBitacoraLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Bitácora</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="bitacoraForm">
+          <div class="mb-3">
+            <label class="form-label">Descripción del Problema</label>
+            <input type="text" class="form-control" formControlName="descripcionProblema" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Solución</label>
+            <input type="text" class="form-control" formControlName="solucion" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha de Registro</label>
+            <input type="date" class="form-control" formControlName="fechaRegistro" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo de Solución</label>
+            <select class="form-select" formControlName="idTipoSolucion">
+              <option *ngFor="let tipo of tipoSolucionArray" [value]="tipo.idTipoSolucion">
+                {{ tipo.nombre }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmarEdicion()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
