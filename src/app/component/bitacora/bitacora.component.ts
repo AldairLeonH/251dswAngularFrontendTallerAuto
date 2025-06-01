@@ -25,17 +25,26 @@ declare var bootstrap: any;
 })
 export class BitacoraComponent {
   modalEditarBitacoraInstance: any;
+  modalAgregarBitacoraInstance: any;
 
   bitacoraArray: IBitacoraResponse[] = []; // Replace 'any' with the actual type of your bitacora items
   tipoSolucionArray: ITipoSolucion[] = []; // Replace 'any' with the actual type of your tipoSolucion items
   bitacoraRequest: IBitacoraRequest = {} as IBitacoraRequest;
   bitacoraForm: FormGroup;
+  bitacoraFormAdd: FormGroup;
   page: number = 1;
   constructor(
     private bitacoraProblemasService:BitacoraProblemasService,
     private tipoSolucionService:TipoSolucionService
   ) {
     this.bitacoraForm = new FormGroup({
+      idProblema: new FormControl(''),
+      descripcionProblema: new FormControl('', [Validators.required]),
+      solucion: new FormControl('', [Validators.required]),
+      fechaRegistro: new FormControl('', [Validators.required]),
+      idTipoSolucion: new FormControl('', [Validators.required]),
+    });
+    this.bitacoraFormAdd = new FormGroup({
       idProblema: new FormControl(''),
       descripcionProblema: new FormControl('', [Validators.required]),
       solucion: new FormControl('', [Validators.required]),
@@ -152,7 +161,7 @@ export class BitacoraComponent {
             Swal.fire({
               icon: 'error',
               title: 'Advertencia',
-              text: 'No se pudo eliminar de la bitácora',
+              text: 'No se pudo eliminar  la bitácora',
             });
             console.error('Error al eliminar  de la bitácora:', error);
           }
@@ -174,5 +183,63 @@ export class BitacoraComponent {
 
     });
   }
+  //----------------
+  setBitacoraRequestAdd(){
+    this.bitacoraRequest.idProblema = this.bitacoraFormAdd.get('idProblema')?.value;
+    this.bitacoraRequest.descripcionProblema = this.bitacoraFormAdd.get('descripcionProblema')?.value;
+    this.bitacoraRequest.solucion = this.bitacoraFormAdd.get('solucion')?.value;
+    this.bitacoraRequest.fechaRegistro = this.bitacoraFormAdd.get('fechaRegistro')?.value;
+    this.bitacoraRequest.idTipoSolucion = this.bitacoraFormAdd.get('idTipoSolucion')?.value;
 
+  }
+
+  mostrarAgregarBitacora() {
+    this.bitacoraFormAdd.reset(); // Limpia el formulario
+    const modalElement = document.getElementById('modalAgregarBitacora')!;
+    this.modalAgregarBitacoraInstance = new bootstrap.Modal(modalElement);
+    this.modalAgregarBitacoraInstance.show();
+  }
+  confirmarAgregar(): void {
+
+    if (this.bitacoraFormAdd.invalid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor, complete todos los campos obligatorios.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Está seguro de añadir un nuevo problema  a la bitácora?',
+      showCancelButton: true,
+      cancelButtonText: 'NO',
+      confirmButtonText: 'Sí',
+      focusCancel: true,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.setBitacoraRequestAdd();
+        this.bitacoraProblemasService.registrarBitacora(this.bitacoraRequest).subscribe({
+          next: () => {
+            this.ngOnInit();
+            this.modalAgregarBitacoraInstance.hide();
+            Swal.fire({
+              icon: 'success',
+              title: 'Nuevo problema a la Bitácora Añadida',
+              text: '¡Se ha registrado exitosamente!',
+            });
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo registrar  en la bitácora',
+            });
+            console.error('Error al registar en la  bitácora:', error);
+          }
+        });
+      }
+    });
+  }
 }
