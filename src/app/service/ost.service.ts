@@ -8,6 +8,7 @@ import { IAuto } from '@model/auto';
 import { IMarca } from '@model/marca';
 import { IModelo } from '@model/modelo';
 import { IPersonaResponse } from '@model/persona-response';
+import { IDireccion } from '@model/direccion';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,10 @@ export class OstService {
 
   getMarcas(): Observable<IMarca[]> {
     return this.http.get<IMarca[]>(`${BASE_URL}/marca`);
+  }
+
+  getDirecciones(): Observable<IDireccion[]> {
+    return this.http.get<IDireccion[]>(`${BASE_URL}/direccion`);
   }
 
   getModelos(): Observable<IModelo[]> {

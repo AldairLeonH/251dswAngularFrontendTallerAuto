@@ -26,6 +26,9 @@
           <li class="nav-item">
             <a class="nav-link" [class.active]="pasoActual === 3">3. Detalles OST</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 4">4. Preguntas</a>
+          </li>
         </ul>
 
         <!-- CONTENIDO DEL WIZARD -->
@@ -69,68 +72,74 @@
         </div>
 
         <div *ngIf="pasoActual === 3">
-          <form [formGroup]="formOST">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label>Fecha</label>
-                <input formControlName="fecha" type="date" class="form-control">
-              </div>
-              <div class="col-md-6">
-                <label>Hora</label>
-                <input formControlName="hora" type="time" class="form-control">
-              </div>
-              <div class="col-md-12">
-                <label>Dirección</label>
-                <input formControlName="direccion" type="text" class="form-control">
-              </div>
-              <div class="col-md-6">
-                <label>Marca</label>
-                <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
-                  <option value="">Seleccione marca</option>
-                  <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label>Modelo</label>
-                <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
-                  <option value="">Seleccione modelo</option>
-                  <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label>Placa</label>
-                <input formControlName="placa" class="form-control">
-              </div>
-              <div class="col-md-4">
-                <label>Año</label>
-                <input formControlName="anio" class="form-control" type="number" min="1900">
-              </div>
-              <div class="col-md-4">
-                <label>Color</label>
-                <input formControlName="color" class="form-control">
-              </div>
-              <div class="col-12">
-                <label>Preguntas</label>
-                <div class="row">
-                  <div formArrayName="preguntas" class="preguntas-lista">
-                    <div *ngFor="let pregunta of preguntasArray; let i = index" class="pregunta-item">
-                        <label class="pregunta-label">
-                        <input type="checkbox" [formControl]="getFormControl(i)">
-                        <span class="texto-pregunta">{{ pregunta.pregunta }}</span>
-                        </label>
-                    </div>
-                  </div>
-                </div>
+        <form [formGroup]="formOST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label>Fecha</label>
+              <input formControlName="fecha" type="date" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label>Hora</label>
+              <input formControlName="hora" type="time" class="form-control">
+            </div>
+            <div class="col-md-12">
+              <label>Dirección</label>
+              <select formControlName="direccion" class="form-select">
+                <option value="">Seleccione dirección</option>
+                <option *ngFor="let dir of direcciones" [value]="dir.idDireccion">{{ dir.direccion }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Marca</label>
+              <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
+                <option value="">Seleccione marca</option>
+                <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Modelo</label>
+              <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
+                <option value="">Seleccione modelo</option>
+                <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label>Placa</label>
+              <input formControlName="placa" class="form-control" [readonly]="camposAutoBloqueados">
+            </div>
+            <div class="col-md-4">
+              <label>Año</label>
+              <input formControlName="anio" class="form-control" type="number" min="1900" [readonly]="camposAutoBloqueados">
+            </div>
+            <div class="col-md-4">
+              <label>Color</label>
+              <input formControlName="color" class="form-control" [readonly]="camposAutoBloqueados">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="pasoActual === 4">
+        <h4 class="mb-3">Checklist de Preguntas</h4>
+        <form [formGroup]="formOST">
+          <div formArrayName="preguntas" class="row">
+            <div *ngFor="let pregunta of preguntasArray; let i = index" class="col-md-6 mb-3">
+              <div class="form-check border rounded p-3 h-100 bg-light shadow-sm">
+                <input type="checkbox" class="form-check-input" [formControl]="getFormControl(i)" [id]="'pregunta'+i">
+                <label class="form-check-label fs-5" [for]="'pregunta'+i">
+                  {{ pregunta.pregunta }}
+                </label>
               </div>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
+      </div>
 
       </div>
       <div class="modal-footer justify-content-between">
         <button class="btn btn-secondary" (click)="retroceder()" [disabled]="pasoActual === 1">Anterior</button>
-        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 3">Siguiente</button>
-        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 3">Registrar</button>
+        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 4">Siguiente</button>
+        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 4">Registrar</button>
       </div>
     </div>
   </div>

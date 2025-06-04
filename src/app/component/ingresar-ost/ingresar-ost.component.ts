@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule,FormBuilder, FormGroup, FormArray, FormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule,FormBuilder, FormGroup, FormArray, FormsModule, Validators, FormControl } from '@angular/forms';
 import { IModelo } from '@model/modelo';
 import { IMarca } from '@model/marca';
 import { OstService} from '@service/ost.service';
 import { PersonaService} from '@service/persona.service';
 import Swal from 'sweetalert2';
 import { IPregunta } from '@model/pregunta';
+import { IDireccion } from '@model/direccion';
 declare var bootstrap: any;
 
 @Component({
@@ -17,6 +18,7 @@ declare var bootstrap: any;
     ReactiveFormsModule,CommonModule,FormsModule
   ]
 })
+
 export class IngresarOstComponent implements OnInit {
 
   formOST!: FormGroup;
@@ -56,7 +58,7 @@ export class IngresarOstComponent implements OnInit {
     const minutos = ahora.getMinutes().toString().padStart(2, '0');
     this.horaActual = `${horas}:${minutos}`;
     this.formOST.get('hora')?.setValue(this.horaActual);
-
+    this.cargarDirecciones();
     this.ostService.getMarcas().subscribe(marcas => this.marcasArray = marcas);
     this.ostService.getModelos().subscribe(modelos => this.modelosArray = modelos);
     this.ostService.getPreguntas().subscribe(preguntas => {
@@ -77,6 +79,18 @@ export class IngresarOstComponent implements OnInit {
   get preguntasFormArray(): FormArray {
     return this.formOST.get('preguntas') as FormArray;
   }
+  direcciones: IDireccion[] = [];
+
+  cargarDirecciones() {
+  this.ostService.getDirecciones().subscribe({
+    next: (data) => {
+      this.direcciones = data;
+    },
+    error: (err) => {
+      console.error('Error al cargar direcciones', err);
+    }
+  });
+}
 
   filtro: string = '';
   personaEncontrada: any = null;
@@ -87,11 +101,17 @@ export class IngresarOstComponent implements OnInit {
     this.ostService.buscarPersona(this.filtro).subscribe({
       next: (persona) => {
         this.personaEncontrada = persona;
-        alert('persona encontrada');
+          Swal.fire({
+            icon: 'success',
+            title: 'Persona encontrada',
+            timer: 900,
+            showConfirmButton: false
+          });
         // Obtener autos si la persona fue encontrada
         this.ostService.getAutosPorPersona(persona.idPersona).subscribe({
           next: (autos) => {
             this.autosPersona = autos;
+            this.autosFiltrados = [...autos];
           },
           error: () => {
             this.autosPersona = [];
@@ -101,7 +121,12 @@ export class IngresarOstComponent implements OnInit {
       error: () => {
         this.personaEncontrada = null;
         this.autosPersona = [];
-        alert('No se encontró persona con ese dato');
+        Swal.fire({
+          icon: 'error',
+          title: 'No se encontró la persona',
+          text: 'Verifica el número de documento',
+          confirmButtonText: 'Entendido'
+        });
       }
     });
   }
@@ -149,7 +174,7 @@ export class IngresarOstComponent implements OnInit {
       idPersona: this.personaEncontrada.idPersona,
       idEstado: 1, // Estado por defecto
       idAuto: this.autoSeleccionado ? this.autoSeleccionado.idAuto : null,
-      idRecepcionista: Number(localStorage.getItem('idUsuario')), // Reemplazar por ID dinámico si usas auth
+      idRecepcionista: Number(localStorage.getItem('idUsuario')) || 23, // Reemplazar por ID dinámico si usas auth
       preguntas: preguntasSeleccionadas
     };
 
@@ -163,6 +188,8 @@ export class IngresarOstComponent implements OnInit {
         title: 'OST registrada',
         text: 'La orden de servicio fue registrada correctamente.'
       });
+      this.modalWizard.hide();  // <- cerrar el modal
+        this.pasoActual = 1;
     },
     error: (err) => {
       Swal.fire({
@@ -203,6 +230,9 @@ export class IngresarOstComponent implements OnInit {
       this.camposAutoBloqueados = true;
       this.formOST.get('idModelo')?.disable();
       this.formOST.get('idMarca')?.disable();
+        this.formOST.get('placa')?.disable();
+        this.formOST.get('color')?.disable();
+        this.formOST.get('anio')?.disable();
       const modal = bootstrap.Modal.getInstance(document.getElementById('modalAutos')!);
       if (modal) modal.hide();
     }
@@ -227,6 +257,9 @@ export class IngresarOstComponent implements OnInit {
 
       this.formOST.get('idMarca')?.enable();
       this.formOST.get('idModelo')?.enable();
+      this.formOST.get('placa')?.enable();
+      this.formOST.get('color')?.enable();
+      this.formOST.get('anio')?.enable();
       this.autoSeleccionado = null;
       this.formOST.patchValue({
         idModelo: null,
@@ -238,18 +271,38 @@ export class IngresarOstComponent implements OnInit {
       });
       this.modelosFiltrados = [];
     }
-    step = 0;
-
-iniciarRegistro() {
-  this.step = 1;
-}
-
-siguientePaso() {
-  if (this.step < 3) this.step++;
-}
+    /////////////
+    step = 1;
 ostGuardada = false;
 
-pasoAnterior() {
-  if (this.step > 1) this.step--;
+pasoActual = 1;
+
+modalWizard: any;
+
+abrirWizard() {
+  this.pasoActual = 1;
+  this.modalWizard = new bootstrap.Modal(document.getElementById('modalWizardOST')!);
+  this.modalWizard.show();
 }
+
+avanzar() {
+  if (this.pasoActual === 1 && !this.personaEncontrada) {
+    Swal.fire('Debes seleccionar una persona antes de continuar');
+    return;
+  }
+  if (this.pasoActual === 2 && !this.autoSeleccionado) {
+    // Puede continuar si desea registrar nuevo auto
+    // Agrega validaciones aquí si quieres forzar selección
+  }
+  if (this.pasoActual < 4) {this.pasoActual++};
+}
+
+retroceder() {
+  if (this.pasoActual > 1) this.pasoActual--;
+}
+
+getFormControl(index: number): FormControl {
+  return this.preguntasFormArray.at(index) as FormControl;
+}
+
 }

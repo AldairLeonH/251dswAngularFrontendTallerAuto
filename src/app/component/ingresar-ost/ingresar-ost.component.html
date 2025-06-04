@@ -1,156 +1,154 @@
+<!-- Botón en página principal -->
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Registrar Orden de Servicio Técnica (OST)</h2>
-
-  <form [formGroup]="formOST" (ngSubmit)="guardarOST()">
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="fecha">Fecha</label>
-        <input type="date" class="form-control" id="fecha" formControlName="fecha" [value]="fechaActual">
-      </div>
-
-      <div class="col-md-4">
-        <label for="hora">Hora</label>
-        <input type="time" class="form-control" id="hora" formControlName="hora" [value]="horaActual">
-      </div>
-
-      <div class="col-md-4">
-        <label for="direccion">Dirección</label>
-        <input type="text" class="form-control" id="direccion" formControlName="direccion">
-      </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-          <label for="marca">Marca</label>
-          <select 
-            class="form-select" 
-            id="marca" 
-            formControlName="idMarca" 
-            (change)="onMarcaChange($event)">
-            <option value="" disabled selected>Seleccione una marca</option>
-            <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
-          </select>
-        </div>
-
-      <div class="col-md-4">
-        <label for="idModelo">Modelo</label>
-        <select class="form-select" id="idModelo" formControlName="idModelo" [disabled]="!modelosFiltrados.length">
-          <option [ngValue]="null" disabled>Seleccione un modelo</option>
-          <option *ngFor="let modelo of modelosFiltrados" [ngValue]="modelo.idModelo">{{ modelo.nombre }}
-          </option>
-        </select>
-      </div>
-
-      <div class="col-md-2">
-        <label for="color">Color</label>
-        <input type="text" class="form-control" id="color" formControlName="color">
-      </div>
-
-      <div class="col-md-2">
-        <label for="placa">Placa</label>
-        <input type="text" class="form-control" id="placa" formControlName="placa">
-      </div>
-
-      <div class="col-md-2">
-        <label for="anio">Año</label>
-        <input type="number" class="form-control" id="anio" formControlName="anio" [attr.min]="minAnio" [attr.max]="anioActual">
-
-      </div>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <label>Buscar persona</label>
-        <div class="input-group">
-          <input type="text" class="form-control" [(ngModel)]="filtro"  [ngModelOptions]="{standalone: true}" placeholder="Nro Documento">
-          <button class="btn btn-outline-primary" type="button" (click)="buscarPersona()">Buscar</button>
-        </div>
-      </div>
-    </div>
-<div *ngIf="personaEncontrada">
-  <p><strong>Nombre:</strong> {{ personaEncontrada.nombres }}</p>
-  <p><strong>Apellido Paterno:</strong> {{ personaEncontrada.apellidoPaterno }}</p>
-  <p><strong>Apellido Materno:</strong> {{ personaEncontrada.apellidoMaterno }}</p>
-  <p><strong>Documento:</strong> {{ personaEncontrada.nroDocumento }}</p>
-  <p><strong>Telefono:</strong> {{ personaEncontrada.telefono }}</p>
-  <button type="button" class="btn btn-outline-secondary" (click)="abrirModalAutos()">Ver autos</button>
-  
-</div>
-<div *ngIf="autoSeleccionado" class="alert alert-info mt-3">
-  <p><strong>Auto seleccionado:</strong> {{ autoSeleccionado.placa }} - {{ autoSeleccionado.modelo?.nombre }} - {{ autoSeleccionado.color }} - {{ autoSeleccionado.anio }}</p>
-  <button type="button" class="btn btn-sm btn-outline-danger" (click)="quitarAutoSeleccionado()">Quitar auto</button>
+  <h2 class="text-center mb-4">Registrar Orden de Servicio Técnico (OST)</h2>
+  <p>Complete los datos paso a paso para registrar la orden de servicio.</p>
+  <button class="btn btn-primary" (click)="abrirWizard()">Ingresar al Registro</button>
 </div>
 
-<div class="mb-3" [formGroup]="formOST">
-  <label>Preguntas de revisión:</label>
-  <div formArrayName="preguntas">
-    <div class="form-check" *ngFor="let pregunta of preguntasArray; let i = index">
-      <input type="checkbox"
-             class="form-check-input"
-             [formControlName]="i"
-             id="pregunta-{{ i }}">
-      <label class="form-check-label" [for]="'pregunta-' + i">
-        {{ pregunta.pregunta }}
-      </label>
-    </div>
-  </div>
-</div>
-
-<div class="mt-2 text-success">
-  <p *ngIf="preguntasSeleccionadas.length">Seleccionadas: {{ preguntasSeleccionadas.join(', ') }}</p>
-</div>
-
-    <div class="text-center">
-      <button type="submit" class="btn btn-success">Guardar OST</button>
-    </div>
-  </form>
-</div>
-
-<div  class="card-footer text-start">
-  <button type="button" class="btn btn-outline-success" onclick="window.location.href='/menu-recepcionista'">Regresar</button>
-</div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="modalAutos" tabindex="-1" aria-labelledby="modalAutosLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalAutosLabel">Autos de la persona</h5>
+<!-- Modal Wizard -->
+<div class="modal fade" id="modalWizardOST" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-gear-fill me-2"></i>Registrar Orden de Servicio</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-
       <div class="modal-body">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" [(ngModel)]="filtroPlaca" placeholder="Buscar por placa" (input)="filtrarAutos()"
-                 [ngModelOptions]="{standalone: true}">
+
+        <!-- PASOS INDICADORES -->
+        <ul class="nav nav-tabs nav-fill mb-3">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 1">1. Cliente</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 2">2. Vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 3">3. Detalles OST</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 4">4. Preguntas</a>
+          </li>
+        </ul>
+
+        <!-- CONTENIDO DEL WIZARD -->
+        <div *ngIf="pasoActual === 1">
+          <h6>Buscar persona</h6>
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filtro" class="form-control" placeholder="DNI o nombre">
+            <button class="btn btn-outline-primary" (click)="buscarPersona()">Buscar</button>
+          </div>
+          <div *ngIf="personaEncontrada" class="card p-3">
+            <h6><i class="bi bi-person-check me-2"></i>{{ personaEncontrada.nombres }}</h6>
+            <p>DNI: {{ personaEncontrada.nroDocumento }}</p>
+          </div>
         </div>
 
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Placa</th>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Año</th>
-              <th>Color</th>
-              <th>Seleccionar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let auto of autosFiltrados">
-              <td>{{ auto.placa }}</td>
-              <td>{{ auto.modelo.marca.nombre }}</td>
-              <td>{{ auto.modelo.nombre }}</td>
-              <td>{{ auto.anio }}</td>
-              <td>{{ auto.color }}</td>
-              <td>
-                <button class="btn btn-sm btn-primary" (click)="seleccionarAuto(auto)" data-bs-dismiss="modal">Seleccionar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div *ngIf="pasoActual === 2">
+          <h6>Seleccionar auto</h6>
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filtroPlaca" class="form-control" placeholder="Filtrar por placa" (input)="filtrarAutos()">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Placa</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Año</th>
+                  <th>Color</th>
+                  <th>Seleccionar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let auto of autosFiltrados">
+                  <td>{{ auto.placa }}</td>
+                  <td>{{ auto.modelo.marca.nombre }}</td>
+                  <td>{{ auto.modelo.nombre }}</td>
+                  <td>{{ auto.anio }}</td>
+                  <td>{{ auto.color }}</td>
+                  <td><button class="btn btn-sm btn-outline-success" (click)="seleccionarAuto(auto)">Seleccionar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="autoSeleccionado" class="alert alert-info mt-3">
+            <strong>Auto seleccionado:</strong> {{ autoSeleccionado.placa }} - {{ autoSeleccionado.modelo.marca.nombre }}- {{ autoSeleccionado.modelo.nombre }}
+            <button class="btn btn-sm btn-link text-danger" (click)="quitarAutoSeleccionado()">Quitar</button>
+          </div>
+        </div>
+
+        <div *ngIf="pasoActual === 3">
+        <form [formGroup]="formOST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label>Fecha</label>
+              <input formControlName="fecha" type="date" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label>Hora</label>
+              <input formControlName="hora" type="time" class="form-control">
+            </div>
+            <div class="col-md-12">
+              <label>Dirección</label>
+              <select formControlName="direccion" class="form-select">
+                <option value="">Seleccione dirección</option>
+                <option *ngFor="let dir of direcciones" [value]="dir.idDireccion">{{ dir.direccion }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Marca</label>
+              <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
+                <option value="">Seleccione marca</option>
+                <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Modelo</label>
+              <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
+                <option value="">Seleccione modelo</option>
+                <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label>Placa</label>
+              <input formControlName="placa" class="form-control" [readonly]="camposAutoBloqueados">
+            </div>
+            <div class="col-md-4">
+              <label>Año</label>
+              <input formControlName="anio" class="form-control" type="number" min="1900" [readonly]="camposAutoBloqueados">
+            </div>
+            <div class="col-md-4">
+              <label>Color</label>
+              <input formControlName="color" class="form-control" [readonly]="camposAutoBloqueados">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="pasoActual === 4">
+        <h4 class="mb-3">Checklist de Preguntas</h4>
+        <form [formGroup]="formOST">
+          <div formArrayName="preguntas" class="row">
+            <div *ngFor="let pregunta of preguntasArray; let i = index" class="col-md-6 mb-3">
+              <div class="form-check border rounded p-3 h-100 bg-light shadow-sm">
+                <input type="checkbox" class="form-check-input" [formControl]="getFormControl(i)" [id]="'pregunta'+i">
+                <label class="form-check-label fs-5" [for]="'pregunta'+i">
+                  {{ pregunta.pregunta }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-secondary" (click)="retroceder()" [disabled]="pasoActual === 1">Anterior</button>
+        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 4">Siguiente</button>
+        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 4">Registrar</button>
       </div>
     </div>
   </div>

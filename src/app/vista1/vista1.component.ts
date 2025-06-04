@@ -7,6 +7,7 @@ import { OstService} from '@service/ost.service';
 import { PersonaService} from '@service/persona.service';
 import Swal from 'sweetalert2';
 import { IPregunta } from '@model/pregunta';
+import { IDireccion } from '@model/direccion';
 declare var bootstrap: any;
 @Component({
   selector: 'app-vista1',
@@ -55,7 +56,7 @@ export class Vista1Component implements OnInit {
     const minutos = ahora.getMinutes().toString().padStart(2, '0');
     this.horaActual = `${horas}:${minutos}`;
     this.formOST.get('hora')?.setValue(this.horaActual);
-
+    this.cargarDirecciones();
     this.ostService.getMarcas().subscribe(marcas => this.marcasArray = marcas);
     this.ostService.getModelos().subscribe(modelos => this.modelosArray = modelos);
     this.ostService.getPreguntas().subscribe(preguntas => {
@@ -76,6 +77,18 @@ export class Vista1Component implements OnInit {
   get preguntasFormArray(): FormArray {
     return this.formOST.get('preguntas') as FormArray;
   }
+  direcciones: IDireccion[] = [];
+
+  cargarDirecciones() {
+  this.ostService.getDirecciones().subscribe({
+    next: (data) => {
+      this.direcciones = data;
+    },
+    error: (err) => {
+      console.error('Error al cargar direcciones', err);
+    }
+  });
+}
 
   filtro: string = '';
   personaEncontrada: any = null;
@@ -159,7 +172,7 @@ export class Vista1Component implements OnInit {
       idPersona: this.personaEncontrada.idPersona,
       idEstado: 1, // Estado por defecto
       idAuto: this.autoSeleccionado ? this.autoSeleccionado.idAuto : null,
-      idRecepcionista: Number(localStorage.getItem('idUsuario')), // Reemplazar por ID dinámico si usas auth
+      idRecepcionista: Number(localStorage.getItem('idUsuario')) || 23, // Reemplazar por ID dinámico si usas auth
       preguntas: preguntasSeleccionadas
     };
 
@@ -173,6 +186,8 @@ export class Vista1Component implements OnInit {
         title: 'OST registrada',
         text: 'La orden de servicio fue registrada correctamente.'
       });
+      this.modalWizard.hide();  // <- cerrar el modal
+        this.pasoActual = 1;
     },
     error: (err) => {
       Swal.fire({
@@ -260,10 +275,12 @@ ostGuardada = false;
 
 pasoActual = 1;
 
+modalWizard: any;
+
 abrirWizard() {
   this.pasoActual = 1;
-  const modal = new bootstrap.Modal(document.getElementById('modalWizardOST')!);
-  modal.show();
+  this.modalWizard = new bootstrap.Modal(document.getElementById('modalWizardOST')!);
+  this.modalWizard.show();
 }
 
 avanzar() {
@@ -275,7 +292,7 @@ avanzar() {
     // Puede continuar si desea registrar nuevo auto
     // Agrega validaciones aquí si quieres forzar selección
   }
-  if (this.pasoActual < 3) this.pasoActual++;
+  if (this.pasoActual < 4) {this.pasoActual++};
 }
 
 retroceder() {
