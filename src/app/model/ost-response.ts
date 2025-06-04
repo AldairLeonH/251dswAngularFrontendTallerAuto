@@ -4,6 +4,7 @@ import { IPregunta } from './pregunta';
 export interface IOstResponse {
   idOst: number;
   fecha: string;
+  fechaRevision: string;
   hora: string;
   direccion: string;
   estado: string;

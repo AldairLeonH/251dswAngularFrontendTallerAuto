@@ -163,6 +163,7 @@ export class Vista1Component implements OnInit {
 
     const ostPayload = {
       fecha: formValue.fecha,
+      fechaRevison: formValue.fecha,
       hora: formValue.hora,
       direccion: formValue.direccion,
       idModelo: formValue.idModelo,
@@ -179,25 +180,6 @@ export class Vista1Component implements OnInit {
     console.log('Datos a enviar al backend:', ostPayload);
 
 
-  this.ostService.registrarOst(ostPayload).subscribe({
-    next: (respuesta) => {
-      Swal.fire({
-        icon: 'success',
-        title: 'OST registrada',
-        text: 'La orden de servicio fue registrada correctamente.'
-      });
-      this.modalWizard.hide();  // <- cerrar el modal
-        this.pasoActual = 1;
-    },
-    error: (err) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al registrar la OST.'
-      });
-      console.error('Error al registrar la OST:', err);
-    }
-  });
   }
 
   autoSeleccionado: any =null;

@@ -3,6 +3,7 @@ import { IPregunta } from "./pregunta";
 export interface IOstRequest {
   idOst?: number;
   fecha: string;   // o Date
+  fechaRevision: string; 
   hora: string;    // formato "HH:mm"
   direccion: string;
 

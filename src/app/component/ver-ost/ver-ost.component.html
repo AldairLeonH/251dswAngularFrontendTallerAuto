@@ -23,6 +23,7 @@
         <tr>
           <th>#</th>
           <th>Fecha</th>
+          <th>Fecha Revision</th>
           <th>Hora</th>
           <th>Dirección</th>
           <th>Estado</th>
@@ -36,6 +37,7 @@
         <tr *ngFor="let ost of ostFiltrados | paginate : { itemsPerPage: 10, currentPage: page }; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ ost.fecha }}</td>
+          <td>{{ ost.fechaRevision }}</td>
           <td>{{ ost.hora }}</td>
           <td>{{ ost.direccion }}</td>
           <td>{{ ost.estado }}</td>
@@ -79,6 +81,7 @@
           <div class="col-md-6">
             <p><strong>Fecha:</strong> {{ ostSeleccionada?.fecha }}</p>
             <p><strong>Hora:</strong> {{ ostSeleccionada?.hora }}</p>
+            <p><strong>Fecha Revision:</strong> {{ ostSeleccionada?.fechaRevision }}</p>
             <p><strong>Dirección:</strong> {{ ostSeleccionada?.direccion }}</p>
             <p><strong>Estado:</strong> {{ ostSeleccionada?.estado }}</p>
           </div>
@@ -89,6 +92,7 @@
             <p><strong>Modelo:</strong> {{ ostSeleccionada?.modelo }}</p>
             <p><strong>Cliente:</strong> {{ ostSeleccionada?.nombres }} {{ ostSeleccionada?.apellidoPaterno }}</p>
             <p><strong>Recepcionista:</strong> {{ ostSeleccionada?.recepcionista }}</p>
+            <p><strong>Tecnico Supervisor:</strong> {{ ostSeleccionada?.supervisor }}</p>
           </div>
         </div>
       </div>

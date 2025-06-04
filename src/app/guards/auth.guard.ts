@@ -1,26 +1,40 @@
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router, CanActivateFn } from '@angular/router';
+import { Router, CanActivateFn, ActivatedRouteSnapshot } from '@angular/router';
 import { ToastService } from '@service/toast.service'; // Ajusta si es necesario
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state) => {
   const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
   const toastService = inject(ToastService);
 
-  // Verificar que se está ejecutando en el navegador
-  if (isPlatformBrowser(platformId)) {
-    const token = localStorage.getItem('token');
+  if (!isPlatformBrowser(platformId)) return false;
 
-    if (token) {
-      return true;
-    } else {
-      toastService.show('Debes iniciar sesión', 'danger');
-      router.navigate(['/iniciar-sesion']);
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('nombreUsuario');
+  const rolesPermitidos = route.data['roles'] as string[];
+  console.log('Token:', token);
+console.log('User:', userStr);
+console.log('Roles requeridos:', rolesPermitidos);
+
+  if (token && userStr) {
+    const user = localStorage.getItem('rol')!;
+
+    if (rolesPermitidos && !rolesPermitidos.includes(user)) {
+      setTimeout(() => {
+        toastService.show('No tienes permiso para acceder a esta sección', 'danger');
+        router.navigate(['/perfil']);
+      }, 0);
       return false;
     }
+
+    return true;
   } else {
-    // Si no es navegador (SSR, prerender), impedir acceso
+    setTimeout(() => {
+      toastService.show('Debes iniciar sesión', 'danger');
+      router.navigate(['/iniciar-sesion']);
+    }, 0);
     return false;
   }
 };
+

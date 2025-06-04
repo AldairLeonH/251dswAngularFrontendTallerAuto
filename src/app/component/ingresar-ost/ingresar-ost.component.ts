@@ -38,6 +38,7 @@ export class IngresarOstComponent implements OnInit {
   ngOnInit(): void {
     this.formOST = this.fb.group({
       fecha: ['', Validators.required],
+      fechaRevison: ['', Validators.required],
       hora: ['', Validators.required],
       direccion: ['', Validators.required],
       idMarca: ['', Validators.required], // se usará solo para filtrar
@@ -52,6 +53,7 @@ export class IngresarOstComponent implements OnInit {
     const hoy = new Date();
     this.fechaActual = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     this.formOST.get('fecha')?.setValue(this.fechaActual);
+    this.formOST.get('fechaRevison')?.setValue(this.fechaActual);
     
       const ahora = new Date();
     const horas = ahora.getHours().toString().padStart(2, '0');
@@ -165,6 +167,7 @@ export class IngresarOstComponent implements OnInit {
 
     const ostPayload = {
       fecha: formValue.fecha,
+      fechaRevision: formValue.fechaRevison,
       hora: formValue.hora,
       direccion: formValue.direccion,
       idModelo: formValue.idModelo,

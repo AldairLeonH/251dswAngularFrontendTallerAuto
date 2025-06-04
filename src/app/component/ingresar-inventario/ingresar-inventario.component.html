@@ -1,0 +1,24 @@
+<form [formGroup]="formInventario" (ngSubmit)="guardarInventario()">
+  <div class="form-group">
+    <label for="kilometraje">Kilometraje</label>
+    <input formControlName="kilometraje" type="number" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label for="gasolina">Gasolina (%)</label>
+    <input formControlName="gasolina" type="number" class="form-control" min="0" max="100"/>
+  </div>
+
+  <div formArrayName="items">
+    <div *ngFor="let item of formInventario.get('items')['controls']; let i = index" [formGroupName]="i" class="mb-3 border p-2">
+      <strong>{{ item.value.descripcion }}</strong>
+      <input formControlName="cantidad" type="number" placeholder="Cantidad" />
+      <input formControlName="estado" type="text" placeholder="Estado" />
+    </div>
+  </div>
+
+  <div>
+    <label><input type="checkbox" formControlName="autorizacionConduccion" /> Autorizo conducción para pruebas</label>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Guardar Inventario</button>
+</form>
