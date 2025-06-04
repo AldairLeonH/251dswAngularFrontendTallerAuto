@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BASE_URL } from '../utils/contans';
 import { IPersonaRequest } from '../model/persona-request';
 import { IPersonaResponse } from '../model/persona-response';
+import { IAutoResponse } from '@model/auto-response';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,8 @@ export class PersonaService {
   
   buscarPersonaPorDocumento(documento: string): Observable<any> {
     return this.http.get(`${BASE_URL}/buscar?documento=${documento}`);
+  }
+  getAutosPorPersona(idPersona: number): Observable<IAutoResponse[]> {
+    return this.http.get<IAutoResponse[]>(`${BASE_URL}/auto/autos/persona/${idPersona}`);
   }
 }
