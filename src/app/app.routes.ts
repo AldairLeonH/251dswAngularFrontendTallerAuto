@@ -14,6 +14,7 @@ import { SidebarLayoutComponent } from '@component/sidebar-layout/sidebar-layout
 import { PerfilComponent } from '@component/perfil/perfil.component';
 import { VerOstComponent } from '@component/ver-ost/ver-ost.component';
 import { ClienteOstComponent } from '@component/cliente-ost/cliente-ost.component';
+import { Vista1Component } from './vista1/vista1.component';
 
 
 export const routes: Routes = [
@@ -21,6 +22,7 @@ export const routes: Routes = [
           {path: 'home',component: HomeComponent},
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
+          {path: 'vista1', component: Vista1Component},
           
           {path: '',
            component: SidebarLayoutComponent,
@@ -32,7 +34,7 @@ export const routes: Routes = [
             {path: 'perfil',component: PerfilComponent,canActivate: [authGuard]},
             {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard]}, 
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard]},
-            {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard]},
+            {path: 'ingresar-ost', component: IngresarOstComponent,},
             {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard]},
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard]},
             { path: '', redirectTo: 'perfil', pathMatch: 'full' }

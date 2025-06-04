@@ -1,0 +1,137 @@
+<!-- Botón en página principal -->
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Registrar Orden de Servicio Técnica (OST)</h2>
+  <p>Complete los datos paso a paso para registrar la orden de servicio.</p>
+  <button class="btn btn-primary" (click)="abrirWizard()">Ingresar Registro</button>
+</div>
+
+<!-- Modal Wizard -->
+<div class="modal fade" id="modalWizardOST" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-gear-fill me-2"></i>Registrar Orden de Servicio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- PASOS INDICADORES -->
+        <ul class="nav nav-tabs nav-fill mb-3">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 1">1. Cliente</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 2">2. Vehículo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 3">3. Detalles OST</a>
+          </li>
+        </ul>
+
+        <!-- CONTENIDO DEL WIZARD -->
+        <div *ngIf="pasoActual === 1">
+          <h6>Buscar persona</h6>
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filtro" class="form-control" placeholder="DNI o nombre">
+            <button class="btn btn-outline-primary" (click)="buscarPersona()">Buscar</button>
+          </div>
+          <div *ngIf="personaEncontrada" class="card p-3">
+            <h6><i class="bi bi-person-check me-2"></i>{{ personaEncontrada.nombres }}</h6>
+            <p>DNI: {{ personaEncontrada.nroDocumento }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="pasoActual === 2">
+          <h6>Seleccionar auto</h6>
+          <div class="input-group mb-3">
+            <input [(ngModel)]="filtroPlaca" class="form-control" placeholder="Filtrar por placa" (input)="filtrarAutos()">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr><th>Placa</th><th>Modelo</th><th>Año</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let auto of autosFiltrados">
+                  <td>{{ auto.placa }}</td>
+                  <td>{{ auto.modelo.nombre }}</td>
+                  <td>{{ auto.anio }}</td>
+                  <td><button class="btn btn-sm btn-outline-success" (click)="seleccionarAuto(auto)">Seleccionar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="autoSeleccionado" class="alert alert-info mt-3">
+            <strong>Auto seleccionado:</strong> {{ autoSeleccionado.placa }} - {{ autoSeleccionado.modelo.nombre }}
+            <button class="btn btn-sm btn-link text-danger" (click)="quitarAutoSeleccionado()">Quitar</button>
+          </div>
+        </div>
+
+        <div *ngIf="pasoActual === 3">
+          <form [formGroup]="formOST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label>Fecha</label>
+                <input formControlName="fecha" type="date" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label>Hora</label>
+                <input formControlName="hora" type="time" class="form-control">
+              </div>
+              <div class="col-md-12">
+                <label>Dirección</label>
+                <input formControlName="direccion" type="text" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label>Marca</label>
+                <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
+                  <option value="">Seleccione marca</option>
+                  <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label>Modelo</label>
+                <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
+                  <option value="">Seleccione modelo</option>
+                  <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label>Placa</label>
+                <input formControlName="placa" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label>Año</label>
+                <input formControlName="anio" class="form-control" type="number" min="1900">
+              </div>
+              <div class="col-md-4">
+                <label>Color</label>
+                <input formControlName="color" class="form-control">
+              </div>
+              <div class="col-12">
+                <label>Preguntas</label>
+                <div class="row">
+                  <div formArrayName="preguntas" class="preguntas-lista">
+                    <div *ngFor="let pregunta of preguntasArray; let i = index" class="pregunta-item">
+                        <label class="pregunta-label">
+                        <input type="checkbox" [formControl]="getFormControl(i)">
+                        <span class="texto-pregunta">{{ pregunta.pregunta }}</span>
+                        </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-secondary" (click)="retroceder()" [disabled]="pasoActual === 1">Anterior</button>
+        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 3">Siguiente</button>
+        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 3">Registrar</button>
+      </div>
+    </div>
+  </div>
+</div>

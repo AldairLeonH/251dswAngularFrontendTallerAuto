@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule,FormBuilder, FormGroup, FormArray, FormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule,FormBuilder, FormGroup, FormArray, FormsModule, Validators, FormControl } from '@angular/forms';
 import { IModelo } from '@model/modelo';
 import { IMarca } from '@model/marca';
 import { OstService} from '@service/ost.service';
@@ -8,16 +8,15 @@ import { PersonaService} from '@service/persona.service';
 import Swal from 'sweetalert2';
 import { IPregunta } from '@model/pregunta';
 declare var bootstrap: any;
-
 @Component({
-  selector: 'app-ingresar-ost',
-  templateUrl: './ingresar-ost.component.html',
-  styleUrls: ['./ingresar-ost.component.css'],
-  imports: [
-    ReactiveFormsModule,CommonModule,FormsModule
-  ]
+  selector: 'app-vista1',
+  imports: [ReactiveFormsModule,CommonModule,FormsModule],
+  templateUrl: './vista1.component.html',
+  styleUrl: './vista1.component.css'
 })
-export class IngresarOstComponent implements OnInit {
+
+
+export class Vista1Component implements OnInit {
 
   formOST!: FormGroup;
   marcasArray: IMarca[] = [];
@@ -87,11 +86,17 @@ export class IngresarOstComponent implements OnInit {
     this.ostService.buscarPersona(this.filtro).subscribe({
       next: (persona) => {
         this.personaEncontrada = persona;
-        alert('persona encontrada');
+          Swal.fire({
+            icon: 'success',
+            title: 'Persona encontrada',
+            timer: 900,
+            showConfirmButton: false
+          });
         // Obtener autos si la persona fue encontrada
         this.ostService.getAutosPorPersona(persona.idPersona).subscribe({
           next: (autos) => {
             this.autosPersona = autos;
+            this.autosFiltrados = [...autos];
           },
           error: () => {
             this.autosPersona = [];
@@ -101,7 +106,12 @@ export class IngresarOstComponent implements OnInit {
       error: () => {
         this.personaEncontrada = null;
         this.autosPersona = [];
-        alert('No se encontró persona con ese dato');
+        Swal.fire({
+          icon: 'error',
+          title: 'No se encontró la persona',
+          text: 'Verifica el número de documento',
+          confirmButtonText: 'Entendido'
+        });
       }
     });
   }
@@ -203,6 +213,9 @@ export class IngresarOstComponent implements OnInit {
       this.camposAutoBloqueados = true;
       this.formOST.get('idModelo')?.disable();
       this.formOST.get('idMarca')?.disable();
+        this.formOST.get('placa')?.disable();
+        this.formOST.get('color')?.disable();
+        this.formOST.get('anio')?.disable();
       const modal = bootstrap.Modal.getInstance(document.getElementById('modalAutos')!);
       if (modal) modal.hide();
     }
@@ -227,6 +240,9 @@ export class IngresarOstComponent implements OnInit {
 
       this.formOST.get('idMarca')?.enable();
       this.formOST.get('idModelo')?.enable();
+      this.formOST.get('placa')?.enable();
+      this.formOST.get('color')?.enable();
+      this.formOST.get('anio')?.enable();
       this.autoSeleccionado = null;
       this.formOST.patchValue({
         idModelo: null,
@@ -238,18 +254,36 @@ export class IngresarOstComponent implements OnInit {
       });
       this.modelosFiltrados = [];
     }
-    step = 0;
-
-iniciarRegistro() {
-  this.step = 1;
-}
-
-siguientePaso() {
-  if (this.step < 3) this.step++;
-}
+    /////////////
+    step = 1;
 ostGuardada = false;
 
-pasoAnterior() {
-  if (this.step > 1) this.step--;
+pasoActual = 1;
+
+abrirWizard() {
+  this.pasoActual = 1;
+  const modal = new bootstrap.Modal(document.getElementById('modalWizardOST')!);
+  modal.show();
 }
+
+avanzar() {
+  if (this.pasoActual === 1 && !this.personaEncontrada) {
+    Swal.fire('Debes seleccionar una persona antes de continuar');
+    return;
+  }
+  if (this.pasoActual === 2 && !this.autoSeleccionado) {
+    // Puede continuar si desea registrar nuevo auto
+    // Agrega validaciones aquí si quieres forzar selección
+  }
+  if (this.pasoActual < 3) this.pasoActual++;
+}
+
+retroceder() {
+  if (this.pasoActual > 1) this.pasoActual--;
+}
+
+getFormControl(index: number): FormControl {
+  return this.preguntasFormArray.at(index) as FormControl;
+}
+
 }
