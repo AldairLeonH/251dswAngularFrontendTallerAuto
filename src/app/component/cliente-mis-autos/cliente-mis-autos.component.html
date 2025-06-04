@@ -1,0 +1,159 @@
+<div>
+  <button type="button" class="btn btn-outline-primary btn-sm" (click)="mostrarAgregarAuto()">
+    <i class="fa-solid fa-plus"></i> Añadir Auto
+  </button>
+</div>
+<div class="card">
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Placa</th>
+          <th scope="col">Modelo</th>
+          <th scope="col">Marca</th>
+          <th scope="col">Año</th>
+          <th scope="col">Color</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let auto of autosArray | paginate : { itemsPerPage: 10, currentPage: page }; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ auto.placa }}</td>
+            <td>{{ auto.modelo.nombre }}</td>
+            <td>{{ auto.modelo.marca.nombre }}</td>
+            <td>{{ auto.anio }}</td>
+            <td>{{ auto.color }}</td>
+            <td class="text-center">
+              <div class="d-flex justify-content-center align-items-center gap-2">
+                <!-- Botón de editar -->
+                <button class="btn btn-primary rounded-circle p-2"
+                        (click)="mostrarEditarAuto(auto)"
+                        title="Editar auto">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <!-- Botón de eliminar -->
+                <button class="btn btn-danger rounded-circle p-2"
+                        (click)="eliminarAuto(auto)"
+                        title="Eliminar auto">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+
+            </td>
+          </tr>
+
+      </tbody>
+    </table>
+    <pagination-controls
+      (pageChange)="page = $event"
+      previousLabel="Anterior"
+      nextLabel="Siguiente">
+    </pagination-controls>
+
+  </div>
+</div>
+<!-- Modal añadir-->
+<div class="modal fade" id="modalAgregarAuto" tabindex="-1" aria-labelledby="modalAgregarAutoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarAutoLabel">Agregar Auto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="autoFormAdd" >
+          <div class="mb-3">
+            <label for="placa" class="form-label">Placa</label>
+            <input type="text" class="form-control" id="placa" formControlName="placa" required>
+          </div>
+          <div class="col-md-4">
+            <label for="marca">Marca</label>
+            <select 
+              class="form-select" 
+              id="marca" 
+              formControlName="idMarca" 
+              (change)="onMarcaChange($event)">
+              <option value="" disabled selected>Seleccione una marca</option>
+              <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="idModelo">Modelo</label>
+            <select class="form-select" id="idModelo" formControlName="idModelo" [disabled]="!modelosFiltrados.length">
+              <option [ngValue]="null" disabled>Seleccione un modelo</option>
+              <option *ngFor="let modelo of modelosFiltrados" [ngValue]="modelo.idModelo">{{ modelo.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="anio" class="form-label">Año</label>
+            <input type="number" class="form-control" id="anio" formControlName="anio" required>
+          </div>
+          <div class="mb-3">
+            <label for="color" class="form-label">Color</label>
+            <input type="text" class="form-control" id="color" formControlName="color" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" (click)="confirmarAgregarAuto()">Añadir</button>
+          </div>         
+        </form>
+      </div>
+    </div>
+  </div>    
+</div>
+<!-- Modal Editar-->
+<div class="modal fade" id="modalEditarAuto" tabindex="-1" aria-labelledby="modalEditarAutoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarAutoLabel">Editar Auto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="autoFormEdit" >
+          <div class="mb-3">
+            <label for="placa" class="form-label">Placa</label>
+            <input type="text" class="form-control" id="placa" formControlName="placa" required>
+          </div>
+          <div class="col-md-4">
+            <label for="marca">Marca</label>
+            <select 
+              class="form-select" 
+              id="marca" 
+              formControlName="idMarca" 
+              (change)="onMarcaChange($event)">
+              <option value="" disabled selected>Seleccione una marca</option>
+              <option *ngFor="let marca of marcasArray" [value]="marca.idMarca">{{ marca.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label for="idModelo">Modelo</label>
+            <select class="form-select" id="idModelo" formControlName="idModelo" [disabled]="!modelosFiltrados.length">
+              <option [ngValue]="null" disabled>Seleccione un modelo</option>
+              <option *ngFor="let modelo of modelosFiltrados" [ngValue]="modelo.idModelo">{{ modelo.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="anio" class="form-label">Año</label>
+            <input type="number" class="form-control" id="anio" formControlName="anio" required>
+          </div>
+          <div class="mb-3">
+            <label for="color" class="form-label">Color</label>
+            <input type="text" class="form-control" id="color" formControlName="color" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" (click)="confirmarEditarAuto()">Aceptar</button>
+          </div>         
+        </form>
+      </div>
+    </div>
+  </div>    
+</div>
+
+

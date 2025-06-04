@@ -1,3 +1,9 @@
+<div>
+  <button type="button" class="btn btn-outline-primary btn-sm" (click)="mostrarAgregarBitacora()">
+    <i class="fa-solid fa-plus"></i> Añadir
+  </button>
+</div>
+
 <div class="card">
           <div class="card-body">
                     <table class="table">
@@ -93,6 +99,46 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-primary" (click)="confirmarEdicion()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Añadir -->
+<div class="modal fade" id="modalAgregarBitacora" tabindex="-1" aria-labelledby="modalAgregarBitacoraLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Añadir Bitácora</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="bitacoraFormAdd">
+          <div class="mb-3">
+            <label class="form-label">Descripción del Problema</label>
+            <input type="text" class="form-control" formControlName="descripcionProblema" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Solución</label>
+            <input type="text" class="form-control" formControlName="solucion" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha de Registro</label>
+            <input type="date" class="form-control" formControlName="fechaRegistro" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo de Solución</label>
+            <select class="form-select" formControlName="idTipoSolucion">
+              <option *ngFor="let tipo of tipoSolucionArray" [value]="tipo.idTipoSolucion">
+                {{ tipo.nombre }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="confirmarAgregar()">Guardar</button>
       </div>
     </div>
   </div>

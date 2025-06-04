@@ -26,4 +26,8 @@ export class UsuarioService {
   actualizarUsuario(usuario: IUsuarioRequest): Observable<IUsuarioResponse> {
     return this.http.put<IUsuarioResponse>(`${BASE_URL}/usuario`, usuario);
   } // Inyectar HttpClient en el constructor
+  getUsuarioById(id: number): Observable<IUsuarioResponse> {
+    return this.http.get<IUsuarioResponse>(`${BASE_URL}/usuario/findById/${id}`);
+  }
+
 }

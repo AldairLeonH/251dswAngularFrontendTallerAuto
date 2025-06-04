@@ -15,6 +15,7 @@ import { PerfilComponent } from '@component/perfil/perfil.component';
 import { VerOstComponent } from '@component/ver-ost/ver-ost.component';
 import { ClienteOstComponent } from '@component/cliente-ost/cliente-ost.component';
 import { Vista1Component } from './vista1/vista1.component';
+import { ClienteMisAutosComponent } from '@component/cliente-mis-autos/cliente-mis-autos.component';
 
 
 export const routes: Routes = [
@@ -37,6 +38,7 @@ export const routes: Routes = [
             {path: 'ingresar-ost', component: IngresarOstComponent,},
             {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard]},
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard]},
+            {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard]},
             { path: '', redirectTo: 'perfil', pathMatch: 'full' }
             ]
           },
