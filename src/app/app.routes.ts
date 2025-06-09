@@ -16,6 +16,7 @@ import { VerOstComponent } from '@component/ver-ost/ver-ost.component';
 import { ClienteOstComponent } from '@component/cliente-ost/cliente-ost.component';
 import { Vista1Component } from './vista1/vista1.component';
 import { ClienteMisAutosComponent } from '@component/cliente-mis-autos/cliente-mis-autos.component';
+import { IngresarInventarioComponent } from '@component/ingresar-inventario/ingresar-inventario.component';
 
 
 export const routes: Routes = [
@@ -24,6 +25,7 @@ export const routes: Routes = [
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
           {path: 'vista1', component: Vista1Component},
+          {path: 'ingresar-inventario', component: IngresarInventarioComponent},
           
           {path: '',
            component: SidebarLayoutComponent,

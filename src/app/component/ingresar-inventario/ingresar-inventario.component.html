@@ -1,24 +1,157 @@
-<form [formGroup]="formInventario" (ngSubmit)="guardarInventario()">
-  <div class="form-group">
-    <label for="kilometraje">Kilometraje</label>
-    <input formControlName="kilometraje" type="number" class="form-control" />
-  </div>
-  <div class="form-group">
-    <label for="gasolina">Gasolina (%)</label>
-    <input formControlName="gasolina" type="number" class="form-control" min="0" max="100"/>
+<div style="max-width: 700px; margin: 1rem auto; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
+  <!-- Botón Buscar OST -->
+  <div style="margin-bottom: 1rem; text-align: right;">
+    <button
+      class="btn btn-primary"
+      (click)="buscarOst()"
+      style="padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer;"
+    >
+      Buscar OST
+    </button>
   </div>
 
-  <div formArrayName="items">
-    <div *ngFor="let item of formInventario.get('items')['controls']; let i = index" [formGroupName]="i" class="mb-3 border p-2">
-      <strong>{{ item.value.descripcion }}</strong>
-      <input formControlName="cantidad" type="number" placeholder="Cantidad" />
-      <input formControlName="estado" type="text" placeholder="Estado" />
+  <!-- Kilometraje -->
+  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; max-width: 350px;">
+    <label style="width: 110px; font-weight: 600;">Kilometraje:</label>
+    <input
+      type="number"
+      [(ngModel)]="kilometraje"
+      min="0"
+      style="flex: 1; padding: 0.3rem 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+    />
+  </div>
+
+  <!-- Gasolina -->
+<div class="gas-container">
+  <label class="block text-sm font-semibold mb-1">Nivel de Gasolina:</label>
+
+  <div class="gas-slider-wrapper">
+    <input
+      type="range"
+      min="0"
+      max="4"
+      step="1"
+      [(ngModel)]="form.controls['nivelGasolina'].value"
+      class="gas-slider"
+    />
+
+    <!-- Etiquetas -->
+    <div class="gas-labels">
+      <span>E</span>
+      <span>1/4</span>
+      <span>1/2</span>
+      <span>3/4</span>
+      <span>F</span>
+    </div>
+
+    <!-- Icono de gasolina -->
+    <div
+      class="gas-icon"
+      [ngClass]="{
+        'low': form.value.nivelGasolina <= 1,
+        'medium': form.value.nivelGasolina === 2 || form.value.nivelGasolina === 3,
+        'high': form.value.nivelGasolina === 4
+      }"
+    >
+      <i class="fas fa-gas-pump"></i>
+    </div>
+  </div>
+</div>
+
+  <!-- Categorías -->
+  <div *ngFor="let categoria of categorias" style="margin-bottom: 1rem; border-top: 1px solid #eee; padding-top: 0.8rem;">
+    <h3 style="font-weight: 700; margin-bottom: 0.5rem; color: #333;">{{ categoria.nombre }}</h3>
+
+
+      <!-- Títulos para cantidad y estado -->
+  <div style="display: flex; justify-content: flex-end; gap: 2rem; font-weight: 600; font-size: 0.9rem; color: #444; margin: 0.2rem 0 0.3rem;">
+  <span style="width: 100px;">Cantidad</span>
+  <span style="width: 230px;">Estado</span>
+  </div>
+    <!-- Items -->
+    <div *ngFor="let item of categoria.items" style="margin-bottom: 0.5rem; padding: 0.5rem; background: #f9f9f9; border-radius: 6px; display: flex; align-items: center; gap: 1rem;">
+      <input
+        type="checkbox"
+        [(ngModel)]="item.seleccionado"
+        style="width: 16px; height: 16px;"
+      />
+      <span style="flex: 2;">{{ item.nombre }}</span>
+
+      <div *ngIf="item.seleccionado" style="display: flex; align-items: center; gap: 1rem; flex: 3;">
+        <div style="display: flex; align-items: center; gap: 0.3rem;">
+          <label style="font-weight: 600; font-size: 0.9rem;"></label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="item.cantidad"
+            style="width: 60px; padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px;"
+          />
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="cursor: pointer;">
+            <input
+              type="radio"
+              [(ngModel)]="item.estado"
+              [value]="'Bueno'"
+              [name]="'estado' + item.idItem"
+              style="display: none;"
+            />
+            <span
+              [style.backgroundColor]="item.estado === 'Bueno' ? '#059669' : '#d1fae5'"
+              [style.color]="item.estado === 'Bueno' ? 'white' : '#065f46'"
+              style="padding: 6px 12px; border-radius: 8px; border: 1px solid #059669; user-select: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.15); font-weight: 700;"
+            >
+              👍
+            </span>
+          </label>
+
+          <label style="cursor: pointer;">
+            <input
+              type="radio"
+              [(ngModel)]="item.estado"
+              [value]="'Regular'"
+              [name]="'estado' + item.idItem"
+              style="display: none;"
+            />
+            <span
+              [style.backgroundColor]="item.estado === 'Regular' ? '#ca8a04' : '#fef3c7'"
+              [style.color]="item.estado === 'Regular' ? 'white' : '#92400e'"
+              style="padding: 6px 12px; border-radius: 8px; border: 1px solid #ca8a04; user-select: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.15); font-weight: 700;"
+            >
+              😐
+            </span>
+          </label>
+
+          <label style="cursor: pointer;">
+            <input
+              type="radio"
+              [(ngModel)]="item.estado"
+              [value]="'Malo'"
+              [name]="'estado' + item.idItem"
+              style="display: none;"
+            />
+            <span
+              [style.backgroundColor]="item.estado === 'Malo' ? '#b91c1c' : '#fecaca'"
+              [style.color]="item.estado === 'Malo' ? 'white' : '#7f1d1d'"
+              style="padding: 6px 12px; border-radius: 8px; border: 1px solid #b91c1c; user-select: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.15); font-weight: 700;"
+            >
+              👎
+            </span>
+          </label>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div>
-    <label><input type="checkbox" formControlName="autorizacionConduccion" /> Autorizo conducción para pruebas</label>
+  <!-- Botón guardar -->
+  <div style="text-align: right; margin-top: 1rem;">
+    <button
+      (click)="onSubmit()"
+      style="background-color: #3b82f6; color: white; padding: 0.6rem 1.5rem; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;"
+    >
+      Guardar Inventario
+    </button>
   </div>
 
-  <button type="submit" class="btn btn-primary">Guardar Inventario</button>
-</form>
+</div>
