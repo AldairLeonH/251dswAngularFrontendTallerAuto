@@ -25,8 +25,6 @@ export const routes: Routes = [
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
           {path: 'vista1', component: Vista1Component},
-          {path: 'ingresar-inventario', component: IngresarInventarioComponent},
-          
           {path: '',
            component: SidebarLayoutComponent,
            children: [
@@ -38,6 +36,7 @@ export const routes: Routes = [
             {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] }  }, 
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard],data: { roles: ['recepcionista'] }  },
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
+            {path: 'ingresar-inventario', component: IngresarInventarioComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
             {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico'] } },
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
