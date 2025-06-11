@@ -23,5 +23,8 @@ export interface IOstResponse {
   tipoDocumento: string;
   telefono: string;
 
+  supervisor: string;
   recepcionista: string;
+
+  preguntas: string[];
 }

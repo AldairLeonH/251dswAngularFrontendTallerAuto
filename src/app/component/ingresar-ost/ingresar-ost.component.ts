@@ -11,6 +11,8 @@ import { IDireccion } from '@model/direccion';
 import { IngresarInventarioComponent } from '@component/ingresar-inventario/ingresar-inventario.component';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { IUsuarioResponse } from '@model/usuario-response';
+import { UsuarioService } from '@service/usuario.service';
 declare var bootstrap: any;
 
 @Component({
@@ -25,7 +27,10 @@ declare var bootstrap: any;
 export class IngresarOstComponent implements OnInit {
   mostrarInventario: boolean = false;
   botonesActivos: boolean = false;
+
   formOST!: FormGroup;
+  
+  supervisorArray: IUsuarioResponse[] = [];
   marcasArray: IMarca[] = [];
   modelosArray: IModelo[] = [];
   preguntasArray: IPregunta[] = [];
@@ -37,7 +42,9 @@ export class IngresarOstComponent implements OnInit {
   fechaActual!: string;
   horaActual!: string;
 
-  constructor(private fb: FormBuilder, private ostService: OstService) {}
+  constructor(private fb: FormBuilder, private ostService: OstService,
+    private usuarioService: UsuarioService) {
+  }
 
   ngOnInit(): void {
     this.abrirWizard();
@@ -45,7 +52,7 @@ export class IngresarOstComponent implements OnInit {
       fecha: ['', Validators.required],
       fechaRevison: ['', Validators.required],
       hora: ['', Validators.required],
-      direccion: ['', Validators.required],
+      idDireccion: ['', Validators.required],
       idMarca: ['', Validators.required], // se usará solo para filtrar
       idModelo: ['', Validators.required], // se enviará idModelo
       placa: ['', Validators.required],
@@ -54,6 +61,7 @@ export class IngresarOstComponent implements OnInit {
       preguntas: this.fb.array([]) // se llenará al cargar
     });
 
+    this.getSupervisores();
         this.formOST.get('anio')?.setValue(this.anioActual);
     const hoy = new Date();
     this.fechaActual = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -141,7 +149,8 @@ export class IngresarOstComponent implements OnInit {
 
   guardarOST(): void {
     const formValue = this.formOST.value;
-  this.ostGuardada = true;
+    this.ostGuardada = true;
+    this.botonesActivos =true;
 
     // Validación obligatoria: persona debe estar seleccionada
     if (!this.personaEncontrada) {
@@ -174,7 +183,7 @@ export class IngresarOstComponent implements OnInit {
       fecha: formValue.fecha,
       fechaRevision: formValue.fechaRevison,
       hora: formValue.hora,
-      direccion: formValue.direccion,
+      idDireccion: formValue.idDireccion,
       idModelo: formValue.idModelo,
       placa: formValue.placa,
       anio: formValue.anio,
@@ -183,6 +192,7 @@ export class IngresarOstComponent implements OnInit {
       idEstado: 1, // Estado por defecto
       idAuto: this.autoSeleccionado ? this.autoSeleccionado.idAuto : null,
       idRecepcionista: Number(localStorage.getItem('idUsuario')) || 23, // Reemplazar por ID dinámico si usas auth
+      idSupervisor: this.supervisorSeleccionado? this.supervisorSeleccionado.idUsuario: null,
       preguntas: preguntasSeleccionadas
     };
 
@@ -198,6 +208,7 @@ export class IngresarOstComponent implements OnInit {
       });
       this.modalWizard.hide();  // <- cerrar el modal
         this.pasoActual = 1;
+        localStorage.setItem('idOst', respuesta.idOst.toString());
     },
     error: (err) => {
       Swal.fire({
@@ -310,7 +321,7 @@ avanzar() {
     // Puede continuar si desea registrar nuevo auto
     // Agrega validaciones aquí si quieres forzar selección
   }
-  if (this.pasoActual < 4) {this.pasoActual++};
+  if (this.pasoActual < 5) {this.pasoActual++};
 }
 
 retroceder() {
@@ -530,6 +541,32 @@ convertImageToBase64(url: string): Promise<string> {
     };
     img.onerror = () => reject('No se pudo cargar la imagen');
   });
+}
+nombreSupervisor: string = '';
+supervisorSeleccionado:  any = null;
+  supervisorArrayOriginal: IUsuarioResponse[] = [];
+  getSupervisores(): void {
+    this.usuarioService.getUsuarios().subscribe((result: any) => {
+      // Filtrar solo los usuarios cuyo id_rol = 3
+      this.supervisorArray = result.filter((usuario: IUsuarioResponse) => 
+        usuario.rol?.idRol === 5
+      );
+      this.supervisorArrayOriginal = result.filter((usuario: IUsuarioResponse) => 
+        usuario.rol?.idRol === 5
+      );
+    });
+  }
+
+  filtrarSupervisores() {
+  const filtro = this.nombreSupervisor.toLowerCase();
+  this.supervisorArray = this.supervisorArrayOriginal.filter(sup =>
+    (sup.persona.nombres + ' ' + sup.persona.apellidoPaterno + ' ' + sup.persona.apellidoMaterno).toLowerCase().includes(filtro)
+  );
+}
+
+seleccionarSupervisor(supervisor: any) {
+  this.supervisorSeleccionado = supervisor;
+  console.log(supervisor+' dfdfd');
 }
 
 }

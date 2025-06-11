@@ -22,8 +22,9 @@ export class IngresarInventarioComponent implements OnInit {
   itemsPorCategoria: { [key: number]: IItemInventarioExtendido[] } = {};
   kilometraje: number = 0;
 gasolina: number = 50;
+loading = true;
 
-nivelesGasolina = [
+nivelesGasoina = [
   { valor: 0, label: 'Vacío (0%)' },
   { valor: 25, label: '1/4 (25%)' },
   { valor: 50, label: 'Medio (50%)' },
@@ -33,16 +34,18 @@ nivelesGasolina = [
   constructor(private fb: FormBuilder, private invService: InventarioService) {}
 
   ngOnInit(): void {
-    const idOst = +localStorage.getItem('idOst')!;
+    const idOst = localStorage.getItem('idOst')!;
+    console.log(idOst);
 
-    this.form = this.fb.group({
-      kilometraje: [null],
-      nivelGasolina: [0],
+          this.form = this.fb.group({
+      kilometraje: [null, Validators.required],
+      nivelGasolina: [0, Validators.required],
       inventario: this.fb.array([])
     });
 
     this.invService.getItems().subscribe(items => {
       this.categorias = this.agruparPorCategoria(items);
+    this.loading = false;
     });
   }
 
@@ -72,17 +75,19 @@ agruparPorCategoria(items: IItemInventario[]): ICategoriaItem[] {
   getItemGroup(idItem: number): FormGroup {
     return this.inventario.controls.find(c => c.value.idItem === idItem) as FormGroup;
   }
-buscarOst() {
+cargar() {
   // Aquí tu lógica para redirigir, por ejemplo:
   // this.router.navigate(['/buscar-ost']);
   // o emitir evento para que el padre maneje el redirect
-  console.log('Botón Buscar OST pulsado');
+  
+  console.log('Botón Buscar OST pulsado'+this.form.value.kilometraje+this.form.value.nivelGasolina);
 }
   onSubmit() {
+    const formValue = this.form.value;
     const dto = {
       idOst: +localStorage.getItem('idOst')!,
-      kilometraje: this.form.value.kilometraje,
-      nivelGasolina: this.translateGasLevel(this.form.value.nivelGasolina),
+      kilometraje: formValue.kilometraje,
+      nivelGasolina: this.translateGasLevel(formValue.nivelGasolina),
       inventario: this.categorias.flatMap(cat =>
         cat.items
           .filter(item => item.seleccionado)
@@ -93,16 +98,17 @@ buscarOst() {
           }))
       )
     };
-
+    console.log('Datos a enviar al backend:', dto);
     this.invService.registrarInventario(dto).subscribe({
       next: () => Swal.fire('¡Éxito!', 'Inventario registrado correctamente', 'success'),
       error: err => Swal.fire('Error', 'No se pudo registrar el inventario', 'error')
     });
   }
 
-  translateGasLevel(nivel: number): string {
-    return ['Vacío', '1/4', '1/2', '3/4', 'Lleno'][nivel] || 'Vacío';
-  }
+translateGasLevel(valor: number): string {
+  const niveles = ["Vacío", "1/4", "1/2", "3/4", "Lleno"];
+  return niveles[valor] ?? "Desconocido";
+}
 
   toggleSeleccion(item: any) {
   item.seleccionado = !item.seleccionado;

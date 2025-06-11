@@ -22,6 +22,6 @@ export class InventarioService {
     return this.http.get<IItemInventario[]>(`${BASE_URL}/item-inventario`);
   }
   registrarInventario(payload: InventarioRevisionDTO): Observable<void> {
-    return this.http.post<void>(`${BASE_URL}/registrar`, payload);
+    return this.http.post<void>(`${BASE_URL}/inventario-auto`, payload);
   }
 }

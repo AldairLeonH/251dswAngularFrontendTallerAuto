@@ -44,6 +44,9 @@
           <li class="nav-item">
             <a class="nav-link" [class.active]="pasoActual === 4">4. Preguntas</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="pasoActual === 5">5. Técnico supervisor</a>
+          </li>
         </ul>
 
         <!-- CONTENIDO DEL WIZARD -->
@@ -96,56 +99,56 @@
         </div>
 
         <div *ngIf="pasoActual === 3">
-        <form [formGroup]="formOST">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label>Fecha</label>
-              <input formControlName="fecha" type="date" class="form-control">
+          <form [formGroup]="formOST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label>Fecha</label>
+                <input formControlName="fecha" type="date" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label>Fecha de revision</label>
+                <input formControlName="fechaRevison" type="date" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label>Hora</label>
+                <input formControlName="hora" type="time" class="form-control">
+              </div>
+              <div class="col-md-12">
+                <label>Dirección</label>
+                <select formControlName="idDireccion" class="form-select">
+                  <option value="">Seleccione dirección</option>
+                  <option *ngFor="let dir of direcciones" [value]="dir.idDireccion">{{ dir.direccion }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label>Marca</label>
+                <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
+                  <option value="">Seleccione marca</option>
+                  <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label>Modelo</label>
+                <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
+                  <option value="">Seleccione modelo</option>
+                  <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label>Placa</label>
+                <input formControlName="placa" class="form-control" [readonly]="camposAutoBloqueados">
+              </div>
+              <div class="col-md-4">
+                <label>Año</label>
+                <input formControlName="anio" class="form-control" type="number" min="1900" [readonly]="camposAutoBloqueados">
+              </div>
+              <div class="col-md-4">
+                <label>Color</label>
+                <input formControlName="color" class="form-control" [readonly]="camposAutoBloqueados">
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Fecha de revision</label>
-              <input formControlName="fechaRevison" type="date" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label>Hora</label>
-              <input formControlName="hora" type="time" class="form-control">
-            </div>
-            <div class="col-md-12">
-              <label>Dirección</label>
-              <select formControlName="direccion" class="form-select">
-                <option value="">Seleccione dirección</option>
-                <option *ngFor="let dir of direcciones" [value]="dir.idDireccion">{{ dir.direccion }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label>Marca</label>
-              <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
-                <option value="">Seleccione marca</option>
-                <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label>Modelo</label>
-              <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
-                <option value="">Seleccione modelo</option>
-                <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label>Placa</label>
-              <input formControlName="placa" class="form-control" [readonly]="camposAutoBloqueados">
-            </div>
-            <div class="col-md-4">
-              <label>Año</label>
-              <input formControlName="anio" class="form-control" type="number" min="1900" [readonly]="camposAutoBloqueados">
-            </div>
-            <div class="col-md-4">
-              <label>Color</label>
-              <input formControlName="color" class="form-control" [readonly]="camposAutoBloqueados">
-            </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
 
       <div *ngIf="pasoActual === 4">
         <h4 class="mb-3">Checklist de Preguntas</h4>
@@ -163,11 +166,51 @@
         </form>
       </div>
 
+      <div *ngIf="pasoActual === 5">
+          <h6>Seleccionar supervisor</h6>
+          
+          <div class="input-group mb-3">
+            <input [(ngModel)]="nombreSupervisor" class="form-control" placeholder="Filtrar por nombre" (input)="filtrarSupervisores()">
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>NroDoc</th>
+                  <th>TipoDoc</th>
+                  <th>Apellido Paterno</th>
+                  <th>Apellido Materno</th>
+                  <th>Nombres</th>
+                  <th>Teléfono</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let supervisor of supervisorArray">
+                  <td>{{ supervisor.persona.nroDocumento }}</td>
+                  <td>{{ supervisor.persona.tipoDocumento.tipoDoc }}</td>
+                  <td>{{ supervisor.persona.apellidoPaterno }}</td>
+                  <td>{{ supervisor.persona.apellidoMaterno }}</td>
+                  <td>{{ supervisor.persona.nombres }}</td>
+                  <td>{{ supervisor.persona.telefono }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-success" (click)="seleccionarSupervisor(supervisor)">Seleccionar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div *ngIf="supervisorSeleccionado" class="alert alert-info mt-3">
+            <strong>Supervisor seleccionado:</strong> {{ supervisorSeleccionado.idUsuario }} - {{ supervisorSeleccionado.persona.apellidoPaterno }}- {{ supervisorSeleccionado.persona.nombres }}
+          </div>
+        </div>
+
       </div>
       <div class="modal-footer justify-content-between">
         <button class="btn btn-secondary" (click)="retroceder()" [disabled]="pasoActual === 1">Anterior</button>
-        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 4">Siguiente</button>
-        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 4">Registrar</button>
+        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 5">Siguiente</button>
+        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 5">Registrar</button>
       </div>
     </div>
   </div>

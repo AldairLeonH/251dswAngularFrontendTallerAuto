@@ -5,7 +5,7 @@ export interface IOstRequest {
   fecha: string;   // o Date
   fechaRevision: string; 
   hora: string;    // formato "HH:mm"
-  direccion: string;
+  idDireccion: number;
 
   idModelo: number;
   placa: string;
@@ -16,5 +16,6 @@ export interface IOstRequest {
   idEstado: number;
   idAuto: number;
   idRecepcionista: number;
+  idSupervisor: number;
   preguntas: number[]; 
 }
