@@ -30,14 +30,14 @@ export const routes: Routes = [
            children: [
             {path: 'menu-recepcionista',component: MenuRecepcionistaComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } },
             {path: 'testeo',component: TesteoComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
-            {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard],data: { roles: ['tecnico'] } },
-            {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard], data: { roles: ['tecnico'] } },
-            {path: 'perfil',component: PerfilComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico','cliente'] } },
+            {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard],data: { roles: ['tecnico','supervisor'] } },
+            {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard], data: { roles: ['tecnico','supervisor'] } },
+            {path: 'perfil',component: PerfilComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico','cliente','supervisor'] } },
             {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] }  }, 
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard],data: { roles: ['recepcionista'] }  },
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
             {path: 'ingresar-inventario', component: IngresarInventarioComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
-            {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico'] } },
+            {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico',,'supervisor'] } },
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             { path: '', redirectTo: 'perfil', pathMatch: 'full' }
