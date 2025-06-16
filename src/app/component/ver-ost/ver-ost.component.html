@@ -44,13 +44,6 @@
           <td>{{ ost.placa }}</td>
           <td>{{ ost.modelo }}</td>
           <td>{{ ost.nombres }} {{ ost.apellidoPaterno }}</td>
-          <!--<td>
-            <div *ngIf="ost.tecnicos?.length > 0">
-              <span *ngFor="let t of ost.tecnicos" class="badge bg-info me-1">
-                {{ t.nombre }} - {{ t.estado }}
-              </span>
-            </div>
-          </td>-->
         <td>
           <button class="btn btn-sm btn-outline-info me-1" (click)="verDetalles(ost)" title="Ver">
             <i class="bi bi-eye"></i>
@@ -143,17 +136,54 @@
     </div>
   </div>
 </div>
-
-<!-- Modal Asignar Técnico -->
+<!-- Modal Asignar Tecnico -->
 <div class="modal fade" id="modalAsignarTecnico" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title">Asignar Técnicos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
+      <!-- Sección 1: Técnicos ya asignados -->
+      <div *ngIf="asignados.length > 0" class="mb-4 px-3 pt-3">
+        <h6 class="mb-3">Técnicos ya asignados</h6>
+
+        <div class="table-responsive rounded shadow-sm bg-white">
+          <table class="table table-bordered table-sm table-striped align-middle text-center text-nowrap">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Finalizado</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of asignados">
+                <td>{{ getInfoTecnico(a.idTecnico)?.nombre }}</td>
+                <td>{{ a.estado }}</td>
+                <td>{{ a.fechaAsignacion | date:'shortDate' }}</td>
+                <td>{{ a.fechaAsignacion | date:'shortTime' }}</td>
+                <td>{{ a.fechaFinalizacion ? (a.fechaFinalizacion | date:'short') : '-' }}</td>
+                <td>{{ a.observaciones }}</td>
+                <td>
+                  <button class="btn btn-sm btn-danger" (click)="eliminarAsignado(a)">×</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ✅ Formulario de asignación -->
       <form [formGroup]="asignacionForm" (ngSubmit)="confirmarAsignacion()">
         <div class="modal-body">
+          <!-- Técnicos nuevos -->
           <div formArrayName="asignaciones">
             <div
               class="border rounded p-3 mb-3"
@@ -161,7 +191,7 @@
               [formGroupName]="i"
             >
               <div class="row g-3 align-items-start">
-                <!-- Selector de técnico -->
+                <!-- Técnico -->
                 <div class="col-md-4">
                   <label class="form-label">Técnico</label>
                   <select class="form-select" formControlName="idTecnico">
@@ -171,7 +201,6 @@
                     </option>
                   </select>
 
-                  <!-- Info técnica con íconos -->
                   <div *ngIf="getInfoTecnico(grupo.get('idTecnico')?.value) as t" class="mt-3">
                     <ul class="list-group list-group-flush small text-muted">
                       <li class="list-group-item py-1">
@@ -202,7 +231,7 @@
 
                 <!-- Estado -->
                 <div class="col-md-3">
-                  <label for="estadoTecnico" class="form-label">Estado</label>
+                  <label class="form-label">Estado</label>
                   <select class="form-select" formControlName="idEstado">
                     <option *ngFor="let estado of estados" [value]="estado.id">
                       {{ estado.estado }}
@@ -228,6 +257,7 @@
             + Agregar Técnico
           </button>
         </div>
+
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Asignar</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

@@ -9,6 +9,7 @@ import { OstTecnicoService } from '@service/ost-tecnico.service';
 import Swal from 'sweetalert2';
 import { TecnicoService } from '@service/tecnico.service';
 import { EstadoService } from '@service/tipo-estado.service';
+import { OstTecnicoResponse } from '@model/ost-tecnico-response';
 declare var bootstrap: any;
 
 
@@ -32,6 +33,8 @@ asignacionForm!: FormGroup;
 tecnicos: any[] = [];
 estados: any[] = [];
 esSupervisor: boolean = false;
+asignados: OstTecnicoResponse[] = [];
+
 
 // Lista completa (ya debe existir)
 listaOst: IOstResponse[] = [];
@@ -100,9 +103,13 @@ getInfoTecnico(id: any) {
   asignarTecnico(ost: any) {
     this.ostSeleccionada = ost;
     this.asignaciones.clear(); // Limpia cualquier asignación anterior
-    this.agregarAsignacion(); // Agrega uno por defecto
+    this.asignacionForm.reset();
+    this.agregarAsignacion();
 
-    // Abre el modal (Bootstrap 5)
+    this.ostTecnicoService.obtenerAsignacionesPorOst(ost.idOst).subscribe(data => {
+      this.asignados = data;
+    });
+    // Abre el modal
     const modal = new bootstrap.Modal(document.getElementById('modalAsignarTecnico')!);
     modal.show();
   }
@@ -116,7 +123,6 @@ getInfoTecnico(id: any) {
       })
     );
   }
-
   tecnicosFiltrados(index: number): any[] {
     const asignaciones = this.asignacionForm.get('asignaciones')?.value;
 
@@ -152,6 +158,25 @@ getInfoTecnico(id: any) {
 
   eliminarAsignacion(index: number) {
     this.asignaciones.removeAt(index);
+  }
+
+  eliminarAsignado(asignado: OstTecnicoResponse) {
+    Swal.fire({
+      title: '¿Eliminar asignación?',
+      text: 'Esta acción eliminará el técnico asignado.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.ostTecnicoService.eliminarAsignacion(this.ostSeleccionada.idOst, asignado.idTecnico)
+          .subscribe(() => {
+            this.asignados = this.asignados.filter(a => a.idTecnico !== asignado.idTecnico);
+            Swal.fire('Eliminado', 'Asignación eliminada con éxito.', 'success');
+          });
+      }
+    });
   }
 
   rolActual: string = localStorage.getItem('rol') || 'rol';

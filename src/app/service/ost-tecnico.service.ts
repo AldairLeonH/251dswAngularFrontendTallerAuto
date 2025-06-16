@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BASE_URL } from '@utils/contans';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,14 @@ export class OstTecnicoService {
 
   obtenerTecnicos() {
     return this.http.get<any[]>(`${BASE_URL}/tecnicos`);
+  }
+
+  obtenerAsignacionesPorOst(idOst : number) {
+    return this.http.get<any[]>(`${BASE_URL}/ost-tecnico/por-ost/${idOst}`);
+  }
+
+  eliminarAsignacion(idOst: number, idTecnico: number): Observable<any> {
+    return this.http.delete(`${BASE_URL}/ost-tecnico/${idOst}/${idTecnico}`);
   }
 
   obtenerEstados() {
