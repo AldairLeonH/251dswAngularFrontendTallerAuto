@@ -5,13 +5,13 @@
    <button class="btn btn-primary" (click)="abrirWizard()">Ingresar al Registro</button>
 
    <div class="container mt-4">
-    <button type="button" class="btn btn-primary" (click)="mostrarInventario = !mostrarInventario">
-      {{ mostrarInventario ? 'Ocultar Inventario' : 'Ver Inventario' }}[disabled]="!botonesActivos"[disabled]="!botonesActivos"
+    <button type="button" class="btn btn-primary" (click)="mostrarInventario = !mostrarInventario"[disabled]="!botonesActivos">
+      {{ mostrarInventario ? 'Ocultar Inventario' : 'Ver Inventario' }}
     </button>
    </div>
 
     <div class="container mt-4">
-      <button type="button" class="btn btn-outline-primary" (click)="generarPDF()">Ver PDF</button>
+      <button type="button" class="btn btn-outline-primary" (click)="generarPDF()"[disabled]="!botonesActivos">Ver PDF</button>
     </div>
 
    <!-- COMPONENTE SOLO SI ESTÁ ACTIVO -->
