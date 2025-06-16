@@ -7,10 +7,10 @@ import { FormBuilder, FormGroup, FormsModule, Validators,ReactiveFormsModule, Fo
 import { OstTecnicoService } from '@service/ost-tecnico.service';
 
 import Swal from 'sweetalert2';
-<<<<<<< Updated upstream
+
 import { TecnicoService } from '@service/tecnico.service';
 import { EstadoService } from '@service/tipo-estado.service';
-=======
+
 import { IMaterialResponse } from '@model/material-response';
 import { IServicioResponse } from '@model/servicio-response';
 import { MaterialService } from '@service/material.service';
@@ -23,7 +23,7 @@ import { IMaterialCotizacionRequest } from '@model/material-cotizacion-request';
 import { IAgregarMultiplesMaterialesRequest } from '@model/agregar-multiples-materiales-request';
 import { ICotizacionMultiplesMaterialesResponse } from '@model/cotizacion-multiples-materiales-response';
 import { forkJoin } from 'rxjs';
->>>>>>> Stashed changes
+
 declare var bootstrap: any;
 
 
@@ -50,10 +50,8 @@ esSupervisor: boolean = false;
 
 // Lista completa (ya debe existir)
 listaOst: IOstResponse[] = [];
-<<<<<<< Updated upstream
-  constructor(private fb: FormBuilder,private ostService: OstService, private estadoService: EstadoService,
-    private ostTecnicoService: OstTecnicoService , private tecnicoService: TecnicoService) {}
-=======
+
+
 materialesArray:IMaterialResponse [] =[];
 serviciosArray: IServicioResponse[] = [];
 cotizacionRequest:ICotizacionRequest = {} as ICotizacionRequest;
@@ -66,8 +64,18 @@ serviciosCotizacionResponse: ICotizacionMultiplesServiciosResponse = {} as ICoti
 materialesSeleccionados: IMaterialCotizacionRequest[] = [];
 materialCotizacionRequest: IAgregarMultiplesMaterialesRequest = {} as IAgregarMultiplesMaterialesRequest;
 materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICotizacionMultiplesMaterialesResponse; 
-  constructor(private ostService: OstService, private materialService:MaterialService, private servicioService:ServicioService, private cotizacionService:CotizacionService) {}
->>>>>>> Stashed changes
+  constructor(
+  private fb: FormBuilder,
+  private ostService: OstService,
+  private estadoService: EstadoService,
+  private ostTecnicoService: OstTecnicoService,
+  private tecnicoService: TecnicoService,
+  // Nuevos servicios para cotización
+  private materialService: MaterialService,
+  private servicioService: ServicioService,
+  private cotizacionService: CotizacionService
+) {}
+
 
   ngOnInit(): void {
     this.getMateriales(); // Llamamos al método para obtener los materiales
@@ -203,7 +211,6 @@ getInfoTecnico(id: any) {
           next: (data) => this.listaOst = data,
           error: (err) => console.error('Error al obtener OSTs:', err)
     });
-<<<<<<< Updated upstream
   }
 
   eliminarOst(id: number): void {
@@ -218,7 +225,6 @@ getInfoTecnico(id: any) {
 
         // Cierra el modal manualmente
         const modal = document.getElementById('modalEliminarOst');
-=======
     },
     error: (err) => {
       console.error('Error al eliminar OST:', err);
@@ -532,33 +538,16 @@ getInfoTecnico(id: any) {
     });
         // 1. Cerrar el modal
         const modal = document.getElementById('modalCotizacion');
->>>>>>> Stashed changes
         if (modal) {
           const bootstrapModal = bootstrap.Modal.getInstance(modal);
           bootstrapModal?.hide();
-        }
-
-<<<<<<< Updated upstream
-        // Refresca la lista
-        this.cargarDatos();
-      },
-      error: (err) => {
-        console.error('Error al eliminar OST:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al eliminar la OST.'
-        });
+        
       }
-    });
-  }
-=======
         // 2. Vaciar los arrays
         this.materialesSeleccionados = [];
-        this.serviciosSeleccionados = [];    
-  } 
+        this.serviciosSeleccionados = [];
+  }   
+   
 
-
->>>>>>> Stashed changes
 
 }

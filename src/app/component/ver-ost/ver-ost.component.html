@@ -44,7 +44,6 @@
           <td>{{ ost.placa }}</td>
           <td>{{ ost.modelo }}</td>
           <td>{{ ost.nombres }} {{ ost.apellidoPaterno }}</td>
-<<<<<<< Updated upstream
           <!--<td>
             <div *ngIf="ost.tecnicos?.length > 0">
               <span *ngFor="let t of ost.tecnicos" class="badge bg-info me-1">
@@ -64,16 +63,10 @@
           <button class="btn btn-sm btn-outline-danger" (click)="mostrarEliminarOst(ost)" title="Eliminar">
             <i class="bi bi-trash"></i>
           </button>
+          <button class="btn btn-sm btn-outline-success me-1" (click)="generarCotizacionInicial(ost)" title="Realizar cotización">
+            <i class="bi bi-file-earmark-text"></i> 
+          </button>
         </td>
-
-=======
-          <td>
-            <button class="btn btn-sm btn-outline-info" (click)="verDetalles(ost)">Ver</button>
-            <button class="btn btn-sm btn-outline-warning" (click)="asignarTecnico(ost)">Asignar técnico</button>
-            <button class="btn btn-sm btn-outline-danger" (click)="mostrarEliminarOst(ost)">Eliminar</button>
-            <button class="btn btn-sm btn-outline-success" (click)="generarCotizacionInicial(ost)">Realizar Cotización</button>
-          </td>
->>>>>>> Stashed changes
         </tr>
       </tbody>
     </table>
@@ -242,6 +235,209 @@
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Cotización -->
+<div class="modal fade" id="modalCotizacion" tabindex="-1" aria-labelledby="modalCotizacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalCotizacionLabel">Realizar Cotización</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="cotizacionTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="materiales-tab" data-bs-toggle="tab" data-bs-target="#materiales" type="button" role="tab">Materiales</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="servicios-tab" data-bs-toggle="tab" data-bs-target="#servicios" type="button" role="tab">Servicios</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="resumen-tab" data-bs-toggle="tab" data-bs-target="#resumen" type="button" role="tab">Resumen</button>
+          </li>          
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content mt-3">
+          <div class="tab-pane fade show active" id="materiales" role="tabpanel">
+            <p>Aquí puedes ingresar los materiales para la cotización.</p>
+            <!-- Aquí iría tu formulario o tabla de materiales -->
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let material of materialesArray">
+                    <td>{{ material.id }}</td>
+                    <td>{{ material.nombre }}</td>
+                    <td>{{ material.stock }}</td>
+                    <td>{{ material.precio | currency:'S/ ' }}</td>
+                    <td>
+                      <input #cantidadInput
+                            type="number"
+                            min="1"
+                            [max]="material.stock"
+                            placeholder="Cantidad"
+                            class="form-control form-control-sm"
+                            style="width: 80px;"
+                            [value]="getCantidadSeleccionada(material.id)">
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm" role="group">
+                        <!-- Botón Agregar/Actualizar -->
+                        <button class="btn btn-primary"
+                                (click)="agregarMaterial(material, cantidadInput.valueAsNumber)"
+                                [disabled]="!cantidadInput.value || +cantidadInput.value <= 0 || +cantidadInput.value > material.stock">
+                          <i class="fas" [class.fa-plus]="!isMaterialSeleccionado(material.id)"
+                                        [class.fa-edit]="isMaterialSeleccionado(material.id)"></i>
+                          {{ isMaterialSeleccionado(material.id) ? 'Actualizar' : 'Agregar' }}
+                        </button>
+                        
+                        <!-- Botón Eliminar - Solo visible si el material está seleccionado -->
+                        <button *ngIf="isMaterialSeleccionado(material.id)"
+                                class="btn btn-danger"
+                                (click)="eliminarMaterial(material.id)"
+                                title="Eliminar material">
+                          <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+            <div class="tab-pane fade" id="servicios" role="tabpanel">
+              <p>Aquí puedes ingresar los servicios para la cotización.</p>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Precio</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let servicio of serviciosArray">
+                      <td>{{ servicio.id }}</td>
+                      <td>{{ servicio.nombre }}</td>
+                      <td>{{ servicio.precio | currency:'S/ ' }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                          <!-- Botón Agregar - Visible cuando el servicio NO está seleccionado -->
+                          <button *ngIf="!serviciosSeleccionados.includes(servicio.id)"
+                                  class="btn btn-primary"
+                                  (click)="agregarServicio(servicio)">
+                            <i class="fas fa-plus"></i> Agregar
+                          </button>
+                          
+                          <!-- Botón Eliminar - Visible cuando el servicio SÍ está seleccionado -->
+                          <button *ngIf="serviciosSeleccionados.includes(servicio.id)"
+                                  class="btn btn-danger"
+                                  (click)="eliminarServicio(servicio.id)">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          
+          <div class="tab-pane fade" id="resumen" role="tabpanel">
+            <h5 class="mb-3">Resumen de la Cotización</h5>
+            
+            <!-- Tabla de Materiales Seleccionados -->
+            <div class="card mb-4">
+              <div class="card-header bg-light">
+                <h6>Materiales</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Material</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of materialesSeleccionados">
+                        <td>{{ getNombreMaterial(item.idMaterial) }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ getPrecioMaterial(item.idMaterial) | currency:'S/ ' }}</td>
+                        <td>{{ calcularSubtotalMaterial(item) | currency:'S/ ' }}</td>
+                      </tr>
+                      <tr *ngIf="materialesSeleccionados.length === 0">
+                        <td colspan="4" class="text-center text-muted">No hay materiales seleccionados</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de Servicios Seleccionados -->
+            <div class="card mb-4">
+              <div class="card-header bg-light">
+                <h6>Servicios</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Servicio</th>
+                        <th>Precio</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let id of serviciosSeleccionados">
+                        <td>{{ getNombreServicio(id) }}</td>
+                        <td>{{ getPrecioServicio(id) | currency:'S/ ' }}</td>
+                      </tr>
+                      <tr *ngIf="serviciosSeleccionados.length === 0">
+                        <td colspan="2" class="text-center text-muted">No hay servicios seleccionados</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total de la cotización -->
+            <div class="card">
+              <div class="card-header bg-light">
+                <h6>Total</h6>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <strong>Total:</strong>
+                  <span class="fw-bold">{{ calcularTotal() | currency:'S/ ' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>            
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="generarCotizacionCompleta()">Generar Cotización</button>
+      </div>
     </div>
   </div>
 </div>
