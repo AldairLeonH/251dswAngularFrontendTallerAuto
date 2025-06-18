@@ -13,6 +13,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { IUsuarioResponse } from '@model/usuario-response';
 import { UsuarioService } from '@service/usuario.service';
+import { IPersonaResponse } from '@model/persona-response';
 declare var bootstrap: any;
 
 @Component({
@@ -67,7 +68,7 @@ export class IngresarOstComponent implements OnInit {
     this.fechaActual = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     this.formOST.get('fecha')?.setValue(this.fechaActual);
     this.formOST.get('fechaRevison')?.setValue(this.fechaActual);
-    
+    this.formOST.get('fechaRevison')?.setValue(this.fechaActual);
       const ahora = new Date();
     const horas = ahora.getHours().toString().padStart(2, '0');
     const minutos = ahora.getMinutes().toString().padStart(2, '0');
@@ -108,7 +109,7 @@ export class IngresarOstComponent implements OnInit {
 }
 
   filtro: string = '';
-  personaEncontrada: any = null;
+  personaEncontrada!: IPersonaResponse;
   autosPersona: any[] = [];
 
   buscarPersona(): void {
@@ -134,7 +135,7 @@ export class IngresarOstComponent implements OnInit {
         });
       },
       error: () => {
-        this.personaEncontrada = null;
+        this.personaEncontrada;
         this.autosPersona = [];
         Swal.fire({
           icon: 'error',
@@ -219,7 +220,38 @@ export class IngresarOstComponent implements OnInit {
       console.error('Error al registrar la OST:', err);
     }
   });
-      //this.botonesActivos = true;
+      const form = this.formOST.value;
+
+      // Datos de persona
+    const datosCliente = {
+      nombreCompleto: `${this.personaEncontrada.nombres} ${this.personaEncontrada.apellidoPaterno} ${this.personaEncontrada.apellidoMaterno}`,
+      direccion: this.personaEncontrada.direccion,
+      telefono: this.personaEncontrada.telefono,
+      nroDocumento: this.personaEncontrada.nroDocumento
+    };
+const marcaSeleccionada = this.marcasArray.find(m => m.idMarca === form.idMarca);
+const modeloSeleccionado = this.modelosArray.find(m => m.idModelo === form.idModelo);
+    const datosVehiculo = this.autoSeleccionado ? {
+      placa: this.autoSeleccionado.placa,
+      color: this.autoSeleccionado.color,
+      anio: this.autoSeleccionado.anio,
+      marca: this.autoSeleccionado.modelo.marca.nombre,
+      modelo: this.autoSeleccionado.modelo.nombre,
+      fecha: form.fecha,
+      hora: form.hora
+    } : {
+      placa: form.placa,
+      color: form.color,
+      anio: form.anio,
+      marca: marcaSeleccionada?.nombre || '',
+      modelo: modeloSeleccionado?.nombre || '',
+      fecha: form.fecha,
+      hora: form.hora
+    };
+
+      // Guardar en localStorage
+      localStorage.setItem('datosCliente', JSON.stringify(datosCliente));
+      localStorage.setItem('datosVehiculo', JSON.stringify(datosVehiculo));
   }
 
   autoSeleccionado: any =null;
@@ -312,7 +344,6 @@ abrirInventario() {
 }
 
 avanzar() {
-  console.log('Nadadadada');
   if (this.pasoActual === 1 && !this.personaEncontrada) {
     Swal.fire('Debes seleccionar una persona antes de continuar');
     return;
@@ -332,197 +363,7 @@ getFormControl(index: number): FormControl {
   return this.preguntasFormArray.at(index) as FormControl;
 }
 
-  generarPDF() {
-    this.botonesActivos = true;
-    const doc = new jsPDF();
-  // Logo genérico en base64 (puedes reemplazarlo luego)
-const logoBase64 = 'data:image/png;base64,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';
-  //this.convertImageToBase64(logoUrl).then((logoBase64) => {
-    // Imagen del logo (x, y, width, height)
-    doc.addImage(logoBase64, 'PNG', 10, 10, 40, 20);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text('REPARA TU VEHÍCULO CON LA MEJOR', 90, 25, { align: 'center' });
-    doc.text('CALIDAD Y PRECIO DEL MERCADO', 90, 30, { align: 'center' });
 
-
-    // 🔹 Recuadro con RUC a la derecha
-    const rucX = 130;
-    const rucY = 12;
-    const rucWidth = 65;
-    const rucHeight = 20;
-
-    doc.roundedRect(rucX, rucY, rucWidth, rucHeight, 3, 3, 'S');
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('RUC: 20564558478', rucX + 5, rucY + 6);
-    doc.text('INVENTARIO VEHICULAR', rucX + 5, rucY + 12);
-    doc.text('V101 - 00000060', rucX + 5, rucY + 17);
-
-    // Tabla 1: Datos Generales
-
-        const yStart = 60;
-
-    autoTable(doc, {
-      startY: 40,
-      margin: { left: 10 },
-      tableWidth: 95,
-      head: [['DATOS GENERALES']],
-      body: [
-        ['Razón Social: Javier Franco Vargas Perales'],
-        ['Dirección: Moche'],
-        ['Placas: F5T-221'],
-        ['Asesor Comercial: Jean - Demo Automotriz'],
-        ['Nro Ficha / Kilometraje: 100000']
-      ],
-      theme: 'plain',
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          textColor: [0, 0, 0],
-        },
-        headStyles: {
-        fillColor: [200, 200, 200], // gris claro
-        textColor: 0,
-        fontStyle: 'bold',
-        halign: 'left',
-      },
-  didDrawCell: function (data) {
-    const { cell, row, column, table } = data;
-    const isFirstRow = row.index === 0;
-    const isLastRow = row.index === table.body.length - 1;
-    const isFirstColumn = column.index === 0;
-    const isLastColumn = column.index === table.columns.length - 1;
-
-    doc.setDrawColor(0); // negro
-
-    // Dibuja bordes solo si es borde externo
-    if (isFirstRow) {
-      doc.line(cell.x, cell.y, cell.x + cell.width, cell.y); // top
-    }
-    if (isLastRow) {
-      doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height); // bottom
-    }
-    if (isFirstColumn) {
-      doc.line(cell.x, cell.y, cell.x, cell.y + cell.height); // left
-    }
-    if (isLastColumn) {
-      doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height); // right
-    }
-  }
-    });
-
-    const y1 = (doc as any).lastAutoTable.finalY + 5;
-
-    // Tabla 2: Datos del Vehículo
-    autoTable(doc, {
-            startY: 40,
-          margin: { left: 105 },
-    tableWidth: 95,
-      head: [['DATOS DEL VEHÍCULO']],
-      body: [
-        ['Color: AZUL / Año: 2014'],
-        ['Chasis / VIN: M2L...', 'Venc. SOAT: 2025-02-20'],
-        ['Fecha: 2024-12-16 / Hora: 17:14 PM']
-      ],
-      theme: 'plain',
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          textColor: [0, 0, 0],
-        },
-        headStyles: {
-        fillColor: [200, 200, 200], // gris claro
-        textColor: 0,
-        fontStyle: 'bold',
-        halign: 'left',
-      },
-  didDrawCell: function (data) {
-    const { cell, row, column, table } = data;
-    const isFirstRow = row.index === 0;
-    const isLastRow = row.index === table.body.length - 1;
-    const isFirstColumn = column.index === 0;
-    const isLastColumn = column.index === table.columns.length - 1;
-
-    doc.setDrawColor(0); // negro
-
-    // Dibuja bordes solo si es borde externo
-    if (isFirstRow) {
-      doc.line(cell.x, cell.y, cell.x + cell.width, cell.y); // top
-    }
-    if (isLastRow) {
-      doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height); // bottom
-    }
-    if (isFirstColumn) {
-      doc.line(cell.x, cell.y, cell.x, cell.y + cell.height); // left
-    }
-    if (isLastColumn) {
-      doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height); // right
-    }
-  }
-    });
-
-    const y2 = (doc as any).lastAutoTable.finalY + 20;
-
-    // Tabla 3: Accesorios Externos
-    autoTable(doc, {
-     startY: y2,
-     margin: { left: 10 },
-     tableWidth: 88,
-      head: [['ACCESORIOS EXTERNOS', 'Bueno', 'Regular', 'Malo']],
-      body: [
-        ['Faros Delanteros', '✔', '', ''],
-        ['Luces Direccionales Delanteras', '', '✔', ''],
-        ['Parachoque Delantero', '', '', '✔']
-      ],
-      theme: 'grid',
-      styles: {
-        lineColor: [0, 0, 0],
-        font: 'helvetica',
-        fontSize: 9,
-        textColor: [0, 0, 0],
-      },
-      headStyles: {
-        lineColor: [0, 0, 0],
-        fillColor: [200, 200, 200], // 🔸 gris claro
-        textColor: 0,
-        lineWidth: 0.2,
-        fontStyle: 'bold',
-        halign: 'left',
-      },
-    });
-
-    const y3 = (doc as any).lastAutoTable.finalY + 10;
-
-    // Tabla 4: Documentos del Vehículo
-    autoTable(doc, {
-      startY: y2,
-           margin: { left: 105 },
-     tableWidth: 88,
-      head: [['DOCUMENTOS DEL VEHÍCULO', 'Cantidad']],
-      body: [
-        ['Tarjeta de Propiedad', '1'],
-        ['SOAT', '1'],
-        ['Rev. Técnica', '']
-      ],
-      theme: 'grid',
-      styles: {
-        lineColor: [0, 0, 0],
-        font: 'helvetica',
-        fontSize: 9,
-        textColor: [0, 0, 0],
-      },
-      headStyles: {
-        lineColor: [0, 0, 0],
-        fillColor: [200, 200, 200], // 🔸 gris claro
-        lineWidth: 0.2,
-        textColor: 0,
-        //fontStyle: 'bold',
-        halign: 'left',
-      }
-    });
-    window.open(doc.output('bloburl'), '_blank');
-  }
 
 // Convertir imagen a base64 desde URL
 convertImageToBase64(url: string): Promise<string> {

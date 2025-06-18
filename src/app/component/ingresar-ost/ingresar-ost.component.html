@@ -10,9 +10,7 @@
     </button>
    </div>
 
-    <div class="container mt-4">
-      <button type="button" class="btn btn-outline-primary" (click)="generarPDF()"[disabled]="!botonesActivos">Ver PDF</button>
-    </div>
+
 
    <!-- COMPONENTE SOLO SI ESTÁ ACTIVO -->
    <div *ngIf="mostrarInventario" class="container mt-3">
@@ -57,8 +55,10 @@
             <button class="btn btn-outline-primary" (click)="buscarPersona()">Buscar</button>
           </div>
           <div *ngIf="personaEncontrada" class="card p-3">
-            <h6><i class="bi bi-person-check me-2"></i>{{ personaEncontrada.nombres }}</h6>
+            <h6><i class="bi bi-person-check me-2"></i>{{ personaEncontrada.nombres }} 
+              {{ personaEncontrada.apellidoPaterno }} {{ personaEncontrada.apellidoMaterno }}</h6>
             <p>DNI: {{ personaEncontrada.nroDocumento }}</p>
+            <p>Direccion: {{ personaEncontrada.direccion }}</p>
           </div>
         </div>
 
