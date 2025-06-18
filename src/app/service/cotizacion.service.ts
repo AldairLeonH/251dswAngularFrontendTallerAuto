@@ -7,6 +7,8 @@ import { ICotizacionMultiplesMaterialesResponse } from '@model/cotizacion-multip
 import { ICotizacionMultiplesServiciosResponse } from '@model/cotizacion-multiples-servicios-response';
 import { ICotizacionRequest } from '@model/cotizacion-request';
 import { ICotizacionResponse } from '@model/cotizacion-response';
+import { ICotizacionServicioResponse } from '@model/cotizacion-servicio-response';
+import { IMaterialConCantidadResponse } from '@model/material-con-cantidad-response';
 import { BASE_URL } from '@utils/contans';
 import { Observable } from 'rxjs';
 
@@ -39,5 +41,19 @@ export class CotizacionService {
     request
   );
   }
+  getCotizaciones(): Observable<ICotizacionResponse[]> {
+    return this.http.get<ICotizacionResponse[]>(`${BASE_URL}/cotizaciones`);
+  }
+
+  getMaterialesPorCotizacion(idCotizacion: number): Observable<IMaterialConCantidadResponse[]> {
+    return this.http.get<IMaterialConCantidadResponse[]>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/materiales`
+    );
+  }
+  getServiciosPorCotizacion(idCotizacion: number): Observable<ICotizacionServicioResponse[]> {
+    return this.http.get<ICotizacionServicioResponse[]>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/servicios`
+    );
+  }    
 
 }

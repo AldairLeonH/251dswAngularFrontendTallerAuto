@@ -1,0 +1,136 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Listado de Cotizaciones</h2>
+    <button class="btn btn-primary" routerLink="/cotizaciones/nueva">
+      <i class="bi bi-plus-circle me-2"></i>Nueva Cotización
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando cotizaciones...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadCotizaciones()">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && cotizaciones.length === 0" class="alert alert-info">
+    No se encontraron cotizaciones registradas.
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!loading && !error && cotizaciones.length > 0" class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <td>#</td>       
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Vehículo</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cot of cotizaciones; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ formatDate(cot.fecha) }}</td>
+            <td class="fw-bold text-success">S/ {{ cot.total | number:'1.2-2' }}</td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="fw-semibold">{{ cot.ost.auto.placa }}</span>
+                <small class="text-muted">
+                  {{ cot.ost.auto.modelo.marca.nombre }} {{ cot.ost.auto.modelo.nombre }}
+                </small>
+              </div>
+            </td>
+            <td>
+              {{ cot.ost.auto.persona.apellidoPaterno }} 
+              {{ cot.ost.auto.persona.apellidoMaterno }}, 
+              {{ cot.ost.auto.persona.nombres }}
+            </td>
+            <td>
+              <span class="badge rounded-pill" 
+                    [ngClass]="{
+                      'bg-warning text-dark': cot.ost.estado.estado === 'Pendiente',
+                      'bg-success': cot.ost.estado.estado === 'Atendida',
+                      'bg-danger': cot.ost.estado.estado === 'Rechazado',
+                      'bg-info text-dark': cot.ost.estado.estado === 'En Proceso'
+                    }">
+                {{ cot.ost.estado.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" 
+                    (click)="verMaterialesYServicios(cot.id)" 
+                    title="Ver Detalles">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" 
+                        title="Imprimir"
+                        (click)="generarPDF(cot)">
+                  <i class="bi bi-printer"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalle -->
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+    
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetalleLabel">Detalle de Cotización #{{ cotizacionSeleccionadaId }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <h6>Servicios</h6>
+        <ul *ngIf="servicios.length > 0; else sinServicios">
+          <li *ngFor="let servicio of servicios">
+            {{ servicio.nombre }} - S/ {{ servicio.precio | number:'1.2-2' }}
+          </li>
+        </ul>
+        <ng-template #sinServicios>
+          <p class="text-muted">No se encontraron servicios asociados.</p>
+        </ng-template>
+
+        <hr />
+
+        <h6>Materiales</h6>
+        <ul *ngIf="materiales.length > 0; else sinMateriales">
+          <li *ngFor="let mat of materiales">
+            {{ mat.nombre }} (x{{ mat.cantidad }}) - S/ {{ mat.precio | number:'1.2-2' }}
+          </li>
+        </ul>
+        <ng-template #sinMateriales>
+          <p class="text-muted">No se encontraron materiales asociados.</p>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+

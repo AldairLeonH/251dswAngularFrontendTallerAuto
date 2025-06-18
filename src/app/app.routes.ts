@@ -17,6 +17,7 @@ import { ClienteOstComponent } from '@component/cliente-ost/cliente-ost.componen
 import { Vista1Component } from './vista1/vista1.component';
 import { ClienteMisAutosComponent } from '@component/cliente-mis-autos/cliente-mis-autos.component';
 import { IngresarInventarioComponent } from '@component/ingresar-inventario/ingresar-inventario.component';
+import { VerCotizacionesComponent } from '@component/ver-cotizaciones/ver-cotizaciones.component';
 
 
 export const routes: Routes = [
@@ -40,7 +41,8 @@ export const routes: Routes = [
             {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico',,'supervisor'] } },
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
-            { path: '', redirectTo: 'perfil', pathMatch: 'full' }
+            { path: '', redirectTo: 'perfil', pathMatch: 'full' },
+            {path: 'ver-cotizaciones', component: VerCotizacionesComponent, canActivate: [authGuard], data: { roles: ['recepcionista'] } },
             ]
           },
 
