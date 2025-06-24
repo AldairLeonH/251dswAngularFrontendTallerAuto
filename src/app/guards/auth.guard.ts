@@ -14,8 +14,8 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state) =
   const userStr = localStorage.getItem('nombreUsuario');
   const rolesPermitidos = route.data['roles'] as string[];
   console.log('Token:', token);
-console.log('User:', userStr);
-console.log('Roles requeridos:', rolesPermitidos);
+  console.log('User:', userStr);
+  console.log('Roles requeridos:', rolesPermitidos);
 
   if (token && userStr) {
     const user = localStorage.getItem('rol')!;

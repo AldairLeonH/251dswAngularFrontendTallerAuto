@@ -23,6 +23,11 @@ export class OstService {
   obtenerOstPorCliente(idUsuario: number): Observable<IOstResponse[]> {
     return this.http.get<IOstResponse[]>(`${BASE_URL}/ost/mis-ost/${idUsuario}`);
   }
+
+  getOstsPorSupervisor(idSupervisor: number): Observable<IOstResponse[]> {
+    return this.http.get<IOstResponse[]>(`${BASE_URL}/ost/supervisor/${idSupervisor}`);
+  }
+
   eliminarOst(id: number): Observable<void> {
     return this.http.delete<void>(`${BASE_URL}/ost/${id}`);
   }

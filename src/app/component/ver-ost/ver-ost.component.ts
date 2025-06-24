@@ -83,13 +83,20 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
   ngOnInit(): void {
     this.getMateriales(); // Llamamos al método para obtener los materiales
     this.getServicios(); // Llamamos al método para obtener los servicios
-    this.ostService.obtenerOsts().subscribe({
-      next: (data) => this.listaOst = data,
-      error: (err) => console.error('Error al obtener OSTs:', err)
-    });
-
-      const rolUsuario = localStorage.getItem('rol'); // O desde tu AuthService
-  this.esSupervisor = rolUsuario === 'supervisor';
+    const rolUsuario = localStorage.getItem('rol');
+    const idUsuario = Number(localStorage.getItem('idUsuario'));
+    this.esSupervisor = rolUsuario === 'supervisor';
+      if (this.esSupervisor) {
+        this.ostService.getOstsPorSupervisor(idUsuario).subscribe({
+          next: (data) => this.listaOst = data,
+          error: (err) => console.error('Error al obtener OSTs:', err)
+        });
+      } else {
+          this.ostService.obtenerOsts().subscribe({
+          next: (data) => this.listaOst = data,
+          error: (err) => console.error('Error al obtener OSTs:', err)
+        });
+      }
 
     this.asignacionForm = this.fb.group({
       asignaciones: this.fb.array([])
@@ -98,6 +105,7 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
     this.cargarTecnicos();
     this.cargarEstados();
   }
+
   get ostFiltrados() {
     return this.listaOst.filter(ost =>
       (this.filtroPlaca === '' || ost.placa?.toLowerCase().includes(this.filtroPlaca.toLowerCase())) &&
@@ -121,16 +129,18 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
           console.log('Técnicos cargados:', this.tecnicos);
     });
   }
-getInfoTecnico(id: any) {
-  if (!id) return null;
-  return this.tecnicos.find(t => t.idTecnico === +id);
-}
+
+  getInfoTecnico(id: any) {
+    if (!id) return null;
+    return this.tecnicos.find(t => t.idTecnico === +id);
+  }
 
   onTecnicoChange(event: Event, index: number) {
-  const value = (event.target as HTMLSelectElement).value;
-  const tecnicoId = +value;
-  console.log('Técnico seleccionado en posición', index, ':', tecnicoId);
-}
+    const value = (event.target as HTMLSelectElement).value;
+    const tecnicoId = +value;
+    console.log('Técnico seleccionado en posición', index, ':', tecnicoId);
+  }
+
   cargarEstados() {
     this.estadoService.getEstados().subscribe(data => {
       this.estados = data;
@@ -164,6 +174,7 @@ getInfoTecnico(id: any) {
       })
     );
   }
+
   tecnicosFiltrados(index: number): any[] {
     const asignaciones = this.asignacionForm.get('asignaciones')?.value;
 
@@ -260,7 +271,7 @@ getInfoTecnico(id: any) {
       });
     }
   });
-}
+  }
 //cotizaciones
 //3
   setCotizacionRequest(ost: IOstResponse): void {

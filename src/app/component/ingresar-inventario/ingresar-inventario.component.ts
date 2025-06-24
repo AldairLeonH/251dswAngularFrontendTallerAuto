@@ -22,16 +22,16 @@ export class IngresarInventarioComponent implements OnInit {
   categorias: ICategoriaItem[] = [];
   itemsPorCategoria: { [key: number]: IItemInventarioExtendido[] } = {};
   kilometraje: number = 0;
-gasolina: number = 50;
-loading = true;
+  gasolina: number = 50;
+  loading = true;
 
-nivelesGasoina = [
-  { valor: 0, label: 'Vacío (0%)' },
-  { valor: 25, label: '1/4 (25%)' },
-  { valor: 50, label: 'Medio (50%)' },
-  { valor: 75, label: '3/4 (75%)' },
-  { valor: 100, label: 'Lleno (100%)' }
-];
+  nivelesGasoina = [
+    { valor: 0, label: 'Vacío (0%)' },
+    { valor: 25, label: '1/4 (25%)' },
+    { valor: 50, label: 'Medio (50%)' },
+    { valor: 75, label: '3/4 (75%)' },
+    { valor: 100, label: 'Lleno (100%)' }
+  ];
   botonesActivos: boolean = false;
   constructor(private fb: FormBuilder, private invService: InventarioService) {}
 
@@ -39,7 +39,7 @@ nivelesGasoina = [
     const idOst = localStorage.getItem('idOst')!;
     console.log(idOst);
 
-          this.form = this.fb.group({
+    this.form = this.fb.group({
       kilometraje: [null, Validators.required],
       nivelGasolina: [0, Validators.required],
       inventario: this.fb.array([])
@@ -55,35 +55,35 @@ nivelesGasoina = [
     return this.form.get('inventario') as FormArray;
   }
 
-agruparPorCategoria(items: IItemInventario[]): ICategoriaItem[] {
-  const map = new Map<number, ICategoriaItem>();
+  agruparPorCategoria(items: IItemInventario[]): ICategoriaItem[] {
+    const map = new Map<number, ICategoriaItem>();
 
-  items.forEach(item => {
-    const cat = item.categoria;
-    if (!map.has(cat.idCategoria)) {
-      map.set(cat.idCategoria, { idCategoria: cat.idCategoria, nombre: cat.nombre, items: [] });
-    }
-    const itemExtendido: IItemInventarioExtendido = {
-      ...item,
-      cantidad: 0,
-      estado: 'Bueno',
-      seleccionado: false
-    };
-    map.get(cat.idCategoria)?.items.push(itemExtendido);
-  });
+    items.forEach(item => {
+      const cat = item.categoria;
+      if (!map.has(cat.idCategoria)) {
+        map.set(cat.idCategoria, { idCategoria: cat.idCategoria, nombre: cat.nombre, items: [] });
+      }
+      const itemExtendido: IItemInventarioExtendido = {
+        ...item,
+        cantidad: 0,
+        estado: 'Bueno',
+        seleccionado: false
+      };
+      map.get(cat.idCategoria)?.items.push(itemExtendido);
+    });
 
-  return Array.from(map.values());
-}
+    return Array.from(map.values());
+  }
   getItemGroup(idItem: number): FormGroup {
     return this.inventario.controls.find(c => c.value.idItem === idItem) as FormGroup;
   }
-cargar() {
-  // Aquí tu lógica para redirigir, por ejemplo:
-  // this.router.navigate(['/buscar-ost']);
-  // o emitir evento para que el padre maneje el redirect
-  
-  console.log('Botón Buscar OST pulsado'+this.form.value.kilometraje+this.form.value.nivelGasolina);
-}
+  cargar() {
+    // Aquí tu lógica para redirigir, por ejemplo:
+    // this.router.navigate(['/buscar-ost']);
+    // o emitir evento para que el padre maneje el redirect
+    
+    console.log('Botón Buscar OST pulsado'+this.form.value.kilometraje+this.form.value.nivelGasolina);
+  }
   onSubmit() {
 
     const formValue = this.form.value;
@@ -109,53 +109,55 @@ cargar() {
         this.botonesActivos = true;
   }
 
-translateGasLevel(valor: number): string {
-  const niveles = ["Vacío", "1/4", "1/2", "3/4", "Lleno"];
-  return niveles[valor] ?? "Desconocido";
-}
+  translateGasLevel(valor: number): string {
+    const niveles = ["Vacío", "1/4", "1/2", "3/4", "Lleno"];
+    return niveles[valor] ?? "Desconocido";
+  }
 
   toggleSeleccion(item: any) {
-  item.seleccionado = !item.seleccionado;
+    item.seleccionado = !item.seleccionado;
 
-  if (item.seleccionado) {
-    this.inventario.push(this.fb.group({
-      idItem: [item.idItem],
-      cantidad: [item.cantidad],
-      estado: [item.estado]
-    }));
-  } else {
-    const index = this.inventario.controls.findIndex(c => c.value.idItem === item.idItem);
-    if (index !== -1) {
-      this.inventario.removeAt(index);
+    if (item.seleccionado) {
+      this.inventario.push(this.fb.group({
+        idItem: [item.idItem],
+        cantidad: [item.cantidad],
+        estado: [item.estado]
+      }));
+    } else {
+      const index = this.inventario.controls.findIndex(c => c.value.idItem === item.idItem);
+      if (index !== -1) {
+        this.inventario.removeAt(index);
+      }
     }
   }
-}
-onCantidadChange(item: any, nuevaCantidad: number) {
-  item.cantidad = nuevaCantidad;
-  const group = this.getItemGroup(item.idItem);
-  if (group) group.get('cantidad')?.setValue(nuevaCantidad);
-}
+
+  onCantidadChange(item: any, nuevaCantidad: number) {
+    item.cantidad = nuevaCantidad;
+    const group = this.getItemGroup(item.idItem);
+    if (group) group.get('cantidad')?.setValue(nuevaCantidad);
+  }
 
   onEstadoChange(item: any, nuevoEstado: string) {
     item.estado = nuevoEstado;
     const group = this.getItemGroup(item.idItem);
     if (group) group.get('estado')?.setValue(nuevoEstado);
   }
-drawBorders(doc: jsPDF) {
-  return function (data: any) {
-    const { cell, row, column, table } = data;
-    const isFirstRow = row.index === 0;
-    const isLastRow = row.index === table.body.length - 1;
-    const isFirstColumn = column.index === 0;
-    const isLastColumn = column.index === table.columns.length - 1;
 
-    doc.setDrawColor(0);
-    if (isFirstRow) doc.line(cell.x, cell.y, cell.x + cell.width, cell.y);
-    if (isLastRow) doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height);
-    if (isFirstColumn) doc.line(cell.x, cell.y, cell.x, cell.y + cell.height);
-    if (isLastColumn) doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height);
-  };
-}
+  drawBorders(doc: jsPDF) {
+    return function (data: any) {
+      const { cell, row, column, table } = data;
+      const isFirstRow = row.index === 0;
+      const isLastRow = row.index === table.body.length - 1;
+      const isFirstColumn = column.index === 0;
+      const isLastColumn = column.index === table.columns.length - 1;
+
+      doc.setDrawColor(0);
+      if (isFirstRow) doc.line(cell.x, cell.y, cell.x + cell.width, cell.y);
+      if (isLastRow) doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height);
+      if (isFirstColumn) doc.line(cell.x, cell.y, cell.x, cell.y + cell.height);
+      if (isLastColumn) doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height);
+    };
+  }
 
 generarPDF() {
   const doc = new jsPDF();
@@ -224,9 +226,9 @@ generarPDF() {
     const body = items.map(i => [
       i.nombre,
       i.cantidad.toString(),
-      i.estado === 'Bueno' ? '✔' : '',
-      i.estado === 'Regular' ? '✔' : '',
-      i.estado === 'Malo' ? '✔' : ''
+      i.estado === 'Bueno' ? 'X' : '',
+      i.estado === 'Regular' ? 'X' : '',
+      i.estado === 'Malo' ? 'X' : ''
     ]);
 
     autoTable(doc, {
