@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { OstTecnicoCompletoDTO } from '@model/ost-tecnico-completo-response';
+import { OstTecnicoResponse } from '@model/ost-tecnico-response';
 import { BASE_URL } from '@utils/contans';
 import { Observable } from 'rxjs';
 
@@ -29,5 +31,13 @@ export class OstTecnicoService {
 
   asignarTecnicos(dto: any) {
     return this.http.post(`${BASE_URL}/ost-tecnico/asignar`, dto);
+  }
+
+  getOstsPorTecnico(idTecnico: number): Observable<OstTecnicoCompletoDTO[]> {
+    return this.http.get<OstTecnicoCompletoDTO []>(`${BASE_URL}/ost-tecnico/por-tecnico/${idTecnico}`);
+  }
+
+  getDetalleOstsPorTecnico(idTecnico: number): Observable<OstTecnicoResponse[]> {
+    return this.http.get<OstTecnicoResponse[]>(`${BASE_URL}/ost-tecnico/detalle-por-tecnico/${idTecnico}`);
   }
 }

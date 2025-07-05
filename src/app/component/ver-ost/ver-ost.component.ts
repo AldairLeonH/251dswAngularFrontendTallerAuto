@@ -24,6 +24,7 @@ import { IMaterialCotizacionRequest } from '@model/material-cotizacion-request';
 import { IAgregarMultiplesMaterialesRequest } from '@model/agregar-multiples-materiales-request';
 import { ICotizacionMultiplesMaterialesResponse } from '@model/cotizacion-multiples-materiales-response';
 import { forkJoin } from 'rxjs';
+import { OstTecnicoCompletoDTO } from '@model/ost-tecnico-completo-response';
 
 declare var bootstrap: any;
 
@@ -48,8 +49,9 @@ asignacionForm!: FormGroup;
 tecnicos: any[] = [];
 estados: any[] = [];
 esSupervisor: boolean = false;
+esTecnico: boolean = false;
 asignados: OstTecnicoResponse[] = [];
-
+listaAsignaciones: OstTecnicoCompletoDTO[] = [];
 
 // Lista completa (ya debe existir)
 listaOst: IOstResponse[] = [];
@@ -86,13 +88,22 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
     const rolUsuario = localStorage.getItem('rol');
     const idUsuario = Number(localStorage.getItem('idUsuario'));
     this.esSupervisor = rolUsuario === 'supervisor';
+    this.esTecnico = rolUsuario === 'tecnico';
       if (this.esSupervisor) {
         this.ostService.getOstsPorSupervisor(idUsuario).subscribe({
           next: (data) => this.listaOst = data,
-          error: (err) => console.error('Error al obtener OSTs:', err)
+          error: (err) => console.error('Error al obtener OSTs del supervisor:', err)
+        });
+      } else if (this.esTecnico) {
+        this.ostTecnicoService.getOstsPorTecnico(idUsuario).subscribe({
+          next: (data) => {
+            this.listaOst = data.map(item => item.ost); // si solo quieres ver las OST
+            this.listaAsignaciones = data; // si quieres mostrar también la fechaAsignacion, estado, etc.
+          },
+          error: (err) => console.error('Error al obtener OSTs del técnico:', err)
         });
       } else {
-          this.ostService.obtenerOsts().subscribe({
+        this.ostService.obtenerOsts().subscribe({
           next: (data) => this.listaOst = data,
           error: (err) => console.error('Error al obtener OSTs:', err)
         });
