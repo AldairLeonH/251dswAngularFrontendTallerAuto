@@ -64,13 +64,8 @@
             </td>
             <td>
               <span class="badge rounded-pill" 
-                    [ngClass]="{
-                      'bg-warning text-dark': cot.ost.estado.estado === 'Pendiente',
-                      'bg-success': cot.ost.estado.estado === 'Atendida',
-                      'bg-danger': cot.ost.estado.estado === 'Rechazado',
-                      'bg-info text-dark': cot.ost.estado.estado === 'En Proceso'
-                    }">
-                {{ cot.ost.estado.estado }}
+                    [ngClass]="getEstadoBadgeClass(cot)">
+                {{ getEstadoCotizacion(cot) }}
               </span>
             </td>
             <td>
@@ -117,28 +112,28 @@
                 <button class="btn btn-sm btn-outline-success" 
                         title="Marcar como Pagada"
                         (click)="pagarCotizacion(cot.id)"
-                        *ngIf="cot.ost.estado.estado !== 'Atendida'">
+                        *ngIf="getEstadoCotizacion(cot) !== 'Pagada' && getEstadoCotizacion(cot) !== 'Atendida'">
                   <i class="bi bi-check-circle"></i>
                 </button>
                 
                 <button class="btn btn-sm btn-outline-warning" 
                         title="Extender Tiempo"
                         (click)="extenderTiempoExpiracion(cot.id)"
-                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada">
+                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada && getEstadoCotizacion(cot) !== 'Pagada'">
                   <i class="bi bi-clock"></i>
                 </button>
                 
                 <button class="btn btn-sm btn-outline-danger" 
                         title="Cancelar Cotización"
                         (click)="cancelarCotizacion(cot.id)"
-                        *ngIf="cot.ost.estado.estado !== 'Rechazado'">
+                        *ngIf="getEstadoCotizacion(cot) !== 'Rechazado' && getEstadoCotizacion(cot) !== 'Expirada'">
                   <i class="bi bi-x-circle"></i>
                 </button>
                 
                 <button class="btn btn-sm btn-outline-info" 
                         title="Marcar como Expirada"
                         (click)="expirarCotizacion(cot.id)"
-                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada">
+                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada && getEstadoCotizacion(cot) !== 'Pagada'">
                   <i class="bi bi-exclamation-triangle"></i>
                 </button>
               </div>
@@ -166,7 +161,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <span>
               <strong>Estado:</strong> 
-              {{ getCotizacionConEstado(cotizacionSeleccionadaId)?.ost?.estado?.estado }}
+              {{ getEstadoCotizacion(getCotizacionConEstado(cotizacionSeleccionadaId)) }}
             </span>
             <span *ngIf="getCotizacionConEstado(cotizacionSeleccionadaId)?.estado?.tiempoExpiracion">
               <strong>Tiempo restante:</strong> 

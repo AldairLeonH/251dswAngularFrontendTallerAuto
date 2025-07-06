@@ -118,12 +118,14 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
   }
 
   get ostFiltrados() {
-    return this.listaOst.filter(ost =>
-      (this.filtroPlaca === '' || ost.placa?.toLowerCase().includes(this.filtroPlaca.toLowerCase())) &&
-      (this.filtroCliente === '' || (`${ost.nombres} ${ost.apellidoPaterno}`.toLowerCase().includes(this.filtroCliente.toLowerCase()))) &&
-      (this.filtroEstado === '' || ost.estado?.toLowerCase().includes(this.filtroEstado.toLowerCase())) &&
-      (this.filtroModelo === '' || ost.modelo?.toLowerCase().includes(this.filtroModelo.toLowerCase()))
-    );
+    return this.listaOst
+      .filter(ost => ost != null) // Filtrar elementos nulos
+      .filter(ost =>
+        (this.filtroPlaca === '' || ost.placa?.toLowerCase().includes(this.filtroPlaca.toLowerCase())) &&
+        (this.filtroCliente === '' || (`${ost.nombres} ${ost.apellidoPaterno}`.toLowerCase().includes(this.filtroCliente.toLowerCase()))) &&
+        (this.filtroEstado === '' || ost.estado?.toLowerCase().includes(this.filtroEstado.toLowerCase())) &&
+        (this.filtroModelo === '' || ost.modelo?.toLowerCase().includes(this.filtroModelo.toLowerCase()))
+      );
   }
 
   ostSeleccionada: any;
@@ -286,14 +288,30 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
 //cotizaciones
 //3
   setCotizacionRequest(ost: IOstResponse): void {
+    if (!ost || !ost.idOst) {
+      console.error('OST inválida o sin ID:', ost);
+      throw new Error('OST inválida para crear cotización');
+    }
+    
     this.cotizacionRequest = {
       idOst: ost.idOst,
-      fecha: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+      fecha: new Date().toISOString(), // Fecha actual en formato ISO completo
       total: 0, // Inicializamos el total en 0
     }
   }
   //1
   generarCotizacionInicial(ost: IOstResponse) {
+    if (!ost || !ost.idOst) {
+      console.error('OST inválida para generar cotización:', ost);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'OST inválida para generar cotización',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
     Swal.fire({ 
       title: '¿Está seguro de generar una nueva cotización?',
       showCancelButton: true,
@@ -305,42 +323,66 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
     }).then((result) => {
       if(result.isConfirmed) {
         this.crearNuevaCotizacionInicial(ost);
-        this.abrirModalCotizacion(ost);
-        
+        // El modal se abrirá después de que se cree la cotización exitosamente
       } 
-      
-
     });
   }
   //2  
-  crearNuevaCotizacionInicial(ost: IOstResponse) {
-    this.setCotizacionRequest(ost);
-    this.cotizacionService.registrarCotizacion(this.cotizacionRequest).subscribe({
-      next: (response) => {
-        this.idCotizacionActual = response.id; // Guardamos el ID de la cotización actual
-        console.log('Cotización registrada con éxito:', response);
-        Swal.close();
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: 'Cotización generada correctamente',
-          confirmButtonText: 'Aceptar'
-        });
-      },
-      error: (error) => {
-        console.error('Error al registrar la cotización:', error);
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo generar la cotización. Intente nuevamente.',
-          confirmButtonText: 'Aceptar'
-        });
-      }
-    });
-
-
-
+    crearNuevaCotizacionInicial(ost: IOstResponse) {
+    try {
+      this.setCotizacionRequest(ost);
+      console.log('Datos de cotización a enviar:', this.cotizacionRequest);
+      this.cotizacionService.registrarCotizacion(this.cotizacionRequest).subscribe({
+        next: (response) => {
+          this.idCotizacionActual = response.id; // Guardamos el ID de la cotización actual
+          console.log('Cotización registrada con éxito:', response);
+          Swal.close();
+          // Abrir el modal después de crear la cotización exitosamente
+          this.abrirModalCotizacion(ost);
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Cotización generada correctamente',
+            confirmButtonText: 'Aceptar'
+          });
+        },
+        error: (error) => {
+          console.error('Error al registrar la cotización:', error);
+          Swal.close();
+          
+          let errorMessage = 'No se pudo generar la cotización. Intente nuevamente.';
+          
+          if (error.status === 400) {
+            // Error de validación
+            if (error.error && error.error.message) {
+              errorMessage = error.error.message;
+            } else {
+              errorMessage = 'Datos de cotización inválidos. Verifique la información.';
+            }
+          } else if (error.status === 404) {
+            errorMessage = 'No se encontró la orden de servicio especificada.';
+          } else if (error.status === 500) {
+            errorMessage = 'Error interno del servidor. Contacte al administrador.';
+          }
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            confirmButtonText: 'Aceptar'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error al preparar la cotización:', error);
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al preparar la cotización: ' + (error as Error).message,
+        confirmButtonText: 'Aceptar'
+      });
+    }
   }  
   abrirModalCotizacion(ost: IOstResponse) {
     this.ostSeleccionada = ost;
@@ -550,6 +592,17 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
     };
   }
   generarCotizacionCompleta(): void {
+    // Validar que tenemos un ID de cotización válido
+    if (!this.idCotizacionActual || this.idCotizacionActual <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se ha creado una cotización válida. Por favor, intente nuevamente.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
     this.setMaterialCotizacionRequest();
     this.setserviciosCotizacionRequest();
 

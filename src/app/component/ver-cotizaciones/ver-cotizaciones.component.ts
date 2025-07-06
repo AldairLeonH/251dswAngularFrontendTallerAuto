@@ -29,6 +29,7 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
   
   // Nuevas propiedades para gestión de estados
   cotizacionesConEstado: any[] = [];
+  cotizacionesExpiradas: Set<number> = new Set();
   private timerSubscription?: Subscription;
   private isUpdatingStates = false; // Flag para evitar actualizaciones concurrentes
   
@@ -85,6 +86,7 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
     
     this.isUpdatingStates = true;
     this.cotizacionesConEstado = [];
+    this.cotizacionesExpiradas.clear();
     
     // Procesar cotizaciones en lotes para evitar sobrecarga
     const batchSize = 3;
@@ -108,6 +110,10 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
                 ...cotizacion,
                 estado: estado
               });
+              
+              if (estado && estado.tiempoExpiracion && estado.tiempoExpiracion.expirada) {
+                this.cotizacionesExpiradas.add(cotizacion.id);
+              }
               
               completedInBatch++;
               
@@ -194,6 +200,10 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
 
   // NUEVOS MÉTODOS - Gestión de Estados
   pagarCotizacion(idCotizacion: number): void {
+    if (this.cotizacionesExpiradas.has(idCotizacion)) {
+      this.toastService.show('Esta cotización ya está expirada. No se puede realizar la acción.', 'warning');
+      return;
+    }
     this.cotizacionService.pagarCotizacion(idCotizacion).subscribe({
       next: (response) => {
         this.toastService.show('Cotización marcada como pagada', 'success');
@@ -207,6 +217,10 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
   }
 
   expirarCotizacion(idCotizacion: number): void {
+    if (this.cotizacionesExpiradas.has(idCotizacion)) {
+      this.toastService.show('Esta cotización ya está expirada. No se puede realizar la acción.', 'warning');
+      return;
+    }
     this.cotizacionService.expirarCotizacion(idCotizacion).subscribe({
       next: (response) => {
         this.toastService.show('Cotización marcada como expirada', 'success');
@@ -220,6 +234,10 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
   }
 
   cancelarCotizacion(idCotizacion: number): void {
+    if (this.cotizacionesExpiradas.has(idCotizacion)) {
+      this.toastService.show('Esta cotización ya está expirada. No se puede realizar la acción.', 'warning');
+      return;
+    }
     this.cotizacionService.cancelarCotizacion(idCotizacion).subscribe({
       next: (response) => {
         this.toastService.show('Cotización cancelada', 'success');
@@ -233,6 +251,10 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
   }
 
   extenderTiempoExpiracion(idCotizacion: number): void {
+    if (this.cotizacionesExpiradas.has(idCotizacion)) {
+      this.toastService.show('Esta cotización ya está expirada. No se puede realizar la acción.', 'warning');
+      return;
+    }
     this.cotizacionService.extenderTiempoExpiracion(idCotizacion).subscribe({
       next: (response) => {
         this.toastService.show('Tiempo de expiración extendido', 'success');
@@ -267,6 +289,58 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
     if (estado?.expirada) return 'text-danger';
     if (estado?.proximaAExpirar) return 'text-warning';
     return 'text-success';
+  }
+
+  // NUEVO: Método para obtener el estado de la cotización
+  getEstadoCotizacion(cotizacion: any): string {
+    // Si no hay información de estado dinámico, usar el estado de la orden de servicio
+    if (!cotizacion.estado) {
+      return cotizacion.ost?.estado?.estado || 'Pendiente';
+    }
+
+    // Si la cotización está pagada
+    if (cotizacion.estado.cotizacion?.estado === 'PAGADO') {
+      return 'Pagada';
+    }
+
+    // Si hay información de tiempo de expiración
+    if (cotizacion.estado.tiempoExpiracion) {
+      if (cotizacion.estado.tiempoExpiracion.expirada) {
+        return 'Expirada';
+      }
+      if (cotizacion.estado.tiempoExpiracion.proximaAExpirar) {
+        return 'Por Expirar';
+      }
+    }
+
+    // Estado por defecto
+    return 'Activa';
+  }
+
+  // NUEVO: Método para obtener la clase CSS del badge del estado
+  getEstadoBadgeClass(cotizacion: any): string {
+    const estado = this.getEstadoCotizacion(cotizacion);
+    
+    switch (estado) {
+      case 'Pagada':
+        return 'bg-success';
+      case 'Expirada':
+        return 'bg-danger';
+      case 'Por Expirar':
+        return 'bg-warning text-dark';
+      case 'Activa':
+        return 'bg-info text-dark';
+      case 'Pendiente':
+        return 'bg-warning text-dark';
+      case 'Atendida':
+        return 'bg-success';
+      case 'Rechazado':
+        return 'bg-danger';
+      case 'En Proceso':
+        return 'bg-info text-dark';
+      default:
+        return 'bg-secondary';
+    }
   }
 
   // Método para contar materiales con stock disponible

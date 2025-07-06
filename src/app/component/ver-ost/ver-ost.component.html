@@ -36,14 +36,14 @@
       <tbody>
         <tr *ngFor="let ost of ostFiltrados | paginate : { itemsPerPage: 10, currentPage: page }; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ ost.fecha }}</td>
-          <td>{{ ost.fechaRevision }}</td>
-          <td>{{ ost.hora }}</td>
-          <td>{{ ost.direccion }}</td>
-          <td>{{ ost.estado }}</td>
-          <td>{{ ost.placa }}</td>
-          <td>{{ ost.modelo }}</td>
-          <td>{{ ost.nombres }} {{ ost.apellidoPaterno }}</td>
+          <td>{{ ost?.fecha || 'N/A' }}</td>
+          <td>{{ ost?.fechaRevision || 'N/A' }}</td>
+          <td>{{ ost?.hora || 'N/A' }}</td>
+          <td>{{ ost?.direccion || 'N/A' }}</td>
+          <td>{{ ost?.estado || 'N/A' }}</td>
+          <td>{{ ost?.placa || 'N/A' }}</td>
+          <td>{{ ost?.modelo || 'N/A' }}</td>
+          <td>{{ ost?.nombres || '' }} {{ ost?.apellidoPaterno || '' }}</td>
         <td>
           <button class="btn btn-sm btn-outline-info me-1" (click)="verDetalles(ost)" title="Ver">
             <i class="bi bi-eye"></i>
