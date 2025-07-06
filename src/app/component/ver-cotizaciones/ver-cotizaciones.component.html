@@ -39,11 +39,13 @@
             <th>Vehículo</th>
             <th>Cliente</th>
             <th>Estado</th>
+            <th>Tiempo Restante</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cot of cotizaciones; let i = index">
+          <tr *ngFor="let cot of cotizacionesConEstado; let i = index" 
+              [ngClass]="getEstadoClass(cot)">
             <td>{{ i + 1 }}</td>
             <td>{{ formatDate(cot.fecha) }}</td>
             <td class="fw-bold text-success">S/ {{ cot.total | number:'1.2-2' }}</td>
@@ -72,16 +74,72 @@
               </span>
             </td>
             <td>
-              <div class="d-flex gap-2">
+              <div *ngIf="cot.estado?.tiempoExpiracion" class="d-flex flex-column">
+                <span [ngClass]="{
+                  'text-danger': cot.estado.tiempoExpiracion.expirada,
+                  'text-warning': cot.estado.tiempoExpiracion.proximaAExpirar && !cot.estado.tiempoExpiracion.expirada,
+                  'text-success': !cot.estado.tiempoExpiracion.proximaAExpirar && !cot.estado.tiempoExpiracion.expirada
+                }">
+                  {{ formatTiempoRestante(cot.estado.tiempoExpiracion.minutosRestantes) }}
+                </span>
+                <small class="text-muted" *ngIf="cot.estado.tiempoExpiracion.fechaExpiracion">
+                  Expira: {{ formatDateTime(cot.estado.tiempoExpiracion.fechaExpiracion) }}
+                </small>
+              </div>
+              <span *ngIf="!cot.estado?.tiempoExpiracion" class="text-muted">Sin expiración</span>
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
                 <button class="btn btn-sm btn-outline-primary" 
                     (click)="verMaterialesYServicios(cot.id)" 
                     title="Ver Detalles">
                   <i class="bi bi-eye"></i>
                 </button>
+                
+                <a class="btn btn-sm btn-outline-info" 
+                   [routerLink]="['/cotizaciones/gestion-estados', cot.id]"
+                   title="Gestionar Estados">
+                  <i class="bi bi-gear"></i>
+                </a>
+                
+                <a class="btn btn-sm btn-outline-warning" 
+                   [routerLink]="['/cotizaciones/agregar-items', cot.id]"
+                   title="Agregar Items">
+                  <i class="bi bi-plus-circle"></i>
+                </a>
                 <button class="btn btn-sm btn-outline-secondary" 
                         title="Imprimir"
                         (click)="generarPDF(cot)">
                   <i class="bi bi-printer"></i>
+                </button>
+                
+                <!-- Botones de gestión de estado -->
+                <button class="btn btn-sm btn-outline-success" 
+                        title="Marcar como Pagada"
+                        (click)="pagarCotizacion(cot.id)"
+                        *ngIf="cot.ost.estado.estado !== 'Atendida'">
+                  <i class="bi bi-check-circle"></i>
+                </button>
+                
+                <button class="btn btn-sm btn-outline-warning" 
+                        title="Extender Tiempo"
+                        (click)="extenderTiempoExpiracion(cot.id)"
+                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada">
+                  <i class="bi bi-clock"></i>
+                </button>
+                
+                <button class="btn btn-sm btn-outline-danger" 
+                        title="Cancelar Cotización"
+                        (click)="cancelarCotizacion(cot.id)"
+                        *ngIf="cot.ost.estado.estado !== 'Rechazado'">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+                
+                <button class="btn btn-sm btn-outline-info" 
+                        title="Marcar como Expirada"
+                        (click)="expirarCotizacion(cot.id)"
+                        *ngIf="cot.estado?.tiempoExpiracion && !cot.estado.tiempoExpiracion.expirada">
+                  <i class="bi bi-exclamation-triangle"></i>
                 </button>
               </div>
             </td>
@@ -103,6 +161,20 @@
       </div>
       
       <div class="modal-body">
+        <!-- Información del estado -->
+        <div *ngIf="cotizacionSeleccionadaId" class="alert alert-info mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>
+              <strong>Estado:</strong> 
+              {{ getCotizacionConEstado(cotizacionSeleccionadaId)?.ost?.estado?.estado }}
+            </span>
+            <span *ngIf="getCotizacionConEstado(cotizacionSeleccionadaId)?.estado?.tiempoExpiracion">
+              <strong>Tiempo restante:</strong> 
+              {{ formatTiempoRestante(getCotizacionConEstado(cotizacionSeleccionadaId)?.estado?.tiempoExpiracion?.minutosRestantes) }}
+            </span>
+          </div>
+        </div>
+
         <h6>Servicios</h6>
         <ul *ngIf="servicios.length > 0; else sinServicios">
           <li *ngFor="let servicio of servicios">
@@ -119,11 +191,26 @@
         <ul *ngIf="materiales.length > 0; else sinMateriales">
           <li *ngFor="let mat of materiales">
             {{ mat.nombre }} (x{{ mat.cantidad }}) - S/ {{ mat.precio | number:'1.2-2' }}
+            <span *ngIf="mat.stock >= mat.cantidad" class="badge bg-success ms-2">Stock disponible</span>
+            <span *ngIf="mat.stock < mat.cantidad" class="badge bg-warning ms-2">Stock insuficiente</span>
           </li>
         </ul>
         <ng-template #sinMateriales>
           <p class="text-muted">No se encontraron materiales asociados.</p>
         </ng-template>
+
+        <!-- Resumen de materiales -->
+        <div *ngIf="materiales.length > 0" class="mt-3 p-3 bg-light rounded">
+          <h6>Resumen de Materiales</h6>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>Total de materiales:</strong> {{ materiales.length }}
+            </div>
+            <div class="col-md-6">
+              <strong>Con stock disponible:</strong> {{ getMaterialesConStockDisponible() }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">

@@ -18,6 +18,9 @@ import { Vista1Component } from './vista1/vista1.component';
 import { ClienteMisAutosComponent } from '@component/cliente-mis-autos/cliente-mis-autos.component';
 import { IngresarInventarioComponent } from '@component/ingresar-inventario/ingresar-inventario.component';
 import { VerCotizacionesComponent } from '@component/ver-cotizaciones/ver-cotizaciones.component';
+import { GestionEstadosCotizacionComponent } from '@component/gestion-estados-cotizacion/gestion-estados-cotizacion.component';
+import { AgregarItemsCotizacionComponent } from '@component/agregar-items-cotizacion/agregar-items-cotizacion.component';
+import { ReportesCotizacionesComponent } from '@component/reportes-cotizaciones/reportes-cotizaciones.component';
 
 
 export const routes: Routes = [
@@ -38,11 +41,21 @@ export const routes: Routes = [
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard],data: { roles: ['recepcionista'] }  },
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
             {path: 'ingresar-inventario', component: IngresarInventarioComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
-            {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico',,'supervisor'] } },
+            {path: 'ver-ost', component: VerOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico','supervisor'] } },
             {path: 'cliente-ost', component: ClienteOstComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             { path: '', redirectTo: 'perfil', pathMatch: 'full' },
             {path: 'ver-cotizaciones', component: VerCotizacionesComponent, canActivate: [authGuard], data: { roles: ['recepcionista'] } },
+            
+            // Nuevas rutas para gestión de cotizaciones
+            {path: 'cotizaciones', canActivate: [authGuard], data: { roles: ['recepcionista'] }, children: [
+              {path: '', redirectTo: 'ver-cotizaciones', pathMatch: 'full'},
+              {path: 'ver-cotizaciones', component: VerCotizacionesComponent},
+              {path: 'gestion-estados/:id', component: GestionEstadosCotizacionComponent},
+              {path: 'agregar-items/:id', component: AgregarItemsCotizacionComponent},
+              {path: 'reportes', component: ReportesCotizacionesComponent}
+            ]},
+            
             ]
           },
 

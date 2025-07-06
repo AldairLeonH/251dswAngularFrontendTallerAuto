@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ICotizacionResponse } from '@model/cotizacion-response';
 import { ICotizacionServicioResponse } from '@model/cotizacion-servicio-response';
 import { IMaterialConCantidadResponse } from '@model/material-con-cantidad-response';
 import { CotizacionService } from '@service/cotizacion.service';
+import { ToastService } from '@service/toast.service';
+import { AlertaExpiracionService } from '@service/alerta-expiracion.service';
 import jsPDF from 'jspdf';
 import { PdfService } from 'src/app/services/pdf.service';
+import { interval, Subscription, catchError, of } from 'rxjs';
 declare var bootstrap: any;
 
 @Component({
@@ -16,7 +19,7 @@ declare var bootstrap: any;
   templateUrl: './ver-cotizaciones.component.html',
   styleUrl: './ver-cotizaciones.component.css'
 })
-export class VerCotizacionesComponent {
+export class VerCotizacionesComponent implements OnInit, OnDestroy {
   cotizaciones: ICotizacionResponse[] = [];
   loading: boolean = true;
   error: string | null = null;
@@ -24,9 +27,35 @@ export class VerCotizacionesComponent {
   materiales: IMaterialConCantidadResponse[] = [];
   cotizacionSeleccionadaId: number | null = null;
   
-  constructor(private cotizacionService: CotizacionService,private pdfService: PdfService) {}
+  // Nuevas propiedades para gestión de estados
+  cotizacionesConEstado: any[] = [];
+  private timerSubscription?: Subscription;
+  private isUpdatingStates = false; // Flag para evitar actualizaciones concurrentes
+  
+  constructor(
+    private cotizacionService: CotizacionService,
+    private pdfService: PdfService,
+    private toastService: ToastService,
+    private alertaExpiracionService: AlertaExpiracionService
+  ) {}
+
   ngOnInit(): void {
     this.loadCotizaciones();
+    this.alertaExpiracionService.solicitarPermisosNotificacion();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    this.alertaExpiracionService.detenerMonitoreo();
+  }
+
+  private startTimer(): void {
+    // Actualizar estados cada 30 segundos
+    this.timerSubscription = interval(30000).subscribe(() => {
+      this.actualizarEstadosCotizaciones();
+    });
   }
 
   loadCotizaciones(): void {
@@ -36,6 +65,8 @@ export class VerCotizacionesComponent {
     this.cotizacionService.getCotizaciones().subscribe({
       next: (data) => {
         this.cotizaciones = data;
+        this.actualizarEstadosCotizaciones();
+        this.alertaExpiracionService.iniciarMonitoreo(data);
         this.loading = false;
       },
       error: (err) => {
@@ -46,6 +77,80 @@ export class VerCotizacionesComponent {
     });
   }
 
+  private actualizarEstadosCotizaciones(): void {
+    // Evitar actualizaciones concurrentes
+    if (this.isUpdatingStates) {
+      return;
+    }
+    
+    this.isUpdatingStates = true;
+    this.cotizacionesConEstado = [];
+    
+    // Procesar cotizaciones en lotes para evitar sobrecarga
+    const batchSize = 3;
+    const processBatch = (startIndex: number) => {
+      const endIndex = Math.min(startIndex + batchSize, this.cotizaciones.length);
+      const batch = this.cotizaciones.slice(startIndex, endIndex);
+      
+      let completedInBatch = 0;
+      
+      batch.forEach(cotizacion => {
+        this.cotizacionService.getEstadoCotizacion(cotizacion.id)
+          .pipe(
+            catchError(err => {
+              console.error('Error obteniendo estado de cotización:', err);
+              return of(null);
+            })
+          )
+          .subscribe({
+            next: (estado) => {
+              this.cotizacionesConEstado.push({
+                ...cotizacion,
+                estado: estado
+              });
+              
+              completedInBatch++;
+              
+              // Si completamos el lote actual, procesar el siguiente
+              if (completedInBatch === batch.length) {
+                if (endIndex < this.cotizaciones.length) {
+                  // Procesar siguiente lote después de un pequeño delay
+                  setTimeout(() => processBatch(endIndex), 500);
+                } else {
+                  // Todos los lotes completados
+                  this.isUpdatingStates = false;
+                }
+              }
+            },
+            error: (err) => {
+              console.error('Error obteniendo estado de cotización:', err);
+              this.cotizacionesConEstado.push({
+                ...cotizacion,
+                estado: null
+              });
+              
+              completedInBatch++;
+              
+              if (completedInBatch === batch.length) {
+                if (endIndex < this.cotizaciones.length) {
+                  setTimeout(() => processBatch(endIndex), 500);
+                } else {
+                  this.isUpdatingStates = false;
+                }
+              }
+            }
+          });
+      });
+    };
+    
+    // Iniciar procesamiento del primer lote
+    if (this.cotizaciones.length > 0) {
+      processBatch(0);
+    } else {
+      this.isUpdatingStates = false;
+    }
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-PE', {
@@ -54,6 +159,18 @@ export class VerCotizacionesComponent {
       year: 'numeric'
     });
   }
+
+  formatDateTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
   verMaterialesYServicios(idCotizacion: number): void {
     this.cotizacionSeleccionadaId = idCotizacion;
     this.servicios = [];
@@ -74,6 +191,89 @@ export class VerCotizacionesComponent {
       new bootstrap.Modal(modalElement).show();
     }
   }
+
+  // NUEVOS MÉTODOS - Gestión de Estados
+  pagarCotizacion(idCotizacion: number): void {
+    this.cotizacionService.pagarCotizacion(idCotizacion).subscribe({
+      next: (response) => {
+        this.toastService.show('Cotización marcada como pagada', 'success');
+        this.loadCotizaciones(); // Recargar para actualizar estados
+      },
+      error: (err) => {
+        this.toastService.show('Error al pagar la cotización', 'danger');
+        console.error('Error pagando cotización:', err);
+      }
+    });
+  }
+
+  expirarCotizacion(idCotizacion: number): void {
+    this.cotizacionService.expirarCotizacion(idCotizacion).subscribe({
+      next: (response) => {
+        this.toastService.show('Cotización marcada como expirada', 'success');
+        this.loadCotizaciones();
+      },
+      error: (err) => {
+        this.toastService.show('Error al expirar la cotización', 'danger');
+        console.error('Error expirando cotización:', err);
+      }
+    });
+  }
+
+  cancelarCotizacion(idCotizacion: number): void {
+    this.cotizacionService.cancelarCotizacion(idCotizacion).subscribe({
+      next: (response) => {
+        this.toastService.show('Cotización cancelada', 'success');
+        this.loadCotizaciones();
+      },
+      error: (err) => {
+        this.toastService.show('Error al cancelar la cotización', 'danger');
+        console.error('Error cancelando cotización:', err);
+      }
+    });
+  }
+
+  extenderTiempoExpiracion(idCotizacion: number): void {
+    this.cotizacionService.extenderTiempoExpiracion(idCotizacion).subscribe({
+      next: (response) => {
+        this.toastService.show('Tiempo de expiración extendido', 'success');
+        this.loadCotizaciones();
+      },
+      error: (err) => {
+        this.toastService.show('Error al extender el tiempo de expiración', 'danger');
+        console.error('Error extendiendo tiempo:', err);
+      }
+    });
+  }
+
+  // Método para obtener el estado de una cotización específica
+  getCotizacionConEstado(idCotizacion: number): any {
+    return this.cotizacionesConEstado.find(c => c.id === idCotizacion);
+  }
+
+  // Método para formatear el tiempo restante
+  formatTiempoRestante(minutos: number): string {
+    if (minutos <= 0) return 'Expirada';
+    if (minutos < 60) return `${minutos} min`;
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
+    return `${horas}h ${mins}min`;
+  }
+
+  // Método para obtener la clase CSS según el estado
+  getEstadoClass(cotizacion: any): string {
+    if (!cotizacion.estado) return '';
+    
+    const estado = cotizacion.estado.tiempoExpiracion;
+    if (estado?.expirada) return 'text-danger';
+    if (estado?.proximaAExpirar) return 'text-warning';
+    return 'text-success';
+  }
+
+  // Método para contar materiales con stock disponible
+  getMaterialesConStockDisponible(): number {
+    return this.materiales.filter(m => m.stock >= m.cantidad).length;
+  }
+
   generarPDF(cotizacion: ICotizacionResponse): void {
     this.cotizacionService.getMaterialesPorCotizacion(cotizacion.id).subscribe({
       next: (materiales) => {
@@ -83,27 +283,22 @@ export class VerCotizacionesComponent {
           },
           error: (err) => {
             console.error('Error al obtener servicios:', err);
-            // Generar PDF solo con los datos básicos si falla la obtención de servicios
             this.pdfService.generateCotizacionPDF(cotizacion, [], materiales);
           }
         });
       },
       error: (err) => {
         console.error('Error al obtener materiales:', err);
-        // Intentar obtener solo servicios si falla la obtención de materiales
         this.cotizacionService.getServiciosPorCotizacion(cotizacion.id).subscribe({
           next: (servicios) => {
             this.pdfService.generateCotizacionPDF(cotizacion, servicios, []);
           },
           error: (err) => {
             console.error('Error al obtener servicios:', err);
-            // Generar PDF solo con los datos básicos
             this.pdfService.generateCotizacionPDF(cotizacion, [], []);
           }
         });
       }
     });
-  }  
-
- 
+  }
 }

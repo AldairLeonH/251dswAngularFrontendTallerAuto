@@ -56,4 +56,57 @@ export class CotizacionService {
     );
   }    
 
+  pagarCotizacion(idCotizacion: number): Observable<ICotizacionResponse> {
+    return this.http.post<ICotizacionResponse>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/pagar`,
+      {}
+    );
+  }
+
+  expirarCotizacion(idCotizacion: number): Observable<ICotizacionResponse> {
+    return this.http.post<ICotizacionResponse>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/expirar`,
+      {}
+    );
+  }
+
+  cancelarCotizacion(idCotizacion: number): Observable<ICotizacionResponse> {
+    return this.http.post<ICotizacionResponse>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/cancelar`,
+      {}
+    );
+  }
+
+  extenderTiempoExpiracion(idCotizacion: number): Observable<ICotizacionResponse> {
+    return this.http.post<ICotizacionResponse>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/extender-tiempo`,
+      {}
+    );
+  }
+
+  getEstadoCotizacion(idCotizacion: number): Observable<any> {
+    return this.http.get<any>(
+      `${BASE_URL}/cotizaciones/${idCotizacion}/estado`
+    );
+  }
+
+  getEstadosCotizaciones(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${BASE_URL}/cotizaciones/estados`
+    );
+  }
+
+  agregarServicio(request: any): Observable<ICotizacionServicioResponse> {
+    return this.http.post<ICotizacionServicioResponse>(
+      `${BASE_URL}/cotizaciones/agregar-servicio`,
+      request
+    );
+  }
+
+  agregarMaterial(request: any): Observable<any> {
+    return this.http.post<any>(
+      `${BASE_URL}/cotizaciones/agregar-material`,
+      request
+    );
+  }
 }

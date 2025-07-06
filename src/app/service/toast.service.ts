@@ -14,11 +14,11 @@ export interface Toast {
 export class ToastService {
 	toasts: Toast[] = [];
 
-	show(message: string, type: ToastType = 'info') {
+	show(message: string, type: ToastType = 'info', delay?: number) {
 		const toast: Toast = {
 		  message,
 		  type,
-		  delay: 3000
+		  delay: delay || 3000
 		};
 		
 		console.log('adding this toast', toast);
