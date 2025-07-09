@@ -109,4 +109,9 @@ export class CotizacionService {
       request
     );
   }
+
+  getCotizacionPorOst(idOst: number): Observable<ICotizacionResponse> {
+    return this.http.get<ICotizacionResponse>(`${BASE_URL}/cotizaciones/por-ost/${idOst}`);
+  }
+
 }

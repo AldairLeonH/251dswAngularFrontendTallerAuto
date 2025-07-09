@@ -33,5 +33,8 @@ export class AutoService {
     return this.http.get<IAuto>(`${BASE_URL}/auto/placa/${placa}`);
   }
   
+  getAutosPorPersona(idPersona: number): Observable<IAuto[]> {
+    return this.http.get<any[]>(`${BASE_URL}/persona/autos/persona/${idPersona}`);
+  }
   
 }

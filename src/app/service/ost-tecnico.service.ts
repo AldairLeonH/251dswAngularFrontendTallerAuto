@@ -29,6 +29,14 @@ export class OstTecnicoService {
     return this.http.get<any[]>(`${BASE_URL}/estados`);
   }
 
+  finalizarTrabajo(idOst: number, idTecnico: number, observaciones: string): Observable<void> {
+    return this.http.put<void>(
+      `${BASE_URL}/ost-tecnico/finalizar/${idOst}/${idTecnico}?observaciones=${encodeURIComponent(observaciones)}`,
+      {}
+    );
+  }
+
+
   asignarTecnicos(dto: any) {
     return this.http.post(`${BASE_URL}/ost-tecnico/asignar`, dto);
   }
@@ -39,5 +47,25 @@ export class OstTecnicoService {
 
   getDetalleOstsPorTecnico(idTecnico: number): Observable<OstTecnicoResponse[]> {
     return this.http.get<OstTecnicoResponse[]>(`${BASE_URL}/ost-tecnico/detalle-por-tecnico/${idTecnico}`);
+  }
+
+  actualizarEstadoOstTecnico(idOst: number, idTecnico: number, idEstado: number): Observable<void> {
+    return this.http.put<void>(`${BASE_URL}/ost-tecnico/estado?idOst=${idOst}&idTecnico=${idTecnico}&idEstado=${idEstado}`, {});
+  }
+
+
+  subirEvidencia(
+    archivo: File,
+    idOst: number,
+    idTecnico: number,
+    descripcion: string
+  ): Observable<any> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    formData.append('idOst', idOst.toString());
+    formData.append('idTecnico', idTecnico.toString());
+    formData.append('descripcion', descripcion);
+
+    return this.http.post<void>(`${BASE_URL}/evidencias/subir`, formData);
   }
 }

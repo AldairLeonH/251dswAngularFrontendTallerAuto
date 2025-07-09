@@ -38,3 +38,17 @@ input[type="checkbox"] {
 .texto-pregunta {
   user-select: none;
 }
+.estado-pendiente {
+  background-color: #ffe5e5;
+  color: #a94442;
+}
+
+.estado-en-proceso {
+  background-color: #fff8e1;
+  color: #8a6d3b;
+}
+
+.estado-atendida {
+  background-color: #e6f4ea;
+  color: #3c763d;
+}

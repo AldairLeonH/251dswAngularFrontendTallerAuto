@@ -13,7 +13,7 @@ import { IDireccion } from '@model/direccion';
 @Injectable({
   providedIn: 'root'
 })
-export class OstService {
+export class OstService { 
 
   constructor(private http: HttpClient) {}
 
@@ -49,6 +49,12 @@ export class OstService {
   registrarOst(ost: IOstRequest): Observable<IOstResponse> {
     return this.http.post<IOstResponse>(`${BASE_URL}/ost`, ost);
   }
+
+
+  actualizarEstadoOst(idOst: number, idEstado: number): Observable<void> {
+    return this.http.put<void>(`${BASE_URL}/ost/${idOst}/estado?idEstado=${idEstado}`, {});
+  }
+
   buscarAutosPorPlaca(placa: string): Observable<IAuto[]> {
     return this.http.get<IAuto[]>(`/api/auto/buscar?placa=${placa}`);
   }

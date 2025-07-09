@@ -5,7 +5,17 @@
   <li class="nav-item">
     <a class="btn btn-outline-light w-100 text-start" routerLink="/bitacora" routerLinkActive="active">Ver Bitacora</a>
   </li>
-  <li class="nav-item">
-    <a class="btn btn-outline-light w-100 text-start" routerLink="/ver-ost" routerLinkActive="active">Ver Ordenes</a>
+  <!-- Ver OST - visible solo para roles tecnico -->
+  <li class="nav-item" *ngIf="rol === 'supervisor' || rol === 'admin'">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/ver-ost" routerLinkActive="active">
+      Ver Órdenes
+    </a>
+  </li>
+
+  <!-- Otra ruta para técnicos -->
+  <li class="nav-item" *ngIf="rol === 'tecnico'">
+    <a class="btn btn-outline-light w-100 text-start" routerLink="/vista-1" routerLinkActive="active">
+     Ver Órdenes
+    </a>
   </li>
 </ul>

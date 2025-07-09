@@ -1,146 +1,385 @@
-<!-- Botón en página principal -->
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Registrar Orden de Servicio Técnica (OST)</h2>
-  <p>Complete los datos paso a paso para registrar la orden de servicio.</p>
-  <button class="btn btn-primary" (click)="abrirWizard()">Ingresar Registro</button>
+    <!-- Filtros -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por placa" [(ngModel)]="filtroPlaca">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por cliente" [(ngModel)]="filtroCliente">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por estado" [(ngModel)]="filtroEstado">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" placeholder="Buscar por modelo" [(ngModel)]="filtroModelo">
+  </div>
 </div>
 
-<!-- Modal Wizard -->
-<div class="modal fade" id="modalWizardOST" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content shadow-lg">
+<div class="card mt-4 shadow-sm">
+  <div class="container p-3">
+    <h4 class="text-primary mb-3">Órdenes de Servicio Técnico</h4>
+      <!-- Tabla -->
+      <table class="table table-striped table-borderless align-middle" *ngIf="listaAsignacionesFiltradas.length > 0">
+        <thead class="bg-primary text-white">
+          <tr>
+            <th>#</th>
+            <th>Fecha OST</th>
+            <th>Fecha Revisión</th>
+            <th>Hora</th>
+            <th>Dirección</th>
+            <th>Estado OST</th>
+            <th>Placa</th>
+            <th>Modelo</th>
+            <th>Cliente</th>
+            <th>Asignada</th>
+            <th>Estado Asignación</th>
+            <th>Finalización</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asignacion of listaAsignacionesFiltradas | paginate : { itemsPerPage: 10, currentPage: page }; let i = index"
+              [ngClass]="getColorEstado(asignacion.ost.estado)">
+            <td>{{ i + 1 }}</td>
+            <td>{{ asignacion.ost?.fecha || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.fechaRevision || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.hora || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.direccion || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.estado || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.placa || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.modelo || 'N/A' }}</td>
+            <td>{{ asignacion.ost?.nombres || '' }} {{ asignacion.ost?.apellidoPaterno || '' }}</td>
+            <td>{{ asignacion.fechaAsignacion | date: 'short' }}</td>
+            <td>{{ asignacion.estadoAsignacion || 'N/A' }}</td>
+            <td>{{ asignacion.fechaFinalizacion ? (asignacion.fechaFinalizacion | date: 'short') : 'En curso' }}</td>
+            <td>{{ asignacion.observaciones || '-' }}</td>
+            <td>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                  Acciones
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" (click)="verDetalles(asignacion.ost)">🔍 Ver Detalles</a></li>
+                  <li><a class="dropdown-item" (click)="abrirModalAvance(asignacion)">⚙ Registrar Avance</a></li>
+                  <li><a class="dropdown-item" (click)="generarCotizacionInicial(asignacion.ost)">📄 Cotizar</a></li>
+                  <li><a class="dropdown-item text-danger" (click)="abrirModalFinalizar(asignacion.ost)">✅ Finalizar</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+    <!-- Paginación -->
+    <pagination-controls
+      (pageChange)="page = $event"
+      previousLabel="Anterior"
+      nextLabel="Siguiente">
+    </pagination-controls>
+
+    <!-- Si no hay datos -->
+    <div *ngIf="listaAsignacionesFiltradas.length === 0" class="alert alert-info">
+      No hay órdenes que coincidan con los filtros.
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Detalles -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title"><i class="bi bi-gear-fill me-2"></i>Registrar Orden de Servicio</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <h5 class="modal-title" id="modalDetallesLabel">Detalles de la Orden</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-
-        <!-- PASOS INDICADORES -->
-        <ul class="nav nav-tabs nav-fill mb-3">
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="pasoActual === 1">1. Cliente</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="pasoActual === 2">2. Vehículo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="pasoActual === 3">3. Detalles OST</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="pasoActual === 4">4. Preguntas</a>
-          </li>
-        </ul>
-
-        <!-- CONTENIDO DEL WIZARD -->
-        <div *ngIf="pasoActual === 1">
-          <h6>Buscar persona</h6>
-          <div class="input-group mb-3">
-            <input [(ngModel)]="filtro" class="form-control" placeholder="DNI o nombre">
-            <button class="btn btn-outline-primary" (click)="buscarPersona()">Buscar</button>
-          </div>
-          <div *ngIf="personaEncontrada" class="card p-3">
-            <h6><i class="bi bi-person-check me-2"></i>{{ personaEncontrada.nombres }}</h6>
-            <p>DNI: {{ personaEncontrada.nroDocumento }}</p>
-          </div>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Cliente:</strong> {{ ostSeleccionada?.nombres }} {{ ostSeleccionada?.apellidoPaterno }}</div>
+          <div class="col-md-6"><strong>Documento:</strong> {{ ostSeleccionada?.tipoDocumento }} - {{ ostSeleccionada?.nroDocumento }}</div>
         </div>
-
-        <div *ngIf="pasoActual === 2">
-          <h6>Seleccionar auto</h6>
-          <div class="input-group mb-3">
-            <input [(ngModel)]="filtroPlaca" class="form-control" placeholder="Filtrar por placa" (input)="filtrarAutos()">
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr><th>Placa</th><th>Modelo</th><th>Año</th><th></th></tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let auto of autosFiltrados">
-                  <td>{{ auto.placa }}</td>
-                  <td>{{ auto.modelo.nombre }}</td>
-                  <td>{{ auto.anio }}</td>
-                  <td><button class="btn btn-sm btn-outline-success" (click)="seleccionarAuto(auto)">Seleccionar</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div *ngIf="autoSeleccionado" class="alert alert-info mt-3">
-            <strong>Auto seleccionado:</strong> {{ autoSeleccionado.placa }} - {{ autoSeleccionado.modelo.nombre }}
-            <button class="btn btn-sm btn-link text-danger" (click)="quitarAutoSeleccionado()">Quitar</button>
-          </div>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Placa:</strong> {{ ostSeleccionada?.placa }}</div>
+          <div class="col-md-6"><strong>Modelo:</strong> {{ ostSeleccionada?.modelo }}</div>
         </div>
-
-        <div *ngIf="pasoActual === 3">
-        <form [formGroup]="formOST">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label>Fecha</label>
-              <input formControlName="fecha" type="date" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label>Hora</label>
-              <input formControlName="hora" type="time" class="form-control">
-            </div>
-            <div class="col-md-12">
-              <label>Dirección</label>
-              <select formControlName="direccion" class="form-select">
-                <option value="">Seleccione dirección</option>
-                <option *ngFor="let dir of direcciones" [value]="dir.idDireccion">{{ dir.direccion }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label>Marca</label>
-              <select formControlName="idMarca" class="form-select" (change)="onMarcaChange($event)" [disabled]="camposAutoBloqueados">
-                <option value="">Seleccione marca</option>
-                <option *ngFor="let m of marcasArray" [value]="m.idMarca">{{ m.nombre }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label>Modelo</label>
-              <select formControlName="idModelo" class="form-select" [disabled]="camposAutoBloqueados">
-                <option value="">Seleccione modelo</option>
-                <option *ngFor="let modelo of modelosFiltrados" [value]="modelo.idModelo">{{ modelo.nombre }}</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label>Placa</label>
-              <input formControlName="placa" class="form-control" [readonly]="camposAutoBloqueados">
-            </div>
-            <div class="col-md-4">
-              <label>Año</label>
-              <input formControlName="anio" class="form-control" type="number" min="1900" [readonly]="camposAutoBloqueados">
-            </div>
-            <div class="col-md-4">
-              <label>Color</label>
-              <input formControlName="color" class="form-control" [readonly]="camposAutoBloqueados">
-            </div>
-          </div>
-        </form>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Fecha:</strong> {{ ostSeleccionada?.fecha }}</div>
+          <div class="col-md-6"><strong>Hora:</strong> {{ ostSeleccionada?.hora }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-12"><strong>Dirección:</strong> {{ ostSeleccionada?.direccion }}</div>
+        </div>
+        <hr>
+        <h6>Asignación del Técnico</h6>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Estado Técnico:</strong> {{ asignacionSeleccionada?.estadoAsignacion }}</div>
+          <div class="col-md-6"><strong>Fecha Asignación:</strong> {{ asignacionSeleccionada?.fechaAsignacion | date:'short' }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Fecha Finalización:</strong> {{ asignacionSeleccionada?.fechaFinalizacion | date:'short' }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-12"><strong>Observaciones:</strong> {{ asignacionSeleccionada?.observaciones || '---' }}</div>
+        </div>
       </div>
-
-      <div *ngIf="pasoActual === 4">
-        <h4 class="mb-3">Checklist de Preguntas</h4>
-        <form [formGroup]="formOST">
-          <div formArrayName="preguntas" class="row">
-            <div *ngFor="let pregunta of preguntasArray; let i = index" class="col-md-6 mb-3">
-              <div class="form-check border rounded p-3 h-100 bg-light shadow-sm">
-                <input type="checkbox" class="form-check-input" [formControl]="getFormControl(i)" [id]="'pregunta'+i">
-                <label class="form-check-label fs-5" [for]="'pregunta'+i">
-                  {{ pregunta.pregunta }}
-                </label>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button class="btn btn-secondary" (click)="retroceder()" [disabled]="pasoActual === 1">Anterior</button>
-        <button class="btn btn-primary" (click)="avanzar()" *ngIf="pasoActual < 4">Siguiente</button>
-        <button class="btn btn-success" (click)="guardarOST()" *ngIf="pasoActual === 4">Registrar</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
+
+
+<!-- Modal Cotización -->
+<div class="modal fade" id="modalCotizacion" tabindex="-1" aria-labelledby="modalCotizacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalCotizacionLabel">Realizar Cotización</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="cotizacionTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="materiales-tab" data-bs-toggle="tab" data-bs-target="#materiales" type="button" role="tab">Materiales</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="servicios-tab" data-bs-toggle="tab" data-bs-target="#servicios" type="button" role="tab">Servicios</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="resumen-tab" data-bs-toggle="tab" data-bs-target="#resumen" type="button" role="tab">Resumen</button>
+          </li>          
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content mt-3">
+          <div class="tab-pane fade show active" id="materiales" role="tabpanel">
+            <p>Aquí puedes ingresar los materiales para la cotización.</p>
+            <!-- Aquí iría tu formulario o tabla de materiales -->
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <!--<th>ID</th>-->
+                    <th>Nombre</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let material of materialesArray">
+                    <!--<td>{{ material.id }}</td>-->
+                    <td>{{ material.nombre }}</td>
+                    <td>{{ material.stock }}</td>
+                    <td>{{ material.precio | currency:'S/ ' }}</td>
+                    <td>
+                      <input #cantidadInput
+                            type="number"
+                            min="1"
+                            [max]="material.stock"
+                            placeholder="Cantidad"
+                            class="form-control form-control-sm"
+                            style="width: 80px;"
+                            [value]="getCantidadSeleccionada(material.id)">
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm" role="group">
+                        <!-- Botón Agregar/Actualizar -->
+                        <button class="btn btn-primary"
+                                (click)="agregarMaterial(material, cantidadInput.valueAsNumber)"
+                                [disabled]="!cantidadInput.value || +cantidadInput.value <= 0 || +cantidadInput.value > material.stock">
+                          <i class="fas" [class.fa-plus]="!isMaterialSeleccionado(material.id)"
+                                        [class.fa-edit]="isMaterialSeleccionado(material.id)"></i>
+                          {{ isMaterialSeleccionado(material.id) ? 'Actualizar' : 'Agregar' }}
+                        </button>
+                        
+                        <!-- Botón Eliminar - Solo visible si el material está seleccionado -->
+                        <button *ngIf="isMaterialSeleccionado(material.id)"
+                                class="btn btn-danger"
+                                (click)="eliminarMaterial(material.id)"
+                                title="Eliminar material">
+                          <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+            <div class="tab-pane fade" id="servicios" role="tabpanel">
+              <p>Aquí puedes ingresar los servicios para la cotización.</p>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <!--<th>ID</th>-->
+                      <th>Nombre</th>
+                      <th>Precio</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let servicio of serviciosArray">
+                      <!--<td>{{ servicio.id }}</td>-->
+                      <td>{{ servicio.nombre }}</td>
+                      <td>{{ servicio.precio | currency:'S/ ' }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                          <!-- Botón Agregar - Visible cuando el servicio NO está seleccionado -->
+                          <button *ngIf="!serviciosSeleccionados.includes(servicio.id)"
+                                  class="btn btn-primary"
+                                  (click)="agregarServicio(servicio)">
+                            <i class="fas fa-plus"></i> Agregar
+                          </button>
+                          
+                          <!-- Botón Eliminar - Visible cuando el servicio SÍ está seleccionado -->
+                          <button *ngIf="serviciosSeleccionados.includes(servicio.id)"
+                                  class="btn btn-danger"
+                                  (click)="eliminarServicio(servicio.id)">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          
+          <div class="tab-pane fade" id="resumen" role="tabpanel">
+            <h5 class="mb-3">Resumen de la Cotización</h5>
+            
+            <!-- Tabla de Materiales Seleccionados -->
+            <div class="card mb-4">
+              <div class="card-header bg-light">
+                <h6>Materiales</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Material</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of materialesSeleccionados">
+                        <td>{{ getNombreMaterial(item.idMaterial) }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ getPrecioMaterial(item.idMaterial) | currency:'S/ ' }}</td>
+                        <td>{{ calcularSubtotalMaterial(item) | currency:'S/ ' }}</td>
+                      </tr>
+                      <tr *ngIf="materialesSeleccionados.length === 0">
+                        <td colspan="4" class="text-center text-muted">No hay materiales seleccionados</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de Servicios Seleccionados -->
+            <div class="card mb-4">
+              <div class="card-header bg-light">
+                <h6>Servicios</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Servicio</th>
+                        <th>Precio</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let id of serviciosSeleccionados">
+                        <td>{{ getNombreServicio(id) }}</td>
+                        <td>{{ getPrecioServicio(id) | currency:'S/ ' }}</td>
+                      </tr>
+                      <tr *ngIf="serviciosSeleccionados.length === 0">
+                        <td colspan="2" class="text-center text-muted">No hay servicios seleccionados</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total de la cotización -->
+            <div class="card">
+              <div class="card-header bg-light">
+                <h6>Total</h6>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <strong>Total:</strong>
+                  <span class="fw-bold">{{ calcularTotal() | currency:'S/ ' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>            
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="generarCotizacionCompleta()">Generar Cotización</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Avance-->
+<div class="modal fade" id="modalAvance" tabindex="-1" aria-labelledby="modalAvanceLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalAvanceLabel">Registrar Avance Técnico</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p><strong>Vehículo:</strong> {{ ostSeleccionada?.placa }}</p>
+        <p><strong>Cliente:</strong> {{ ostSeleccionada?.nombres}} {{ ostSeleccionada?.apellidoPaterno}}</p>
+        <label class="form-label">Descripción del avance:</label>
+        <textarea [(ngModel)]="descripcionAvance" class="form-control" rows="3"></textarea>
+
+        <label class="form-label mt-3">Subir foto de evidencia:</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-warning" (click)="registrarAvance(ostSeleccionada)">Guardar avance</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal finalizar-->
+<div class="modal fade" id="modalFinalizar" tabindex="-1" aria-labelledby="modalFinalizarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalFinalizarLabel">Finalizar Tarea</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="observacionFinal" class="form-label">Observaciones (opcional):</label>
+          <textarea [(ngModel)]="observacionFinal" id="observacionFinal" class="form-control" rows="3" placeholder="Escriba alguna observación si desea..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-warning" (click)="confirmarFinalizacion()">Finalizar</button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -28,7 +28,7 @@ export const routes: Routes = [
           {path: 'home',component: HomeComponent},
           {path: 'iniciar-sesion',component: IniciarSesionComponent},
           {path: 'registrar-cliente', component: RegistrarClienteComponent},
-          {path: 'vista1', component: Vista1Component},
+          //{path: 'vista1', component: Vista1Component},
           {path: '',
            component: SidebarLayoutComponent,
            children: [
@@ -46,7 +46,8 @@ export const routes: Routes = [
             {path: 'cliente-mis-autos', component: ClienteMisAutosComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             { path: '', redirectTo: 'perfil', pathMatch: 'full' },
             {path: 'ver-cotizaciones', component: VerCotizacionesComponent, canActivate: [authGuard], data: { roles: ['recepcionista'] } },
-            
+            {path: 'vista-1', component: Vista1Component, canActivate: [authGuard], data: { roles: ['tecnico'] } },
+
             // Nuevas rutas para gestión de cotizaciones
             {path: 'cotizaciones', canActivate: [authGuard], data: { roles: ['recepcionista'] }, children: [
               {path: '', redirectTo: 'ver-cotizaciones', pathMatch: 'full'},

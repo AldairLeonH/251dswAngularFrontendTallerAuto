@@ -34,6 +34,6 @@ export class PersonaService {
     return this.http.get(`${BASE_URL}/buscar?documento=${documento}`);
   }
   getAutosPorPersona(idPersona: number): Observable<IAutoResponse[]> {
-    return this.http.get<IAutoResponse[]>(`${BASE_URL}/auto/autos/persona/${idPersona}`);
+    return this.http.get<IAutoResponse[]>(`${BASE_URL}/persona/autos/persona/${idPersona}`);
   }
 }
