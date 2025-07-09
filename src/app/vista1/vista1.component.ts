@@ -25,6 +25,7 @@ import { IAgregarMultiplesMaterialesRequest } from '@model/agregar-multiples-mat
 import { ICotizacionMultiplesMaterialesResponse } from '@model/cotizacion-multiples-materiales-response';
 import { forkJoin } from 'rxjs';
 import { OstTecnicoCompletoDTO } from '@model/ost-tecnico-completo-response';
+import { EvidenciaDTO } from '@model/evidencia-tecnico';
 
 declare var bootstrap: any;
 
@@ -135,9 +136,9 @@ materialCotizacionResponse: ICotizacionMultiplesMaterialesResponse = {} as ICoti
 
   ostSeleccionada: any;
 
-  verDetalles(ost: IOstResponse) {
-    this.ostSeleccionada = ost;
-    const modal = new bootstrap.Modal(document.getElementById('modalVerOst'));
+  verDetalles(asig: OstTecnicoCompletoDTO) {
+    this.asignacionSeleccionada = asig;
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalles'));
     modal.show();
   }
 
@@ -237,6 +238,27 @@ registrarAvance(ost: IOstResponse) {
   });
   this.cambiarEstadoTecnico(ost);
 }
+
+evidenciasDelTecnico: EvidenciaDTO[] = [];
+
+verEvidencias(asignacion: OstTecnicoCompletoDTO) {
+  const idOst = asignacion.ost.idOst;
+  const idTecnico = this.idTecnico; // o de asignacion si lo tienes ahí
+
+  this.ostTecnicoService.getEvidenciasPorOstTecnico(idOst, idTecnico).subscribe({
+    next: (data) => {
+      this.evidenciasDelTecnico = data;
+      const modal = new bootstrap.Modal(document.getElementById('modalEvidencias')!);
+      modal.show();
+    },
+    error: () => {
+      Swal.fire('Error', 'No se pudieron cargar las evidencias', 'error');
+    }
+  });
+}
+
+
+
 observacionFinal: string = '';
 
 abrirModalFinalizar(ost: IOstResponse): void {
@@ -264,8 +286,8 @@ abrirModalAvance(asignacion: OstTecnicoCompletoDTO) {
     }
   }
   abrirCotizacionExistente(ost: IOstResponse) {
-        //this.getMateriales(); // Llamamos al método para obtener los materiales
-    //this.getServicios(); // Llamamos al método para obtener los servicioss
+        this.getMateriales(); // Llamamos al método para obtener los materiales
+    this.getServicios(); // Llamamos al método para obtener los servicioss
     this.cotizacionService.getCotizacionPorOst(ost.idOst).subscribe({
       next: (cotizacion) => {
         this.idCotizacionActual = cotizacion.id;

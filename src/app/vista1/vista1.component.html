@@ -33,7 +33,7 @@
             <th>Asignada</th>
             <th>Estado Asignación</th>
             <th>Finalización</th>
-            <th>Observaciones</th>
+            <!--th>Observaciones</th-->
             <th>Acciones</th>
           </tr>
         </thead>
@@ -52,17 +52,18 @@
             <td>{{ asignacion.fechaAsignacion | date: 'short' }}</td>
             <td>{{ asignacion.estadoAsignacion || 'N/A' }}</td>
             <td>{{ asignacion.fechaFinalizacion ? (asignacion.fechaFinalizacion | date: 'short') : 'En curso' }}</td>
-            <td>{{ asignacion.observaciones || '-' }}</td>
+            <!--td>{{ asignacion.observaciones || '-' }}</td-->
             <td>
               <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
                   Acciones
                 </button>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" (click)="verDetalles(asignacion.ost)">🔍 Ver Detalles</a></li>
+                  <li><a class="dropdown-item" (click)="verDetalles(asignacion)">🔍 Ver Detalles</a></li>
                   <li><a class="dropdown-item" (click)="abrirModalAvance(asignacion)">⚙ Registrar Avance</a></li>
                   <li><a class="dropdown-item" (click)="generarCotizacionInicial(asignacion.ost)">📄 Cotizar</a></li>
                   <li><a class="dropdown-item text-danger" (click)="abrirModalFinalizar(asignacion.ost)">✅ Finalizar</a></li>
+                  <li><a class="dropdown-item text-info" (click)="verEvidencias(asignacion)">🖼️ Ver Evidencias</a></li>
                 </ul>
               </div>
             </td>
@@ -344,8 +345,8 @@
       </div>
 
       <div class="modal-body">
-        <p><strong>Vehículo:</strong> {{ ostSeleccionada?.placa }}</p>
-        <p><strong>Cliente:</strong> {{ ostSeleccionada?.nombres}} {{ ostSeleccionada?.apellidoPaterno}}</p>
+        <p><strong>Vehículo:</strong> {{ asignacionSeleccionada?.ost?.placa }}</p>
+        <p><strong>Cliente:</strong> {{ asignacionSeleccionada?.ost?.nombres}} {{ asignacionSeleccionada?.ost?.apellidoPaterno}}</p>
         <label class="form-label">Descripción del avance:</label>
         <textarea [(ngModel)]="descripcionAvance" class="form-control" rows="3"></textarea>
 
@@ -383,3 +384,27 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="modalEvidencias" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Evidencias Registradas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="evidenciasDelTecnico.length > 0; else sinEvidencias">
+          <div *ngFor="let evidencia of evidenciasDelTecnico" class="mb-3 border rounded p-2">
+            <p><strong>Archivo:</strong> {{ evidencia.nombreArchivo }}</p>
+            <p><strong>Fecha:</strong> {{ evidencia.fecha | date:'short' }}</p>
+            <p><strong>Descripción:</strong> {{ evidencia.descripcion }}</p>
+            <img *ngIf="evidencia.url" [src]="evidencia.url" class="img-fluid rounded" />
+          </div>
+        </div>
+        <ng-template #sinEvidencias>
+          <p class="text-muted">No se registraron evidencias aún.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

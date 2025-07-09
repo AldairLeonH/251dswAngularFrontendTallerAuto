@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch  } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { NgChartsModule  } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +12,5 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch ()),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideCharts(withDefaultRegisterables())
   ]
 };

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EvidenciaDTO } from '@model/evidencia-tecnico';
 import { OstTecnicoCompletoDTO } from '@model/ost-tecnico-completo-response';
 import { OstTecnicoResponse } from '@model/ost-tecnico-response';
 import { BASE_URL } from '@utils/contans';
@@ -68,4 +69,9 @@ export class OstTecnicoService {
 
     return this.http.post<void>(`${BASE_URL}/evidencias/subir`, formData);
   }
+
+  getEvidenciasPorOstTecnico(idOst: number, idTecnico: number): Observable<EvidenciaDTO[]> {
+    return this.http.get<EvidenciaDTO[]>(`${BASE_URL}/evidencias/mis-evidencias/${idOst}/${idTecnico}`);
+  }
+  
 }

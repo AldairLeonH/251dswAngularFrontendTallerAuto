@@ -11,11 +11,12 @@ import { IngresosPorDia } from '../../model/ingresos-por-dia.model';
 import { TopClientes } from '../../model/top-clientes.model';
 import { PromedioSatisfaccionPorTecnico } from '../../model/promedio-satisfaccion-tecnico.model';
 import { take } from 'rxjs';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  imports: [CommonModule,NgChartsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
