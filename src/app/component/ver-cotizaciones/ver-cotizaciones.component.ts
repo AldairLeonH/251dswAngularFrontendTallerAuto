@@ -108,7 +108,9 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
             next: (estado) => {
               this.cotizacionesConEstado.push({
                 ...cotizacion,
-                estado: estado
+                estado: estado,
+                // Preservar el estado original de la cotización
+                estadoOriginal: cotizacion.estado
               });
               
               if (estado && estado.tiempoExpiracion && estado.tiempoExpiracion.expirada) {
@@ -293,28 +295,40 @@ export class VerCotizacionesComponent implements OnInit, OnDestroy {
 
   // NUEVO: Método para obtener el estado de la cotización
   getEstadoCotizacion(cotizacion: any): string {
-    // Si no hay información de estado dinámico, usar el estado de la orden de servicio
-    if (!cotizacion.estado) {
-      return cotizacion.ost?.estado?.estado || 'Pendiente';
-    }
-
-    // Si la cotización está pagada
-    if (cotizacion.estado.cotizacion?.estado === 'PAGADO') {
-      return 'Pagada';
-    }
-
-    // Si hay información de tiempo de expiración
-    if (cotizacion.estado.tiempoExpiracion) {
-      if (cotizacion.estado.tiempoExpiracion.expirada) {
-        return 'Expirada';
+    // Si hay información de estado dinámico (del endpoint /estado)
+    if (cotizacion.estado && typeof cotizacion.estado === 'object') {
+      // Verificar si la cotización está pagada según el estado dinámico
+      if (cotizacion.estado.cotizacion?.estado === 'PAGADO') {
+        return 'Pagada';
       }
-      if (cotizacion.estado.tiempoExpiracion.proximaAExpirar) {
-        return 'Por Expirar';
+
+      // Si hay información de tiempo de expiración
+      if (cotizacion.estado.tiempoExpiracion) {
+        if (cotizacion.estado.tiempoExpiracion.expirada) {
+          return 'Expirada';
+        }
+        if (cotizacion.estado.tiempoExpiracion.proximaAExpirar) {
+          return 'Por Expirar';
+        }
       }
     }
 
-    // Estado por defecto
-    return 'Activa';
+    // Si no hay estado dinámico, usar el estado directo de la cotización
+    if (cotizacion.estado && typeof cotizacion.estado === 'string') {
+      switch (cotizacion.estado) {
+        case 'PAGADO':
+          return 'Pagada';
+        case 'EXPIRADO':
+          return 'Expirada';
+        case 'PENDIENTE':
+          return 'Pendiente';
+        default:
+          return 'Activa';
+      }
+    }
+
+    // Si no hay estado, usar el estado de la orden de servicio como fallback
+    return cotizacion.ost?.estado?.estado || 'Pendiente';
   }
 
   // NUEVO: Método para obtener la clase CSS del badge del estado

@@ -1,0 +1,203 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+          <i class="fas fa-receipt me-2"></i>
+          Detalle del Recibo #{{ idRecibo }}
+        </h2>
+        <div>
+          <button class="btn btn-outline-success me-2" (click)="descargarRecibo()">
+            <i class="fas fa-download me-2"></i>
+            Descargar PDF
+          </button>
+          <button class="btn btn-outline-secondary me-2" (click)="volverARecibos()">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver a Recibos
+          </button>
+          <button class="btn btn-outline-primary" (click)="volverAlInicio()">
+            <i class="fas fa-home me-2"></i>
+            Inicio
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3">Cargando detalle del recibo...</p>
+      </div>
+
+      <!-- Detalle del recibo -->
+      <div *ngIf="!loading && recibo" class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h4 class="mb-0">
+                <i class="fas fa-receipt me-2"></i>
+                Recibo de Servicio
+              </h4>
+            </div>
+            <div class="col-md-4 text-end">
+              <span class="badge fs-6" [ngClass]="'bg-' + obtenerColorEstado(recibo.estadoRecibo)">
+                {{ recibo.estadoRecibo }}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <!-- Información general -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 class="text-muted">Información del Cliente</h6>
+              <p><strong>Nombre:</strong> {{ recibo.nombreCliente }}</p>
+              <p><strong>ID Recibo:</strong> {{ recibo.idRecibo }}</p>
+              <p><strong>ID Cotización:</strong> {{ recibo.idCotizacion }}</p>
+              <p><strong>Fecha:</strong> {{ formatearFecha(recibo.fecha) }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Información del Vehículo</h6>
+              <p><strong>Vehículo:</strong> {{ recibo.marcaAuto }} {{ recibo.modeloAuto }} ({{ recibo.anioAuto }})</p>
+              <p><strong>Placa:</strong> {{ recibo.placaAuto }}</p>
+              <p><strong>Fecha Creación:</strong> {{ formatearFecha(recibo.fechaCreacion) }}</p>
+            </div>
+          </div>
+
+          <!-- Materiales -->
+          <div class="mb-4" *ngIf="recibo.materiales && recibo.materiales.length > 0">
+            <h5 class="mb-3">
+              <i class="fas fa-tools me-2"></i>
+              Materiales Utilizados
+            </h5>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Material</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Precio Unitario</th>
+                    <th class="text-end">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let material of recibo.materiales">
+                    <td>{{ material.nombreMaterial }}</td>
+                    <td class="text-center">{{ material.cantidad }}</td>
+                    <td class="text-end">{{ formatearMonto(material.precioUnitario) }}</td>
+                    <td class="text-end">{{ formatearMonto(material.subtotal) }}</td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light">
+                  <tr>
+                    <td colspan="3" class="text-end"><strong>Total Materiales:</strong></td>
+                    <td class="text-end"><strong>{{ formatearMonto(obtenerTotalMateriales()) }}</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Servicios -->
+          <div class="mb-4" *ngIf="recibo.servicios && recibo.servicios.length > 0">
+            <h5 class="mb-3">
+              <i class="fas fa-wrench me-2"></i>
+              Servicios Realizados
+            </h5>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Servicio</th>
+                    <th>Descripción</th>
+                    <th class="text-end">Precio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let servicio of recibo.servicios">
+                    <td>{{ servicio.nombreServicio }}</td>
+                    <td>{{ servicio.descripcion }}</td>
+                    <td class="text-end">{{ formatearMonto(servicio.precio) }}</td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light">
+                  <tr>
+                    <td colspan="2" class="text-end"><strong>Total Servicios:</strong></td>
+                    <td class="text-end"><strong>{{ formatearMonto(obtenerTotalServicios()) }}</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Observaciones -->
+          <div class="mb-4" *ngIf="recibo.observaciones">
+            <h6 class="text-muted">
+              <i class="fas fa-comment me-2"></i>
+              Observaciones
+            </h6>
+            <div class="alert alert-info">
+              {{ recibo.observaciones }}
+            </div>
+          </div>
+
+          <!-- Resumen de costos -->
+          <div class="card bg-light">
+            <div class="card-body">
+              <h6 class="text-center mb-3">
+                <i class="fas fa-calculator me-2"></i>
+                Resumen de Costos
+              </h6>
+              <div class="row text-center">
+                <div class="col-md-3">
+                  <div class="stat-item">
+                    <h5 class="text-primary">{{ formatearMonto(obtenerTotalMateriales()) }}</h5>
+                    <p class="text-muted mb-0">Materiales (S/)</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat-item">
+                    <h5 class="text-success">{{ formatearMonto(obtenerTotalServicios()) }}</h5>
+                    <p class="text-muted mb-0">Servicios (S/)</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat-item">
+                    <h5 class="text-info">{{ formatearMonto(recibo.subtotalMateriales) }}</h5>
+                    <p class="text-muted mb-0">Subtotal Materiales (S/)</p>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat-item">
+                    <h5 class="text-warning">{{ formatearMonto(recibo.subtotalServicios) }}</h5>
+                    <p class="text-muted mb-0">Subtotal Servicios (S/)</p>
+                  </div>
+                </div>
+              </div>
+              <hr>
+              <div class="text-center">
+                <h4 class="text-primary">
+                  <strong>Total General (S/): {{ formatearMonto(recibo.montoTotal) }}</strong>
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no se encuentra el recibo -->
+      <div *ngIf="!loading && !recibo" class="text-center py-5">
+        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+        <h4>Recibo no encontrado</h4>
+        <p class="text-muted">No se pudo encontrar el recibo solicitado.</p>
+        <button class="btn btn-primary" (click)="volverARecibos()">
+          <i class="fas fa-arrow-left me-2"></i>
+          Volver a Mis Recibos
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

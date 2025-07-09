@@ -5,4 +5,6 @@ export interface ICotizacionResponse {
   fecha: string;
   total: number;
   ost: IOst;
+  estado?: string;
+  fechaExpiracion?: string;
 }

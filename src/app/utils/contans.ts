@@ -1,1 +1,2 @@
-export const BASE_URL = 'http://localhost:8080/api/v1'; 
+import { environment } from '../../environments/environment';
+export const BASE_URL = `${environment.url}/api/v1`; 

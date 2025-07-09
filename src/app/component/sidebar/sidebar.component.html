@@ -14,4 +14,8 @@
     <app-menu-tecnico *ngSwitchCase="'supervisor'"></app-menu-tecnico>
     <div *ngSwitchDefault class="text-warning">Rol no reconocido</div>
   </ng-container>
+  <!-- Opción de administración solo para admin -->
+  <a *ngIf="rol === 'admin'" routerLink="/admin" class="btn btn-outline-warning mt-4 w-100">
+    <i class="fas fa-cogs me-2"></i> Administración
+  </a>
 </div>

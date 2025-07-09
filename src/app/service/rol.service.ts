@@ -8,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class RolService {
-
   constructor(private http: HttpClient) { }
   getRoles(): Observable<IRol[]> {
     return this.http.get<IRol[]>(`${BASE_URL}/rol`);

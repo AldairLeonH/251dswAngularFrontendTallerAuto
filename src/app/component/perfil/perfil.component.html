@@ -21,6 +21,34 @@
             <li class="list-group-item"><strong>Tipo Documento:</strong> {{ tipoDocumento }}</li>
             <li class="list-group-item"><strong>Número Documento:</strong> {{ nroDocumento }}</li>
           </ul>
+
+          <!-- Enlaces adicionales para clientes -->
+          <div *ngIf="rol === 'cliente'" class="mt-4">
+            <h5 class="text-center mb-3">
+              <i class="fas fa-cog me-2"></i>
+              Acciones Disponibles
+            </h5>
+            <div class="row">
+              <div class="col-md-4 mb-2">
+                <a routerLink="/cliente-encuestas" class="btn btn-outline-primary w-100">
+                  <i class="fas fa-clipboard-check me-2"></i>
+                  Mis Encuestas
+                </a>
+              </div>
+              <div class="col-md-4 mb-2">
+                <a routerLink="/cliente-recibos" class="btn btn-outline-info w-100">
+                  <i class="fas fa-receipt me-2"></i>
+                  Mis Recibos
+                </a>
+              </div>
+              <div class="col-md-4 mb-2">
+                <a routerLink="/cliente-mis-autos" class="btn btn-outline-success w-100">
+                  <i class="fas fa-car me-2"></i>
+                  Mis Vehículos
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,0 +1,162 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+          <i class="fas fa-clipboard-check me-2"></i>
+          Mis Encuestas de Satisfacción
+        </h2>
+        <button class="btn btn-outline-primary" (click)="refrescarDatos()">
+          <i class="fas fa-sync-alt me-2"></i>
+          Actualizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encuestas Pendientes -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-warning text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-clock me-2"></i>
+            Encuestas Pendientes
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Loading -->
+          <div *ngIf="loadingPendientes" class="text-center py-4">
+            <div class="spinner-border text-warning" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando encuestas pendientes...</p>
+          </div>
+
+          <!-- Lista de encuestas pendientes -->
+          <div *ngIf="!loadingPendientes">
+            <div *ngIf="encuestasPendientes.length === 0" class="text-center py-4">
+              <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+              <p class="text-muted">¡Excelente! No tienes encuestas pendientes.</p>
+            </div>
+
+            <div *ngFor="let encuesta of encuestasPendientes" class="encuesta-pendiente mb-3">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h6 class="mb-1">{{ encuesta.descripcion }}</h6>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="text-muted mb-1">
+                        <i class="fas fa-calendar me-1"></i>
+                        Pagado el {{ formatearFecha(encuesta.fechaPago) }}
+                      </p>
+                      <p class="text-muted mb-1">
+                        <i class="fas fa-dollar-sign me-1"></i>
+                        {{ formatearMonto(encuesta.monto) }}
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="text-muted mb-1">
+                        <i class="fas fa-car me-1"></i>
+                        {{ encuesta.marcaVehiculo }} {{ encuesta.modeloVehiculo }}
+                      </p>
+                      <p class="text-muted mb-0">
+                        <i class="fas fa-id-card me-1"></i>
+                        Placa: {{ encuesta.placaVehiculo }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-end">
+                  <button class="btn btn-warning" 
+                          (click)="completarEncuesta(encuesta.idRecibo, encuesta.idCotizacion)">
+                    <i class="fas fa-star me-2"></i>
+                    Completar Encuesta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encuestas Completadas -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-check-circle me-2"></i>
+            Encuestas Completadas
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Loading -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando encuestas completadas...</p>
+          </div>
+
+          <!-- Lista de encuestas completadas -->
+          <div *ngIf="!loading">
+            <div *ngIf="encuestasCompletadas.length === 0" class="text-center py-4">
+              <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+              <p class="text-muted">Aún no has completado ninguna encuesta.</p>
+            </div>
+
+            <div *ngFor="let encuesta of encuestasCompletadas" class="encuesta-completada mb-3">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <h6 class="mb-1">Servicio #{{ encuesta.idCotizacion }}</h6>
+                  <p class="text-muted mb-0">
+                    <i class="fas fa-calendar me-1"></i>
+                    Encuesta completada
+                  </p>
+                </div>
+                <div class="col-md-3 text-center">
+                  <div class="rating-display">
+                    <span class="badge" 
+                          [ngClass]="'bg-' + obtenerColorNivel(obtenerNivelSatisfaccion(encuesta.promedioSatisfaccion))">
+                      {{ encuesta.promedioSatisfaccion | number:'1.1-1' }} ⭐
+                    </span>
+                    <p class="small text-muted mb-0">
+                      {{ obtenerNivelSatisfaccion(encuesta.promedioSatisfaccion) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-3 text-end">
+                  <button class="btn btn-outline-primary btn-sm" 
+                          (click)="verDetalleEncuesta(encuesta)">
+                    <i class="fas fa-eye me-1"></i>
+                    Ver Detalle
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <h6 class="alert-heading">
+          <i class="fas fa-info-circle me-2"></i>
+          ¿Por qué es importante tu opinión?
+        </h6>
+        <p class="mb-0">
+          Tu feedback nos ayuda a mejorar nuestros servicios y brindar una mejor atención 
+          a todos nuestros clientes. Cada encuesta es valiosa para nosotros.
+        </p>
+      </div>
+    </div>
+  </div>
+</div> 
