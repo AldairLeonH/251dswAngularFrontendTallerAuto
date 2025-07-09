@@ -26,9 +26,34 @@
             <li><a class="dropdown-item" href="#servicios">Reparaciones</a></li>
           </ul>
         </li>
-        <li class="nav-item">
-          <a class="btn btn-outline-success ms-3" href="/iniciar-sesion">Iniciar Sesión</a>
-        </li>
+        <ng-container *ngIf="!authService.isLoggedIn()">
+          <li class="nav-item">
+            <a class="btn btn-outline-success ms-3" href="/iniciar-sesion">Iniciar Sesión</a>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="authService.isLoggedIn()">
+          <!-- Panel de navegación según rol -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Navegación
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li *ngIf="rol === 'admin'"><a class="dropdown-item" routerLink="/admin">Panel Admin</a></li>
+              <li *ngIf="rol === 'recepcionista'"><a class="dropdown-item" routerLink="/menu-recepcionista">Recepcionista</a></li>
+              <li *ngIf="rol === 'tecnico'"><a class="dropdown-item" routerLink="/menu-tecnico">Técnico</a></li>
+              <li *ngIf="rol === 'supervisor'"><a class="dropdown-item" routerLink="/menu-tecnico">Supervisor</a></li>
+              <li *ngIf="rol === 'cliente'"><a class="dropdown-item" routerLink="/perfil">Perfil Cliente</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-primary ms-3" (click)="goToMainByRole()">
+              <i class="fas fa-user"></i> Mi Perfil
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-danger ms-3" (click)="logout()">Logout</button>
+          </li>
+        </ng-container>
       </ul>
     </div>
   </div>

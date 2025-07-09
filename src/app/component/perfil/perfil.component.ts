@@ -1,15 +1,17 @@
 import { Component,OnInit } from '@angular/core';
 import { AuthService } from '@service/auth.service';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-perfil',
-  imports: [],
+  imports: [RouterModule, CommonModule],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.css'
 })
 
-export class PerfilComponent {
+export class PerfilComponent implements OnInit {
   rol = '';
   nombres = '';
   nombreUsuario = '';

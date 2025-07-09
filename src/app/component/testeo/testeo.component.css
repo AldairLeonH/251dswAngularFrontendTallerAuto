@@ -1,0 +1,29 @@
+.nav-item .btn {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.nav-item .btn:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.nav-item .btn.active {
+  background-color: #007bff !important;
+  border-color: #007bff !important;
+  color: white !important;
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.nav-item .btn i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Animación para los iconos */
+.nav-item .btn:hover i {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}

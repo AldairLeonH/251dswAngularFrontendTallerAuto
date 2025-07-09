@@ -1,0 +1,93 @@
+<div *ngIf="loading">Cargando dashboard...</div>
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+<div *ngIf="!loading && !error">
+  <ul class="nav nav-tabs mb-4 justify-content-center">
+    <li class="nav-item" (click)="activeTab = 'ventas'">
+      <a class="nav-link" [class.active]="activeTab === 'ventas'">Dashboard Ventas</a>
+    </li>
+    <li class="nav-item" (click)="activeTab = 'satisfaccion'">
+      <a class="nav-link" [class.active]="activeTab === 'satisfaccion'">Dashboard Satisfacción</a>
+    </li>
+  </ul>
+
+  <div [ngSwitch]="activeTab">
+    <!-- SECCIÓN VENTAS -->
+    <div *ngSwitchCase="'ventas'">
+      <div class="dashboard-section">
+        <h2 class="text-center">Resumen General de Ventas</h2>
+        <p class="ventas-resumen text-center" [innerHTML]="ventasResumen"></p>
+        <div class="dashboard-charts-group">
+          <div class="chart-container">
+            <h3>Ventas por Servicio</h3>
+            <p class="text-secondary">Comparativa de ventas totales por cada tipo de servicio ofrecido en el taller.</p>
+            <canvas baseChart
+              [data]="ventasPorServicioChart"
+              [type]="ventasPorServicioType"
+              [options]="barLineChartOptions">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Servicios más vendidos del mes</h3>
+            <p class="text-secondary">Distribución de los servicios más solicitados durante el mes actual.</p>
+            <canvas baseChart
+              [data]="serviciosMasVendidosMesChart"
+              [type]="serviciosMasVendidosMesType"
+              [options]="{ responsive: true, maintainAspectRatio: false }">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Materiales más vendidos del mes</h3>
+            <p class="text-secondary">Ranking de materiales con mayor rotación en el mes.</p>
+            <canvas baseChart
+              [data]="materialesMasVendidosMesChart"
+              [type]="materialesMasVendidosMesType"
+              [options]="barLineChartOptions">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Ingresos por Mes</h3>
+            <p class="text-secondary">Evolución de los ingresos totales del taller mes a mes.</p>
+            <canvas baseChart
+              [data]="ingresosPorMesChart"
+              [type]="ingresosPorMesType"
+              [options]="barLineChartOptions">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Ingresos por Día</h3>
+            <p class="text-secondary">Detalle de ingresos diarios para identificar tendencias y picos de facturación.</p>
+            <canvas baseChart
+              [data]="ingresosPorDiaChart"
+              [type]="ingresosPorDiaType"
+              [options]="barLineChartOptions">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Top Clientes</h3>
+            <p class="text-secondary">Clientes que más han gastado en el taller durante el periodo analizado.</p>
+            <canvas baseChart
+              [data]="topClientesChart"
+              [type]="topClientesType"
+              [options]="barLineChartOptions">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- SECCIÓN SATISFACCIÓN -->
+    <div *ngSwitchCase="'satisfaccion'">
+      <div class="dashboard-section">
+        <h2 class="text-center">Dashboard de Satisfacción</h2>
+        <div class="chart-container">
+          <h3>Promedio de Satisfacción por Técnico</h3>
+          <p class="text-secondary">Nivel promedio de satisfacción de los clientes para cada técnico.</p>
+          <canvas baseChart
+            [data]="promedioSatisfaccionPorTecnicoChart"
+            [type]="promedioSatisfaccionPorTecnicoType"
+            [options]="{ responsive: true, maintainAspectRatio: false, scales: { y: { min: 1, max: 5 } } }">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

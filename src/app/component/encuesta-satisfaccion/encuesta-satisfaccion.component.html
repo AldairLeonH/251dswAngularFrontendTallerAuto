@@ -1,0 +1,156 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-clipboard-list me-2"></i>
+            Encuesta de Satisfacción
+          </h3>
+        </div>
+        
+        <div class="card-body">
+          <!-- Mensaje si ya tiene encuesta -->
+          <div *ngIf="yaTieneEncuesta" class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Ya existe una encuesta de satisfacción para este recibo.
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando encuesta...</p>
+          </div>
+
+          <!-- Formulario de encuesta -->
+          <form *ngIf="!loading && !yaTieneEncuesta" [formGroup]="encuestaForm" (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <h5 class="text-muted">Información del Servicio</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="form-label">ID Recibo:</label>
+                  <input type="text" class="form-control" [value]="idRecibo" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">ID Cotización:</label>
+                  <input type="text" class="form-control" [value]="idCotizacion" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h5 class="text-muted">Evaluación del Servicio</h5>
+              <p class="text-muted">Por favor, califique su experiencia con nuestro servicio:</p>
+            </div>
+
+            <!-- Preguntas de evaluación -->
+            <div formArrayName="evaluaciones">
+              <div *ngFor="let evaluacion of evaluacionesArray.controls; let i = index" 
+                   [formGroupName]="i" 
+                   class="mb-4 p-3 border rounded">
+                
+                <h6 class="mb-3">{{ getPreguntaById(evaluacion.get('idPregunta')?.value) }}</h6>
+                
+                <!-- Puntaje de satisfacción -->
+                <div class="mb-3">
+                  <label class="form-label">Calificación:</label>
+                  <div class="rating-stars">
+                    <div class="btn-group" role="group">
+                      <input type="radio" 
+                             class="btn-check" 
+                             [id]="'star1_' + i" 
+                             formControlName="puntajeSatisfaccion" 
+                             value="1">
+                      <label class="btn btn-outline-warning" [for]="'star1_' + i">
+                        <i class="fas fa-star"></i>
+                      </label>
+                      
+                      <input type="radio" 
+                             class="btn-check" 
+                             [id]="'star2_' + i" 
+                             formControlName="puntajeSatisfaccion" 
+                             value="2">
+                      <label class="btn btn-outline-warning" [for]="'star2_' + i">
+                        <i class="fas fa-star"></i>
+                      </label>
+                      
+                      <input type="radio" 
+                             class="btn-check" 
+                             [id]="'star3_' + i" 
+                             formControlName="puntajeSatisfaccion" 
+                             value="3">
+                      <label class="btn btn-outline-warning" [for]="'star3_' + i">
+                        <i class="fas fa-star"></i>
+                      </label>
+                      
+                      <input type="radio" 
+                             class="btn-check" 
+                             [id]="'star4_' + i" 
+                             formControlName="puntajeSatisfaccion" 
+                             value="4">
+                      <label class="btn btn-outline-warning" [for]="'star4_' + i">
+                        <i class="fas fa-star"></i>
+                      </label>
+                      
+                      <input type="radio" 
+                             class="btn-check" 
+                             [id]="'star5_' + i" 
+                             formControlName="puntajeSatisfaccion" 
+                             value="5">
+                      <label class="btn btn-outline-warning" [for]="'star5_' + i">
+                        <i class="fas fa-star"></i>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div *ngIf="isFieldInvalid('puntajeSatisfaccion', i)" class="text-danger small mt-1">
+                    Por favor seleccione una calificación
+                  </div>
+                </div>
+
+                <!-- Comentario opcional -->
+                <div class="mb-3">
+                  <label class="form-label">Comentario (opcional):</label>
+                  <textarea class="form-control" 
+                            formControlName="comentario" 
+                            rows="3" 
+                            placeholder="Comparta su experiencia o sugerencias..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" 
+                      class="btn btn-secondary" 
+                      (click)="cancelar()">
+                <i class="fas fa-arrow-left me-2"></i>
+                Cancelar
+              </button>
+              
+              <button type="submit" 
+                      class="btn btn-primary" 
+                      [disabled]="loading">
+                <i class="fas fa-paper-plane me-2"></i>
+                <span *ngIf="!loading">Enviar Encuesta</span>
+                <span *ngIf="loading">Enviando...</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Botón para volver si ya tiene encuesta -->
+          <div *ngIf="yaTieneEncuesta" class="text-center mt-4">
+            <button type="button" 
+                    class="btn btn-primary" 
+                    (click)="volverAlInicio()">
+              <i class="fas fa-home me-2"></i>
+              Volver al Inicio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

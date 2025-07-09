@@ -21,6 +21,14 @@ import { VerCotizacionesComponent } from '@component/ver-cotizaciones/ver-cotiza
 import { GestionEstadosCotizacionComponent } from '@component/gestion-estados-cotizacion/gestion-estados-cotizacion.component';
 import { AgregarItemsCotizacionComponent } from '@component/agregar-items-cotizacion/agregar-items-cotizacion.component';
 import { ReportesCotizacionesComponent } from '@component/reportes-cotizaciones/reportes-cotizaciones.component';
+import { EncuestaSatisfaccionComponent } from '@component/encuesta-satisfaccion/encuesta-satisfaccion.component';
+import { PanelEncuestasComponent } from '@component/panel-encuestas/panel-encuestas.component';
+import { ConfirmacionEncuestaComponent } from '@component/confirmacion-encuesta/confirmacion-encuesta.component';
+import { ClienteEncuestasComponent } from '@component/cliente-encuestas/cliente-encuestas.component';
+import { DetalleEncuestaClienteComponent } from '@component/detalle-encuesta-cliente/detalle-encuesta-cliente.component';
+import { ClienteRecibosComponent } from '@component/cliente-recibos/cliente-recibos.component';
+import { DetalleReciboClienteComponent } from '@component/detalle-recibo-cliente/detalle-recibo-cliente.component';
+import { AdminPanelComponent } from '@component/admin-panel/admin-panel.component';
 
 
 export const routes: Routes = [
@@ -36,7 +44,7 @@ export const routes: Routes = [
             {path: 'testeo',component: TesteoComponent,canActivate: [authGuard], data: { roles: ['cliente'] } },
             {path: 'menu-tecnico', component: MenuTecnicoComponent,canActivate: [authGuard],data: { roles: ['tecnico','supervisor'] } },
             {path: 'bitacora', component: BitacoraComponent,canActivate: [authGuard], data: { roles: ['tecnico','supervisor'] } },
-            {path: 'perfil',component: PerfilComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico','cliente','supervisor'] } },
+            {path: 'perfil',component: PerfilComponent,canActivate: [authGuard],data: { roles: ['recepcionista','tecnico','cliente','supervisor','admin'] } },
             {path: 'ingresar-clientes',component: IngresarClientesComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] }  }, 
             {path: 'visualizar-clientes',component: VisualizarClienteComponent, canActivate: [authGuard],data: { roles: ['recepcionista'] }  },
             {path: 'ingresar-ost', component: IngresarOstComponent,canActivate: [authGuard],data: { roles: ['recepcionista'] } } ,
@@ -56,7 +64,17 @@ export const routes: Routes = [
               {path: 'reportes', component: ReportesCotizacionesComponent}
             ]},
             
+            // Rutas para encuestas de satisfacción
+            {path: 'encuesta-satisfaccion/:idRecibo/:idCotizacion', component: EncuestaSatisfaccionComponent},
+            {path: 'panel-encuestas', component: PanelEncuestasComponent, canActivate: [authGuard], data: { roles: ['recepcionista', 'supervisor'] }},
+            {path: 'confirmacion-encuesta', component: ConfirmacionEncuestaComponent},
+            {path: 'cliente-encuestas', component: ClienteEncuestasComponent, canActivate: [authGuard], data: { roles: ['cliente'] }},
+            {path: 'detalle-encuesta-cliente/:idRecibo', component: DetalleEncuestaClienteComponent, canActivate: [authGuard], data: { roles: ['cliente'] }},
+            {path: 'cliente-recibos', component: ClienteRecibosComponent, canActivate: [authGuard], data: { roles: ['cliente'] }},
+            {path: 'detalle-recibo-cliente/:id', component: DetalleReciboClienteComponent, canActivate: [authGuard], data: { roles: ['cliente'] }},
+            
             ]
           },
+          { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard], data: { roles: ['admin'] } },
 
 ];

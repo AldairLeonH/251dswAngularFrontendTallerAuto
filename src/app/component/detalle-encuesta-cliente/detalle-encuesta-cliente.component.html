@@ -1,0 +1,142 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+          <i class="fas fa-clipboard-list me-2"></i>
+          Detalle de Encuesta
+        </h2>
+        <div>
+          <button class="btn btn-outline-secondary me-2" (click)="volverAEncuestas()">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver a Encuestas
+          </button>
+          <button class="btn btn-outline-primary" (click)="volverAlInicio()">
+            <i class="fas fa-home me-2"></i>
+            Inicio
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3">Cargando detalle de la encuesta...</p>
+      </div>
+
+      <!-- Detalle de la encuesta -->
+      <div *ngIf="!loading && encuesta" class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-star me-2"></i>
+            Encuesta de Satisfacción
+          </h4>
+        </div>
+        
+        <div class="card-body">
+          <!-- Información general -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 class="text-muted">Información del Servicio</h6>
+              <p><strong>ID Recibo:</strong> {{ encuesta.idRecibo }}</p>
+              <p><strong>ID Cotización:</strong> {{ encuesta.idCotizacion }}</p>
+            </div>
+            <div class="col-md-6 text-end">
+              <div class="rating-summary">
+                <h3 class="mb-2">{{ encuesta.promedioSatisfaccion | number:'1.1-1' }}</h3>
+                <div class="stars-display mb-2">
+                  {{ obtenerEstrellas(redondear(encuesta.promedioSatisfaccion)) }}
+                </div>
+                <span class="badge" 
+                      [ngClass]="'bg-' + obtenerColorNivel(obtenerNivelSatisfaccion(encuesta.promedioSatisfaccion))">
+                  {{ obtenerNivelSatisfaccion(encuesta.promedioSatisfaccion) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evaluaciones individuales -->
+          <div class="evaluaciones-section">
+            <h5 class="mb-3">
+              <i class="fas fa-list-check me-2"></i>
+              Evaluaciones Detalladas
+            </h5>
+            
+            <div *ngFor="let evaluacion of encuesta.evaluaciones; let i = index" 
+                 class="evaluacion-item mb-3">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h6 class="mb-2">{{ evaluacion.pregunta }}</h6>
+                  <div class="rating-display">
+                    <span class="stars">{{ obtenerEstrellas(evaluacion.puntajeSatisfaccion) }}</span>
+                    <span class="puntaje-text">({{ evaluacion.puntajeSatisfaccion }}/5)</span>
+                  </div>
+                  <div *ngIf="evaluacion.comentario" class="comentario mt-2">
+                    <small class="text-muted">
+                      <i class="fas fa-comment me-1"></i>
+                      <strong>Comentario:</strong> {{ evaluacion.comentario }}
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-4 text-end">
+                  <span class="badge" 
+                        [ngClass]="'bg-' + obtenerColorNivel(obtenerNivelSatisfaccion(evaluacion.puntajeSatisfaccion))">
+                    {{ evaluacion.puntajeSatisfaccion }} ⭐
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje de la encuesta -->
+          <div *ngIf="encuesta.mensaje" class="alert alert-info mt-4">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Mensaje:</strong> {{ encuesta.mensaje }}
+          </div>
+
+          <!-- Resumen final -->
+          <div class="resumen-final mt-4 p-3 bg-light rounded">
+            <h6 class="text-center mb-3">
+              <i class="fas fa-chart-bar me-2"></i>
+              Resumen de Satisfacción
+            </h6>
+            <div class="row text-center">
+              <div class="col-md-4">
+                <div class="stat-item">
+                  <h4 class="text-primary">{{ encuesta.evaluaciones.length }}</h4>
+                  <p class="text-muted mb-0">Preguntas Evaluadas</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-item">
+                  <h4 class="text-success">{{ encuesta.promedioSatisfaccion | number:'1.1-1' }}</h4>
+                  <p class="text-muted mb-0">Promedio General</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-item">
+                  <h4 class="text-info">{{ obtenerNivelSatisfaccion(encuesta.promedioSatisfaccion) }}</h4>
+                  <p class="text-muted mb-0">Nivel de Satisfacción</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no se encuentra la encuesta -->
+      <div *ngIf="!loading && !encuesta" class="text-center py-5">
+        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+        <h4>Encuesta no encontrada</h4>
+        <p class="text-muted">No se pudo encontrar la encuesta solicitada.</p>
+        <button class="btn btn-primary" (click)="volverAEncuestas()">
+          <i class="fas fa-arrow-left me-2"></i>
+          Volver a Mis Encuestas
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

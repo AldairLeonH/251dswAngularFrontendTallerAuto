@@ -42,8 +42,12 @@ export class IniciarSesionComponent {
       response => {
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful', response);
-        this.router.navigate(['/perfil']);
-        const rol = Number(localStorage.getItem('rol'));
+        const rol = localStorage.getItem('rol');
+        if (rol === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/perfil']);
+        }
       },
       error => { 
         let mensaje: string;

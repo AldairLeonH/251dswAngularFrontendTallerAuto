@@ -9,7 +9,6 @@ import { IUsuarioRequest } from '../model/usuario-request';
   providedIn: 'root'
 })
 export class UsuarioService {
-
   constructor(private http: HttpClient) {} 
   getUsuarios(): Observable<IUsuarioResponse[]> {
     return this.http.get<IUsuarioResponse[]>(`${BASE_URL}/usuario`);
@@ -30,4 +29,7 @@ export class UsuarioService {
     return this.http.get<IUsuarioResponse>(`${BASE_URL}/usuario/findById/${id}`);
   }
 
+  getIdPersonaPorUsuario(idUsuario: number): Observable<number> {
+    return this.http.get<number>(`${BASE_URL}/usuario/${idUsuario}/persona`);
+  }
 }
